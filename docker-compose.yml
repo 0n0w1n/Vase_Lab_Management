@@ -1,0 +1,54 @@
+services:
+  node-app:
+    image: 'node:26'
+    user: 'node'
+    working_dir: /home/node/app
+    volumes: # kinda like saying "hey this folder outside corresponds to this folder inside"
+      - ./test-app-next/:/home/node/app
+    ports: # connect port 3000 in the container to port 3000 in the real world
+      - '3000:3000'
+    depends_on:
+      - flask-app
+    networks:
+      - backend
+    # command: ["bash", "start_prod.sh"]
+    command: ["npm", "run", "dev"]
+
+  flask-app:
+    build:
+      context: ./test-app-flask
+    volumes:
+      - ./test-app-flask/:/usr/src/app
+    ports:
+      - '8000:8000'
+    depends_on:
+      - mysql-db
+    networks:
+      - backend
+      - db
+    # command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0", "main:create_app()"]
+    command: ["/venv/bin/python3", "-m", "flask", "--app", "main", "run", "--host=0.0.0.0", "--debug", "--port", "8000"]
+
+
+  mysql-db:
+    image: mysql:26
+    user: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: abc # by god please change this in prod
+    volumes:
+      - test-app-db:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    networks:
+      - db
+
+# creates a network link between containers
+# technically it would also work without it but its good practice
+networks:
+  backend:
+    driver: bridge
+  db:
+    driver: bridge
+
+volumes:
+  test-app-db:
