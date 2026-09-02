@@ -31,12 +31,12 @@ services:
 
 
   mysql-db:
-    image: mysql:26
-    user: mysql
+    build:
+      context: ./test-app-db
     environment:
       MYSQL_ROOT_PASSWORD: abc # by god please change this in prod
     volumes:
-      - test-app-db:/var/lib/mysql
+      - ./test-app-db/db:/var/lib/mysql
     ports:
       - '3306:3306'
     networks:
@@ -51,4 +51,4 @@ networks:
     driver: bridge
 
 volumes:
-  test-app-db:
+  db:
