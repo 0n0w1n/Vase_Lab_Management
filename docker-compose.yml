@@ -1,17 +1,18 @@
 services:
   node-app:
-    image: 'node:26'
+    build:
+      context: ./test-app-next
     user: 'node'
     working_dir: /home/node/app
-    volumes: # kinda like saying "hey this folder outside corresponds to this folder inside"
-      - ./test-app-next/:/home/node/app
+    # volumes: # kinda like saying "hey this folder outside corresponds to this folder inside"
+    #   - ./test-app-next/:/home/node/app
     ports: # connect port 3000 in the container to port 3000 in the real world
       - '3000:3000'
     depends_on:
       - flask-app
     networks:
       - backend
-    # command: ["bash", "start_prod.sh"]
+    # command: ["node", "server.js"]
     command: ["npm", "run", "dev"]
 
   flask-app:
