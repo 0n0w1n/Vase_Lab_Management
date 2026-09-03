@@ -4,22 +4,32 @@ services:
       context: ./test-app-next
     user: 'node'
     working_dir: /home/node/app
-    # volumes: # kinda like saying "hey this folder outside corresponds to this folder inside"
-    #   - ./test-app-next/:/home/node/app
     ports: # connect port 3000 in the container to port 3000 in the real world
       - '3000:3000'
     depends_on:
       - flask-app
     networks:
       - backend
-    # command: ["node", "server.js"]
+    # command: ["bash", "start_prod.sh"]
     command: ["npm", "run", "dev"]
+
+    environment:
+      - WATCHBACK_POLLING=true
+    develop:
+      watch:
+        - action: sync
+          path: ./test-app-next
+          target: /home/node/app
+          ignore:
+            - node_modules/
+            - .next/
+        - action: rebuild
+          path: package.json
+
 
   flask-app:
     build:
       context: ./test-app-flask
-    volumes:
-      - ./test-app-flask/:/usr/src/app
     ports:
       - '8000:8000'
     depends_on:
@@ -29,6 +39,17 @@ services:
       - db
     # command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0", "main:create_app()"]
     command: ["/venv/bin/python3", "-m", "flask", "--app", "main", "run", "--host=0.0.0.0", "--debug", "--port", "8000"]
+
+    environment:
+      - WATCHBACK_POLLING=true
+    develop:
+      watch:
+        - action: sync
+          path: ./test-app-flask
+          target: /usr/src/app
+          ignore:
+            - node_modules/
+            - .next/
 
 
   mysql-db:

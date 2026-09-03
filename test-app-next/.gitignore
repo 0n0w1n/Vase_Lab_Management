@@ -20,6 +20,7 @@
 # production
 /build
 server.js
+run
 
 # misc
 .DS_Store
