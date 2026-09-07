@@ -1,0 +1,162 @@
+{
+  "version": "31.4.4",
+  "data": "<mxfile host=\"app.diagrams.net\"><diagram name=\"Page-1\" id=\"NEIFMwXDolTgYuwV25ZQ\"><mxGraphModel dx=\"1071\" dy=\"713\" grid=\"0\" gridSize=\"10\" guides=\"1\" tooltips=\"1\" connect=\"1\" arrows=\"1\" fold=\"1\" page=\"0\" pageScale=\"1\" pageWidth=\"827\" pageHeight=\"1169\" math=\"0\" shadow=\"0\"><root><mxCell id=\"0\"/><mxCell id=\"1\" parent=\"0\"/><UserObject label=\"\" mermaidData=\"{&#10;  &quot;data&quot;: &quot;---\\nconfig:\\n  layout: elk\\n---\\nflowchart TD\\n  START((\\&quot; \\&quot;)):::startnode\\n  A[\\&quot;TA/Staff reviews request details\\&quot;]:::proc\\n  B{\\&quot;Approved?\\&quot;}:::dec\\n  C[\\&quot;Staff updates status to &amp;quot;in progress&amp;quot;\\&quot;]:::proc\\n  D[\\&quot;Staff resolves request and closes ticket\\&quot;]:::proc\\n  END((\\&quot; \\&quot;)):::endnode\\n\\n  START --&gt; A\\n  A --&gt; B\\n  B --&gt;|NO| A\\n  B --&gt;|YES| C\\n  C --&gt; D\\n  D --&gt; END\\n\\n  classDef proc fill:#EADCF8,stroke:#7A3FD6,stroke-width:2px,color:#7A3FD6\\n  classDef dec fill:#D6F0DC,stroke:#3FA85F,stroke-width:2px,color:#2F7A45\\n  classDef startnode fill:#7A45D6,stroke:#7A45D6,stroke-width:2px,color:#7A45D6\\n  classDef endnode fill:#7A45D6,stroke:#7A45D6,stroke-width:4px,color:#7A45D6\\n  linkStyle default stroke:#7A3FD6,stroke-width:2px&quot;,&#10;  &quot;config&quot;: null&#10;}\" id=\"2\"><mxCell connectable=\"0\" parent=\"1\" style=\"group;transparentBounds=1;editIcon=1;lockedGroup=0;groupPadding=10;\" vertex=\"1\"><mxGeometry as=\"geometry\"/></mxCell></UserObject><UserObject label=\"\" mermaidId=\"n:START\" mermaidBaseStyle=\"ellipse;html=1;aspect=fixed;strokeWidth=2;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"\" id=\"v_4feb7c20\"><mxCell parent=\"2\" style=\"ellipse;html=1;aspect=fixed;strokeWidth=2;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"49\" width=\"49\" x=\"131\" y=\"10\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"TA/Staff reviews request details\" mermaidId=\"n:A\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"TA/Staff reviews request details\" id=\"v_e5f56599\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"291\" x=\"10\" y=\"89\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"Approved?\" mermaidId=\"n:B\" mermaidBaseStyle=\"rhombus;html=1;strokeWidth=2;whiteSpace=wrap;fillColor=#D6F0DC;strokeColor=#3FA85F;fontColor=#2F7A45;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"Approved?\" id=\"v_ef496a6a\"><mxCell parent=\"2\" style=\"rhombus;html=1;strokeWidth=2;whiteSpace=wrap;fillColor=#D6F0DC;strokeColor=#3FA85F;fontColor=#2F7A45;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"133\" width=\"133\" x=\"115.33\" y=\"240\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"Staff updates status to &amp;quot;in progress&amp;quot;\" mermaidId=\"n:C\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"Staff updates status to &amp;quot;in progress&amp;quot;\" id=\"v_cd779618\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"316\" x=\"23.83\" y=\"468\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"Staff resolves request and closes ticket\" mermaidId=\"n:D\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"Staff resolves request and closes ticket\" id=\"v_2cc37d70\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"341\" x=\"11.33\" y=\"552\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"\" mermaidId=\"n:END\" mermaidBaseStyle=\"ellipse;html=1;aspect=fixed;strokeWidth=4;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"\" id=\"v_4feb7c20_1\"><mxCell parent=\"2\" style=\"ellipse;html=1;aspect=fixed;strokeWidth=4;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"49\" width=\"49\" x=\"157.33\" y=\"636\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:START-&gt;A#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.51;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"\" id=\"e_ec337f58\"><mxCell edge=\"1\" parent=\"2\" source=\"v_4feb7c20\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_e5f56599\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"155.5\" y=\"74\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:A-&gt;B#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.520618556701031;exitY=1;entryX=0.5451127819548872;entryY=0;curved=1;exitX=0.52;exitY=1;entryX=0.55;entryY=0;\" mermaidBaseValue=\"\" id=\"e_4e87cc20\"><mxCell edge=\"1\" parent=\"2\" source=\"v_e5f56599\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.6667;exitY=1;entryX=0.6667;entryY=0.1667;\" target=\"v_ef496a6a\"><mxGeometry relative=\"1\" as=\"geometry\"><mxPoint as=\"offset\"/><Array as=\"points\"><mxPoint x=\"204\" y=\"190.5\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"NO\" mermaidId=\"e:B-&gt;A#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.40225563909774437;exitY=0;entryX=0.45532646048109965;entryY=1;curved=1;exitX=0.4;exitY=0;entryX=0.46;entryY=1;\" mermaidBaseValue=\"NO\" id=\"e_8a0e61c8\"><mxCell edge=\"1\" parent=\"2\" source=\"v_ef496a6a\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.3334;exitY=0.1666;entryX=0.3333;entryY=1;\" target=\"v_e5f56599\"><mxGeometry relative=\"1\" as=\"geometry\"><mxPoint y=\"-27.33\" as=\"offset\"/><Array as=\"points\"><mxPoint x=\"159.67\" y=\"224\"/><mxPoint x=\"107\" y=\"224\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"YES\" mermaidId=\"e:B-&gt;C#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"YES\" id=\"e_cea3afec\"><mxCell edge=\"1\" parent=\"2\" source=\"v_ef496a6a\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_cd779618\"><mxGeometry relative=\"1\" as=\"geometry\"><mxPoint as=\"offset\"/><Array as=\"points\"><mxPoint x=\"181.83\" y=\"420.5\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:C-&gt;D#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"\" id=\"e_7541ee98\"><mxCell edge=\"1\" parent=\"2\" source=\"v_cd779618\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_2cc37d70\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"181.83\" y=\"537\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:D-&gt;END#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.51;entryY=0;\" mermaidBaseValue=\"\" id=\"e_e562349a\"><mxCell edge=\"1\" parent=\"2\" source=\"v_2cc37d70\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_4feb7c20_1\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"181.83\" y=\"621\"/></Array></mxGeometry></mxCell></UserObject></root></mxGraphModel></diagram></mxfile>",
+  "pages": [
+    {
+      "id": "NEIFMwXDolTgYuwV25ZQ",
+      "name": "Page-1",
+      "cells": [
+        {
+          "id": "1",
+          "type": "layer"
+        },
+        {
+          "id": "2",
+          "type": "node",
+          "parent": "1",
+          "metadata": {
+            "mermaidData": "{\n  \"data\": \"---\\nconfig:\\n  layout: elk\\n---\\nflowchart TD\\n  START((\\\" \\\")):::startnode\\n  A[\\\"TA/Staff reviews request details\\\"]:::proc\\n  B{\\\"Approved?\\\"}:::dec\\n  C[\\\"Staff updates status to &quot;in progress&quot;\\\"]:::proc\\n  D[\\\"Staff resolves request and closes ticket\\\"]:::proc\\n  END((\\\" \\\")):::endnode\\n\\n  START --> A\\n  A --> B\\n  B -->|NO| A\\n  B -->|YES| C\\n  C --> D\\n  D --> END\\n\\n  classDef proc fill:#EADCF8,stroke:#7A3FD6,stroke-width:2px,color:#7A3FD6\\n  classDef dec fill:#D6F0DC,stroke:#3FA85F,stroke-width:2px,color:#2F7A45\\n  classDef startnode fill:#7A45D6,stroke:#7A45D6,stroke-width:2px,color:#7A45D6\\n  classDef endnode fill:#7A45D6,stroke:#7A45D6,stroke-width:4px,color:#7A45D6\\n  linkStyle default stroke:#7A3FD6,stroke-width:2px\",\n  \"config\": null\n}"
+          }
+        },
+        {
+          "id": "v_4feb7c20",
+          "type": "node",
+          "parent": "2",
+          "metadata": {
+            "mermaidId": "n:START",
+            "mermaidBaseStyle": "ellipse;html=1;aspect=fixed;strokeWidth=2;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "v_e5f56599",
+          "type": "node",
+          "parent": "2",
+          "label": "TA/Staff reviews request details",
+          "metadata": {
+            "mermaidId": "n:A",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "TA/Staff reviews request details"
+          }
+        },
+        {
+          "id": "v_ef496a6a",
+          "type": "node",
+          "parent": "2",
+          "label": "Approved?",
+          "metadata": {
+            "mermaidId": "n:B",
+            "mermaidBaseStyle": "rhombus;html=1;strokeWidth=2;whiteSpace=wrap;fillColor=#D6F0DC;strokeColor=#3FA85F;fontColor=#2F7A45;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "Approved?"
+          }
+        },
+        {
+          "id": "v_cd779618",
+          "type": "node",
+          "parent": "2",
+          "label": "Staff updates status to &quot;in progress&quot;",
+          "metadata": {
+            "mermaidId": "n:C",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "Staff updates status to &quot;in progress&quot;"
+          }
+        },
+        {
+          "id": "v_2cc37d70",
+          "type": "node",
+          "parent": "2",
+          "label": "Staff resolves request and closes ticket",
+          "metadata": {
+            "mermaidId": "n:D",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "Staff resolves request and closes ticket"
+          }
+        },
+        {
+          "id": "v_4feb7c20_1",
+          "type": "node",
+          "parent": "2",
+          "metadata": {
+            "mermaidId": "n:END",
+            "mermaidBaseStyle": "ellipse;html=1;aspect=fixed;strokeWidth=4;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_ec337f58",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_4feb7c20",
+          "target": "v_e5f56599",
+          "metadata": {
+            "mermaidId": "e:START->A#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.51;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_4e87cc20",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_e5f56599",
+          "target": "v_ef496a6a",
+          "metadata": {
+            "mermaidId": "e:A->B#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.520618556701031;exitY=1;entryX=0.5451127819548872;entryY=0;curved=1;exitX=0.52;exitY=1;entryX=0.55;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_8a0e61c8",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_ef496a6a",
+          "target": "v_e5f56599",
+          "label": "NO",
+          "metadata": {
+            "mermaidId": "e:B->A#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.40225563909774437;exitY=0;entryX=0.45532646048109965;entryY=1;curved=1;exitX=0.4;exitY=0;entryX=0.46;entryY=1;",
+            "mermaidBaseValue": "NO"
+          }
+        },
+        {
+          "id": "e_cea3afec",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_ef496a6a",
+          "target": "v_cd779618",
+          "label": "YES",
+          "metadata": {
+            "mermaidId": "e:B->C#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.5;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": "YES"
+          }
+        },
+        {
+          "id": "e_7541ee98",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_cd779618",
+          "target": "v_2cc37d70",
+          "metadata": {
+            "mermaidId": "e:C->D#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_e562349a",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_2cc37d70",
+          "target": "v_4feb7c20_1",
+          "metadata": {
+            "mermaidId": "e:D->END#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.51;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        }
+      ]
+    }
+  ]
+}
