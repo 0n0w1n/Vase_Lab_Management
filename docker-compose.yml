@@ -33,15 +33,20 @@ services:
     ports:
       - '8000:8000'
     depends_on:
-      - mysql-db
+      mysql-db:
+        condition: service_healthy
     networks:
       - backend
       - db
+    volumes:
+      - ./test-app-flask:/usr/src/app
     # command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0", "main:create_app()"]
     command: ["/venv/bin/python3", "-m", "flask", "--app", "main", "run", "--host=0.0.0.0", "--debug", "--port", "8000"]
 
     environment:
       - WATCHBACK_POLLING=true
+      - DATABASE_URL=mysql+mysqlconnector://root:abc@mysql-db:3306/Test
+      - FLASK_APP=main:create_app
     develop:
       watch:
         - action: sync
@@ -58,11 +63,16 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: abc # by god please change this in prod
     volumes:
-      - ./test-app-db/db:/var/lib/mysql
+      - db_data:/var/lib/mysql
     ports:
-      - '3306:3306'
+      - '3307:3306'
     networks:
       - db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pabc"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 # creates a network link between containers
 # technically it would also work without it but its good practice
@@ -73,4 +83,4 @@ networks:
     driver: bridge
 
 volumes:
-  db:
+  db_data:
