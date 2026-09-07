@@ -46,7 +46,6 @@ services:
     environment:
       - WATCHBACK_POLLING=true
       - DATABASE_URL=mysql+mysqlconnector://root:abc@mysql-db:3306/Test
-      - FLASK_APP=main:create_app
     develop:
       watch:
         - action: sync
@@ -65,7 +64,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      - '3307:3306'
+      - '3306:3306'
     networks:
       - db
     healthcheck:
