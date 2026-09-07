@@ -1,2 +1,1 @@
-drop database if exists Test;
-create database Test;
+create database if not exists Test;

@@ -11,7 +11,4 @@ RUN python3 -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 RUN pip install --no-cache-dir --root-user-action ignore -r requirements.txt
 
-
-# RUN venv/bin/python3 -m flask db 
-
 EXPOSE 8000

@@ -44,16 +44,13 @@ services:
     command: ["/venv/bin/python3", "-m", "flask", "--app", "main", "run", "--host=0.0.0.0", "--debug", "--port", "8000"]
 
     environment:
-      - WATCHBACK_POLLING=true
+    #   - WATCHBACK_POLLING=true
       - DATABASE_URL=mysql+mysqlconnector://root:abc@mysql-db:3306/Test
-    develop:
-      watch:
-        - action: sync
-          path: ./test-app-flask
-          target: /usr/src/app
-          ignore:
-            - node_modules/
-            - .next/
+    # develop:
+    #   watch:
+    #     - action: sync
+    #       path: ./test-app-flask
+    #       target: /usr/src/app
 
 
   mysql-db:
