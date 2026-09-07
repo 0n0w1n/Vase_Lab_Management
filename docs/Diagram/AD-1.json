@@ -1,0 +1,337 @@
+{
+  "version": "31.4.4",
+  "data": "<mxfile host=\"app.diagrams.net\"><diagram name=\"Page-1\" id=\"s8EY1_f4gU6e8mJsXP1v\"><mxGraphModel dx=\"1607\" dy=\"1070\" grid=\"0\" gridSize=\"10\" guides=\"1\" tooltips=\"1\" connect=\"1\" arrows=\"1\" fold=\"1\" page=\"0\" pageScale=\"1\" pageWidth=\"827\" pageHeight=\"1169\" math=\"0\" shadow=\"0\"><root><mxCell id=\"0\"/><mxCell id=\"1\" parent=\"0\"/><UserObject label=\"\" mermaidData=\"{&#10;  &quot;data&quot;: &quot;---\\nconfig:\\n  layout: elk\\n---\\nflowchart TD\\n  START((\\&quot; \\&quot;)):::startnode\\n  A[\\&quot;Lab member create request form\\&quot;]:::proc\\n  B[\\&quot;Lab member select a request catagory\\&quot;]:::proc\\n  C[\\&quot;Lab member add detail and attach file\\&quot;]:::proc\\n  D{\\&quot;All require field valid?\\&quot;}:::dec\\n  E[\\&quot;System display valid error\\&quot;]:::proc\\n  F[\\&quot;System save request\\&quot;]:::proc\\n  G[\\&quot;System write in activity log\\&quot;]:::proc\\n  H[\\&quot;System notify the default assignee\\&quot;]:::proc\\n  I[\\&quot;System display lab member request list\\&quot;]:::proc\\n  J{\\&quot;Lab member open a request?\\&quot;}:::dec\\n  K[\\&quot;System display request detail, status and activity\\&quot;]:::proc\\n  END((\\&quot; \\&quot;)):::endnode\\n\\n  START --&gt; A\\n  A --&gt; B\\n  B --&gt; C\\n  C --&gt; D\\n  D --&gt;|NO| E\\n  E --&gt; C\\n  D --&gt;|YES| F\\n  F --&gt; G\\n  G --&gt; H\\n  H --&gt; I\\n  I --&gt; J\\n  J --&gt;|YES| K\\n  K --&gt; END\\n  J --&gt;|NO| END\\n\\n  classDef proc fill:#EADCF8,stroke:#7A3FD6,stroke-width:2px,color:#7A3FD6\\n  classDef dec fill:#D6F0DC,stroke:#3FA85F,stroke-width:2px,color:#2F7A45\\n  classDef startnode fill:#7A45D6,stroke:#7A45D6,stroke-width:2px,color:#7A45D6\\n  classDef endnode fill:#7A45D6,stroke:#7A45D6,stroke-width:4px,color:#7A45D6\\n  linkStyle default stroke:#7A3FD6,stroke-width:2px&quot;,&#10;  &quot;config&quot;: null&#10;}\" id=\"2\"><mxCell connectable=\"0\" parent=\"1\" style=\"group;transparentBounds=1;editIcon=1;lockedGroup=0;groupPadding=10;\" vertex=\"1\"><mxGeometry as=\"geometry\"/></mxCell></UserObject><UserObject label=\"\" mermaidId=\"n:START\" mermaidBaseStyle=\"ellipse;html=1;aspect=fixed;strokeWidth=2;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"\" id=\"v_4feb7c20\"><mxCell parent=\"2\" style=\"ellipse;html=1;aspect=fixed;strokeWidth=2;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"49\" width=\"49\" x=\"262.17\" y=\"10\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"Lab member create request form\" mermaidId=\"n:A\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"Lab member create request form\" id=\"v_5cf4fa68\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"298\" x=\"137.67\" y=\"89\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"Lab member select a request catagory\" mermaidId=\"n:B\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"Lab member select a request catagory\" id=\"v_d1c106ec\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"336\" x=\"118.67\" y=\"173\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"Lab member add detail and attach file\" mermaidId=\"n:C\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"Lab member add detail and attach file\" id=\"v_601cc708\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"338\" x=\"117.67\" y=\"257\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"All require field valid?\" mermaidId=\"n:D\" mermaidBaseStyle=\"rhombus;html=1;strokeWidth=2;whiteSpace=wrap;fillColor=#D6F0DC;strokeColor=#3FA85F;fontColor=#2F7A45;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"All require field valid?\" id=\"v_2d00261c\"><mxCell parent=\"2\" style=\"rhombus;html=1;strokeWidth=2;whiteSpace=wrap;fillColor=#D6F0DC;strokeColor=#3FA85F;fontColor=#2F7A45;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"270\" width=\"270\" x=\"208\" y=\"343\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"System display valid error\" mermaidId=\"n:E\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"System display valid error\" id=\"v_4e24f928\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"245\" x=\"10\" y=\"710\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"System save request\" mermaidId=\"n:F\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"System save request\" id=\"v_a23814e4\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"206\" x=\"285\" y=\"710\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"System write in activity log\" mermaidId=\"n:G\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"System write in activity log\" id=\"v_5be88f80\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"256\" x=\"260\" y=\"794\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"System notify the default assignee\" mermaidId=\"n:H\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"System notify the default assignee\" id=\"v_4cc889af\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"307\" x=\"234.5\" y=\"878\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"System display lab member request list\" mermaidId=\"n:I\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"System display lab member request list\" id=\"v_e5851480\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"342\" x=\"217\" y=\"962\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"Lab member open a request?\" mermaidId=\"n:J\" mermaidBaseStyle=\"rhombus;html=1;strokeWidth=2;whiteSpace=wrap;fillColor=#D6F0DC;strokeColor=#3FA85F;fontColor=#2F7A45;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"Lab member open a request?\" id=\"v_a076831c\"><mxCell parent=\"2\" style=\"rhombus;html=1;strokeWidth=2;whiteSpace=wrap;fillColor=#D6F0DC;strokeColor=#3FA85F;fontColor=#2F7A45;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"347\" width=\"347\" x=\"214.5\" y=\"1046\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"System display request detail, status and activity\" mermaidId=\"n:K\" mermaidBaseStyle=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"System display request detail, status and activity\" id=\"v_dfc6bfc4\"><mxCell parent=\"2\" style=\"html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"54\" width=\"414\" x=\"238.83\" y=\"1490\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"\" mermaidId=\"n:END\" mermaidBaseStyle=\"ellipse;html=1;aspect=fixed;strokeWidth=4;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" mermaidBaseValue=\"\" id=\"v_4feb7c20_1\"><mxCell parent=\"2\" style=\"ellipse;html=1;aspect=fixed;strokeWidth=4;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;\" vertex=\"1\"><mxGeometry height=\"49\" width=\"49\" x=\"413.17\" y=\"1576\" as=\"geometry\"/></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:START-&gt;A#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.49;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"\" id=\"e_3ba1b4a4\"><mxCell edge=\"1\" parent=\"2\" source=\"v_4feb7c20\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_5cf4fa68\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"286.67\" y=\"74\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:A-&gt;B#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"\" id=\"e_378fe824\"><mxCell edge=\"1\" parent=\"2\" source=\"v_5cf4fa68\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_d1c106ec\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"286.67\" y=\"158\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:B-&gt;C#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"\" id=\"e_a5dbb0a0\"><mxCell edge=\"1\" parent=\"2\" source=\"v_d1c106ec\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_601cc708\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"286.67\" y=\"242\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:C-&gt;D#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.68;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"\" id=\"e_15fb78ec\"><mxCell edge=\"1\" parent=\"2\" source=\"v_601cc708\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.6667;exitY=1;entryX=0.5;entryY=0;\" target=\"v_2d00261c\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"343\" y=\"327\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"NO\" mermaidId=\"e:D-&gt;E#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.1;exitY=1;entryX=0.71;entryY=0;\" mermaidBaseValue=\"NO\" id=\"e_01e64510\"><mxCell edge=\"1\" parent=\"2\" source=\"v_2d00261c\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.3333;exitY=0.8333;entryX=0.6667;entryY=0;\" target=\"v_4e24f928\"><mxGeometry relative=\"1\" as=\"geometry\"><mxPoint x=\"-29.84\" y=\"33.5\" as=\"offset\"/><Array as=\"points\"><mxPoint x=\"298\" y=\"629\"/><mxPoint x=\"173.33\" y=\"629\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:E-&gt;C#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.47;exitY=0;entryX=0.27;entryY=1;\" mermaidBaseValue=\"\" id=\"e_bbe857a0\"><mxCell edge=\"1\" parent=\"2\" source=\"v_4e24f928\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.3333;exitY=0;entryX=0.3333;entryY=1;\" target=\"v_601cc708\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"91.67\" y=\"662.5\"/><mxPoint x=\"91.67\" y=\"327\"/><mxPoint x=\"230.33\" y=\"327\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"YES\" mermaidId=\"e:D-&gt;F#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.57;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"YES\" id=\"e_1655fcfc\"><mxCell edge=\"1\" parent=\"2\" source=\"v_2d00261c\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.6667;exitY=0.8333;entryX=0.5;entryY=0;\" target=\"v_a23814e4\"><mxGeometry relative=\"1\" as=\"geometry\"><mxPoint y=\"1\" as=\"offset\"/><Array as=\"points\"><mxPoint x=\"388\" y=\"661.5\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:F-&gt;G#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"\" id=\"e_16758154\"><mxCell edge=\"1\" parent=\"2\" source=\"v_a23814e4\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_5be88f80\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"388\" y=\"779\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:G-&gt;H#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"\" id=\"e_cf38f944\"><mxCell edge=\"1\" parent=\"2\" source=\"v_5be88f80\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_4cc889af\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"388\" y=\"863\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:H-&gt;I#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"\" id=\"e_067ca0ac\"><mxCell edge=\"1\" parent=\"2\" source=\"v_4cc889af\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_e5851480\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"388\" y=\"947\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:I-&gt;J#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"\" id=\"e_a8fb9564\"><mxCell edge=\"1\" parent=\"2\" source=\"v_e5851480\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;\" target=\"v_a076831c\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"388\" y=\"1031\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"YES\" mermaidId=\"e:J-&gt;K#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.8;exitY=1;entryX=0.5;entryY=0;\" mermaidBaseValue=\"YES\" id=\"e_28f53a44\"><mxCell edge=\"1\" parent=\"2\" source=\"v_a076831c\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.6667;exitY=0.8333;entryX=0.5;entryY=0;\" target=\"v_dfc6bfc4\"><mxGeometry relative=\"1\" as=\"geometry\"><mxPoint y=\"1\" as=\"offset\"/><Array as=\"points\"><mxPoint x=\"445.83\" y=\"1441.5\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"\" mermaidId=\"e:K-&gt;END#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=1;entryY=0.29;\" mermaidBaseValue=\"\" id=\"e_1c0f8264\"><mxCell edge=\"1\" parent=\"2\" source=\"v_dfc6bfc4\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.5;exitY=1;entryX=0.6665;entryY=0.0285;\" target=\"v_4feb7c20_1\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"445.83\" y=\"1560\"/></Array></mxGeometry></mxCell></UserObject><UserObject label=\"NO\" mermaidId=\"e:J-&gt;END#0\" mermaidBaseStyle=\"curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.2;exitY=1;entryX=0;entryY=0.29;\" mermaidBaseValue=\"NO\" id=\"e_8bd67b1f\"><mxCell edge=\"1\" parent=\"2\" source=\"v_a076831c\" style=\"curved=0;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);edgeStyle=orthogonalEdgeStyle;rounded=1;exitX=0.3333;exitY=0.8333;entryX=0.3333;entryY=0.0286;\" target=\"v_4feb7c20_1\"><mxGeometry relative=\"1\" as=\"geometry\"><mxPoint y=\"-91.66\" as=\"offset\"/><Array as=\"points\"><mxPoint x=\"330.17\" y=\"1409\"/><mxPoint x=\"227.83\" y=\"1409\"/><mxPoint x=\"227.83\" y=\"1560\"/><mxPoint x=\"429.5\" y=\"1560\"/></Array></mxGeometry></mxCell></UserObject></root></mxGraphModel></diagram></mxfile>",
+  "pages": [
+    {
+      "id": "s8EY1_f4gU6e8mJsXP1v",
+      "name": "Page-1",
+      "cells": [
+        {
+          "id": "1",
+          "type": "layer"
+        },
+        {
+          "id": "2",
+          "type": "node",
+          "parent": "1",
+          "metadata": {
+            "mermaidData": "{\n  \"data\": \"---\\nconfig:\\n  layout: elk\\n---\\nflowchart TD\\n  START((\\\" \\\")):::startnode\\n  A[\\\"Lab member create request form\\\"]:::proc\\n  B[\\\"Lab member select a request catagory\\\"]:::proc\\n  C[\\\"Lab member add detail and attach file\\\"]:::proc\\n  D{\\\"All require field valid?\\\"}:::dec\\n  E[\\\"System display valid error\\\"]:::proc\\n  F[\\\"System save request\\\"]:::proc\\n  G[\\\"System write in activity log\\\"]:::proc\\n  H[\\\"System notify the default assignee\\\"]:::proc\\n  I[\\\"System display lab member request list\\\"]:::proc\\n  J{\\\"Lab member open a request?\\\"}:::dec\\n  K[\\\"System display request detail, status and activity\\\"]:::proc\\n  END((\\\" \\\")):::endnode\\n\\n  START --> A\\n  A --> B\\n  B --> C\\n  C --> D\\n  D -->|NO| E\\n  E --> C\\n  D -->|YES| F\\n  F --> G\\n  G --> H\\n  H --> I\\n  I --> J\\n  J -->|YES| K\\n  K --> END\\n  J -->|NO| END\\n\\n  classDef proc fill:#EADCF8,stroke:#7A3FD6,stroke-width:2px,color:#7A3FD6\\n  classDef dec fill:#D6F0DC,stroke:#3FA85F,stroke-width:2px,color:#2F7A45\\n  classDef startnode fill:#7A45D6,stroke:#7A45D6,stroke-width:2px,color:#7A45D6\\n  classDef endnode fill:#7A45D6,stroke:#7A45D6,stroke-width:4px,color:#7A45D6\\n  linkStyle default stroke:#7A3FD6,stroke-width:2px\",\n  \"config\": null\n}"
+          }
+        },
+        {
+          "id": "v_4feb7c20",
+          "type": "node",
+          "parent": "2",
+          "metadata": {
+            "mermaidId": "n:START",
+            "mermaidBaseStyle": "ellipse;html=1;aspect=fixed;strokeWidth=2;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "v_5cf4fa68",
+          "type": "node",
+          "parent": "2",
+          "label": "Lab member create request form",
+          "metadata": {
+            "mermaidId": "n:A",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "Lab member create request form"
+          }
+        },
+        {
+          "id": "v_d1c106ec",
+          "type": "node",
+          "parent": "2",
+          "label": "Lab member select a request catagory",
+          "metadata": {
+            "mermaidId": "n:B",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "Lab member select a request catagory"
+          }
+        },
+        {
+          "id": "v_601cc708",
+          "type": "node",
+          "parent": "2",
+          "label": "Lab member add detail and attach file",
+          "metadata": {
+            "mermaidId": "n:C",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "Lab member add detail and attach file"
+          }
+        },
+        {
+          "id": "v_2d00261c",
+          "type": "node",
+          "parent": "2",
+          "label": "All require field valid?",
+          "metadata": {
+            "mermaidId": "n:D",
+            "mermaidBaseStyle": "rhombus;html=1;strokeWidth=2;whiteSpace=wrap;fillColor=#D6F0DC;strokeColor=#3FA85F;fontColor=#2F7A45;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "All require field valid?"
+          }
+        },
+        {
+          "id": "v_4e24f928",
+          "type": "node",
+          "parent": "2",
+          "label": "System display valid error",
+          "metadata": {
+            "mermaidId": "n:E",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "System display valid error"
+          }
+        },
+        {
+          "id": "v_a23814e4",
+          "type": "node",
+          "parent": "2",
+          "label": "System save request",
+          "metadata": {
+            "mermaidId": "n:F",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "System save request"
+          }
+        },
+        {
+          "id": "v_5be88f80",
+          "type": "node",
+          "parent": "2",
+          "label": "System write in activity log",
+          "metadata": {
+            "mermaidId": "n:G",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "System write in activity log"
+          }
+        },
+        {
+          "id": "v_4cc889af",
+          "type": "node",
+          "parent": "2",
+          "label": "System notify the default assignee",
+          "metadata": {
+            "mermaidId": "n:H",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "System notify the default assignee"
+          }
+        },
+        {
+          "id": "v_e5851480",
+          "type": "node",
+          "parent": "2",
+          "label": "System display lab member request list",
+          "metadata": {
+            "mermaidId": "n:I",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "System display lab member request list"
+          }
+        },
+        {
+          "id": "v_a076831c",
+          "type": "node",
+          "parent": "2",
+          "label": "Lab member open a request?",
+          "metadata": {
+            "mermaidId": "n:J",
+            "mermaidBaseStyle": "rhombus;html=1;strokeWidth=2;whiteSpace=wrap;fillColor=#D6F0DC;strokeColor=#3FA85F;fontColor=#2F7A45;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "Lab member open a request?"
+          }
+        },
+        {
+          "id": "v_dfc6bfc4",
+          "type": "node",
+          "parent": "2",
+          "label": "System display request detail, status and activity",
+          "metadata": {
+            "mermaidId": "n:K",
+            "mermaidBaseStyle": "html=1;whiteSpace=wrap;strokeWidth=2;fillColor=#EADCF8;strokeColor=#7A3FD6;fontColor=#7A3FD6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": "System display request detail, status and activity"
+          }
+        },
+        {
+          "id": "v_4feb7c20_1",
+          "type": "node",
+          "parent": "2",
+          "metadata": {
+            "mermaidId": "n:END",
+            "mermaidBaseStyle": "ellipse;html=1;aspect=fixed;strokeWidth=4;whiteSpace=wrap;fillColor=#7A45D6;strokeColor=#7A45D6;fontColor=#7A45D6;fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontSize=16;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_3ba1b4a4",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_4feb7c20",
+          "target": "v_5cf4fa68",
+          "metadata": {
+            "mermaidId": "e:START->A#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.49;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_378fe824",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_5cf4fa68",
+          "target": "v_d1c106ec",
+          "metadata": {
+            "mermaidId": "e:A->B#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_a5dbb0a0",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_d1c106ec",
+          "target": "v_601cc708",
+          "metadata": {
+            "mermaidId": "e:B->C#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_15fb78ec",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_601cc708",
+          "target": "v_2d00261c",
+          "metadata": {
+            "mermaidId": "e:C->D#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.68;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_01e64510",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_2d00261c",
+          "target": "v_4e24f928",
+          "label": "NO",
+          "metadata": {
+            "mermaidId": "e:D->E#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.1;exitY=1;entryX=0.71;entryY=0;",
+            "mermaidBaseValue": "NO"
+          }
+        },
+        {
+          "id": "e_bbe857a0",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_4e24f928",
+          "target": "v_601cc708",
+          "metadata": {
+            "mermaidId": "e:E->C#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.47;exitY=0;entryX=0.27;entryY=1;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_1655fcfc",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_2d00261c",
+          "target": "v_a23814e4",
+          "label": "YES",
+          "metadata": {
+            "mermaidId": "e:D->F#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.57;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": "YES"
+          }
+        },
+        {
+          "id": "e_16758154",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_a23814e4",
+          "target": "v_5be88f80",
+          "metadata": {
+            "mermaidId": "e:F->G#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_cf38f944",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_5be88f80",
+          "target": "v_4cc889af",
+          "metadata": {
+            "mermaidId": "e:G->H#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_067ca0ac",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_4cc889af",
+          "target": "v_e5851480",
+          "metadata": {
+            "mermaidId": "e:H->I#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_a8fb9564",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_e5851480",
+          "target": "v_a076831c",
+          "metadata": {
+            "mermaidId": "e:I->J#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_28f53a44",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_a076831c",
+          "target": "v_dfc6bfc4",
+          "label": "YES",
+          "metadata": {
+            "mermaidId": "e:J->K#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.8;exitY=1;entryX=0.5;entryY=0;",
+            "mermaidBaseValue": "YES"
+          }
+        },
+        {
+          "id": "e_1c0f8264",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_dfc6bfc4",
+          "target": "v_4feb7c20_1",
+          "metadata": {
+            "mermaidId": "e:K->END#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;exitX=0.5;exitY=1;entryX=1;entryY=0.29;",
+            "mermaidBaseValue": ""
+          }
+        },
+        {
+          "id": "e_8bd67b1f",
+          "type": "edge",
+          "parent": "2",
+          "source": "v_a076831c",
+          "target": "v_4feb7c20_1",
+          "label": "NO",
+          "metadata": {
+            "mermaidId": "e:J->END#0",
+            "mermaidBaseStyle": "curved=1;startArrow=none;endArrow=block;endSize=7;strokeColor=#7A3FD6;strokeWidth=2;html=1;fontSize=16;labelBackgroundColor=light-dark(#E8E8E88D,#2a2a2a8D);fontFamily=Trebuchet MS,Verdana,Arial,sans-serif;fontColor=light-dark(#333333,#cccccc);exitX=0.2;exitY=1;entryX=0;entryY=0.29;",
+            "mermaidBaseValue": "NO"
+          }
+        }
+      ]
+    }
+  ]
+}

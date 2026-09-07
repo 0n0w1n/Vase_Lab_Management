@@ -1,0 +1,182 @@
+{
+  "version": "31.4.4",
+  "pages": [
+    {
+      "id": "rWqBjazOJvSTfb3NSS63",
+      "name": "Page-1",
+      "cells": [
+        {
+          "id": "p1",
+          "type": "node",
+          "parent": "1",
+          "label": "Staff"
+        },
+        {
+          "id": "a1",
+          "type": "node",
+          "parent": "p1"
+        },
+        {
+          "id": "p2",
+          "type": "node",
+          "parent": "1",
+          "label": "View"
+        },
+        {
+          "id": "a2",
+          "type": "node",
+          "parent": "p2"
+        },
+        {
+          "id": "p3",
+          "type": "node",
+          "parent": "1",
+          "label": "Controller"
+        },
+        {
+          "id": "a3",
+          "type": "node",
+          "parent": "p3"
+        },
+        {
+          "id": "s1",
+          "type": "node",
+          "parent": "p3"
+        },
+        {
+          "id": "s2",
+          "type": "node",
+          "parent": "p3"
+        },
+        {
+          "id": "p4",
+          "type": "node",
+          "parent": "1",
+          "label": "Model"
+        },
+        {
+          "id": "a4",
+          "type": "node",
+          "parent": "p4"
+        },
+        {
+          "id": "a4b",
+          "type": "node",
+          "parent": "p4"
+        },
+        {
+          "id": "p5",
+          "type": "node",
+          "parent": "1",
+          "label": "Database"
+        },
+        {
+          "id": "a5",
+          "type": "node",
+          "parent": "p5"
+        },
+        {
+          "id": "a5b",
+          "type": "node",
+          "parent": "p5"
+        },
+        {
+          "id": "m1",
+          "type": "edge",
+          "parent": "1",
+          "label": "1. Open equipment register"
+        },
+        {
+          "id": "m2",
+          "type": "edge",
+          "parent": "1",
+          "label": "2. GET equipment"
+        },
+        {
+          "id": "m3",
+          "type": "edge",
+          "parent": "1",
+          "label": "3. Check authorisation for edit controls"
+        },
+        {
+          "id": "m4",
+          "type": "edge",
+          "parent": "1",
+          "label": "4. Get equipment records"
+        },
+        {
+          "id": "m5",
+          "type": "edge",
+          "parent": "1",
+          "label": "5. Select name, identifier and availability"
+        },
+        {
+          "id": "m6",
+          "type": "edge",
+          "parent": "1",
+          "label": "6. Return equipment list"
+        },
+        {
+          "id": "m7",
+          "type": "edge",
+          "parent": "1",
+          "label": "7. Return register"
+        },
+        {
+          "id": "m8",
+          "type": "edge",
+          "parent": "1",
+          "label": "8. Render register with edit controls"
+        },
+        {
+          "id": "m9",
+          "type": "edge",
+          "parent": "1",
+          "label": "9. Change availability status"
+        },
+        {
+          "id": "m10",
+          "type": "edge",
+          "parent": "1",
+          "label": "10. PATCH availability"
+        },
+        {
+          "id": "m11",
+          "type": "edge",
+          "parent": "1",
+          "label": "11. Re-verify authorisation"
+        },
+        {
+          "id": "m12",
+          "type": "edge",
+          "parent": "1",
+          "label": "12. Update availability"
+        },
+        {
+          "id": "m13",
+          "type": "edge",
+          "parent": "1",
+          "label": "13. Save new status"
+        },
+        {
+          "id": "m14",
+          "type": "edge",
+          "parent": "1",
+          "label": "14. Confirm update"
+        },
+        {
+          "id": "m15",
+          "type": "edge",
+          "parent": "1",
+          "label": "15. Render updated status"
+        },
+        {
+          "id": "m16",
+          "type": "edge",
+          "parent": "1",
+          "label": "16. Show new availability"
+        }
+      ]
+    }
+  ]
+}
