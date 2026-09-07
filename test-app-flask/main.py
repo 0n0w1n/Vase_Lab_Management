@@ -9,7 +9,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY="dev",
-        SQLALCHEMY_DATABASE_URI=os.environ["DATABASE_URL"],  # Adress that is going to read init_app
+        SQLALCHEMY_DATABASE_URI=os.environ["DATABASE_URL"],
         SQLALCHEMY_TRACK_MODIFICATIONS=False, # Disable modification tracker
     )
 
@@ -26,7 +26,7 @@ def create_app(test_config=None):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from models import User
+    from testmodels import User
 
     app.register_blueprint(test_pages, url_prefix="/test")
 
@@ -38,9 +38,9 @@ def create_app(test_config=None):
         ]
 
         for username, first, last in rows:
-            if db.session.get(Users, username) is None:
+            if db.session.get(User, username) is None:
                 db.session.add(
-                    Users(Username=username, FirstName=first, LastName=last)
+                    User(Username=username, FirstName=first, LastName=last)
                 )
 
         db.session.commit()
