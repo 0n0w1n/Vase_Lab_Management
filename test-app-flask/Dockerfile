@@ -3,7 +3,8 @@ FROM python:3
 WORKDIR /usr/src/app
 
 
-ENV WATCHPACK_POLLING=true
+ENV FLASK_APP=main:create_app
+
 COPY . .
 # do pip install when building
 RUN python3 -m venv /venv
