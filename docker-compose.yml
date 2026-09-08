@@ -39,7 +39,7 @@ services:
       - backend
       - db
     volumes:
-      - ./test-app-flask:/usr/src/app
+      - ./test-app-flask/migrations:/usr/src/app/migrations
     # command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0", "main:create_app()"]
     command: ["/venv/bin/python3", "-m", "flask", "--app", "main", "run", "--host=0.0.0.0", "--debug", "--port", "8000"]
 
