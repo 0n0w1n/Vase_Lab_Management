@@ -30,6 +30,7 @@ services:
   flask-app:
     build:
       context: ./test-app-flask
+    user: 'python'
     ports:
       - '8000:8000'
     depends_on:
