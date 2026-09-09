@@ -41,7 +41,7 @@ export default function AppSidebar({
     <div className="relative shrink-0">
       <aside
         className={cn(
-          "sticky top-0 flex h-screen flex-col rounded-r-3xl bg-sidebar text-sidebar-foreground transition-[width] duration-200",
+          "sticky top-0 flex h-screen flex-col rounded-tr-[2.5rem] bg-sidebar text-sidebar-foreground transition-[width] duration-200",
           collapsed ? "w-20 px-3" : "w-72 px-6"
         )}
       >
@@ -71,7 +71,7 @@ export default function AppSidebar({
                 href={item.href}
                 title={collapsed ? item.label : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm transition-colors hover:bg-brand-soft",
+                  "flex items-center gap-3 rounded-md bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm transition-colors hover:bg-brand-soft",
                   active && "text-brand ring-2 ring-brand",
                   collapsed && "justify-center px-0"
                 )}
@@ -127,7 +127,7 @@ export default function AppSidebar({
             type="button"
             title={collapsed ? "Log out" : undefined}
             className={cn(
-              "flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-100"
+              "flex w-full items-center justify-center gap-2 rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-100"
             )}
           >
             <LogOut className="size-4 text-sky-600" />

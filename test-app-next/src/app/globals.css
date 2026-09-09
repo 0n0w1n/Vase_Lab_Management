@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -83,7 +83,7 @@
   --radius: 0.625rem;
 
   /* Vase Lab brand */
-  --brand: #2ec4b0;
+  --brand: #48C2AF;
   --brand-foreground: #ffffff;
   --brand-soft: #e6f7f4;
   --warn: #e07b39;
@@ -91,7 +91,7 @@
   --surface: #f7f9fa;
   --surface-border: #e6ecf0;
 
-  --sidebar: #2c3644;
+  --sidebar: #31353E;
   --sidebar-foreground: #eaf0f5;
   --sidebar-muted: #9aa8b8;
   --sidebar-primary: oklch(0.205 0 0);
