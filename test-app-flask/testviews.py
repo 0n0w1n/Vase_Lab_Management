@@ -1,6 +1,6 @@
 from flask import Blueprint
 from extensions import db
-from testmodels import User
+from models import User
 import mysql.connector
 
 test_pages = Blueprint("test_pages", __name__)

@@ -45,7 +45,7 @@ services:
 
     environment:
     #   - WATCHBACK_POLLING=true
-      - DATABASE_URL=mysql+mysqlconnector://root:abc@mysql-db:3306/Test
+      - DATABASE_URL=mysql+mysqlconnector://root:abc@mysql-db:3306/VaseLab
     # develop:
     #   watch:
     #     - action: sync
@@ -55,13 +55,13 @@ services:
 
   mysql-db:
     build:
-      context: ./test-app-db
+      context: ./vaselab-app-db
     environment:
       MYSQL_ROOT_PASSWORD: abc # by god please change this in prod
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      - '3306:3306'
+      - '3307:3306'
     networks:
       - db
     healthcheck:
