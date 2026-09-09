@@ -7,7 +7,7 @@ import {Greeting} from "@/components/Example";
 export default function ExamplePage(){
     return (
         <div>
-            <ExampleUi prop1={10} prop2="a" />
+            <ExampleUi prop1={100000000} prop2="a" />
             {/* Usage — no attributes on the tag at all */}
             <Greeting />
         </div>

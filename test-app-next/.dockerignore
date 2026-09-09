@@ -1,0 +1,13 @@
+# Installed inside the image by `npm ci` — copying the host's copy over it
+# ships hundreds of MB of Windows-only native binaries into a Linux container.
+node_modules
+
+# Build output and caches, regenerated in the container.
+.next
+.turbo
+
+.git
+.gitignore
+npm-debug.log*
+.env*.local
+README.md

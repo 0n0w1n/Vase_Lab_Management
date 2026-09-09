@@ -45,6 +45,14 @@
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-surface: var(--surface);
+  --color-surface-border: var(--surface-border);
+  --color-sidebar-muted: var(--sidebar-muted);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
@@ -73,8 +81,19 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
+
+  /* Vase Lab brand */
+  --brand: #2ec4b0;
+  --brand-foreground: #ffffff;
+  --brand-soft: #e6f7f4;
+  --warn: #e07b39;
+  --warn-soft: #fdf1e7;
+  --surface: #f7f9fa;
+  --surface-border: #e6ecf0;
+
+  --sidebar: #2c3644;
+  --sidebar-foreground: #eaf0f5;
+  --sidebar-muted: #9aa8b8;
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
@@ -107,8 +126,18 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
+  /* Vase Lab brand */
+  --brand: #2ec4b0;
+  --brand-foreground: #10231f;
+  --brand-soft: #17322d;
+  --warn: #ef9350;
+  --warn-soft: #33241a;
+  --surface: oklch(0.185 0 0);
+  --surface-border: oklch(1 0 0 / 10%);
+
+  --sidebar: #222b37;
+  --sidebar-foreground: #eaf0f5;
+  --sidebar-muted: #8b98a8;
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
