@@ -10,4 +10,7 @@ node_modules
 .gitignore
 npm-debug.log*
 .env*.local
+node_modules
+.next
+.gitignore
 README.md

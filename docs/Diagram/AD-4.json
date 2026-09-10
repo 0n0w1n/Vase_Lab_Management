@@ -1,0 +1,216 @@
+{
+  "version": "31.3.1",
+  "pages": [
+    {
+      "id": "5vX_bssTNb1OjP6bxMmW",
+      "name": "Page-1",
+      "cells": [
+        {
+          "id": "1",
+          "type": "layer"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-5",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-3",
+          "target": "Xs0v4WlThv_zqLaMGkcj-4"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-3",
+          "type": "node",
+          "parent": "1"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-7",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-4",
+          "target": "Xs0v4WlThv_zqLaMGkcj-8"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-4",
+          "type": "node",
+          "parent": "1",
+          "label": "Staff opens equipment register",
+          "html": "<font style=\"font-size: 16px;\">Staff opens equipment register</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-8",
+          "type": "node",
+          "parent": "1",
+          "label": "Staff selects equipment",
+          "html": "<font style=\"font-size: 16px;\">Staff selects equipment</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-9",
+          "type": "node",
+          "parent": "1",
+          "label": "Staff changes availability status",
+          "html": "<font style=\"font-size: 16px;\">Staff changes availability status</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-24",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-14",
+          "target": "Xs0v4WlThv_zqLaMGkcj-26"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-25",
+          "type": "node",
+          "parent": "Xs0v4WlThv_zqLaMGkcj-24",
+          "label": "[Yes]",
+          "html": "<font style=\"font-size: 16px;\">[Yes]</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-33",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-14",
+          "target": "Xs0v4WlThv_zqLaMGkcj-32"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-34",
+          "type": "node",
+          "parent": "Xs0v4WlThv_zqLaMGkcj-33",
+          "label": "[No]",
+          "html": "<font style=\"font-size: 16px;\">[No]</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-14",
+          "type": "node",
+          "parent": "1",
+          "label": "Authorised?"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-22",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-8",
+          "target": "Xs0v4WlThv_zqLaMGkcj-14"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-27",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-26",
+          "target": "Xs0v4WlThv_zqLaMGkcj-9"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-26",
+          "type": "node",
+          "parent": "1",
+          "label": "Edit options appear",
+          "html": "<font style=\"font-size: 16px;\">Edit options appear</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-31",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-28",
+          "target": "Xs0v4WlThv_zqLaMGkcj-47"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-28",
+          "type": "node",
+          "parent": "1",
+          "label": "System saves update",
+          "html": "<font style=\"font-size: 16px;\">System saves update</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-35",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-32",
+          "target": "Xs0v4WlThv_zqLaMGkcj-47"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-32",
+          "type": "node",
+          "parent": "1",
+          "label": "Edit option doesn't appear",
+          "html": "<font style=\"font-size: 16px;\">Edit option doesn't appear</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-40",
+          "type": "edge",
+          "parent": "1",
+          "target": "Xs0v4WlThv_zqLaMGkcj-37"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-42",
+          "type": "node",
+          "parent": "Xs0v4WlThv_zqLaMGkcj-40",
+          "label": "[No]",
+          "html": "<font style=\"font-size: 16px;\">[No]</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-41",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-36",
+          "target": "Xs0v4WlThv_zqLaMGkcj-28"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-43",
+          "type": "node",
+          "parent": "Xs0v4WlThv_zqLaMGkcj-41",
+          "label": "[Yes]",
+          "html": "<font style=\"font-size: 16px;\">[Yes]</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-36",
+          "type": "node",
+          "parent": "1",
+          "label": "Authorised?"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-44",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-37",
+          "target": "Xs0v4WlThv_zqLaMGkcj-47"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-37",
+          "type": "node",
+          "parent": "1",
+          "label": "System rejects update",
+          "html": "<font style=\"font-size: 16px;\">System rejects update</font>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-38",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-9",
+          "target": "Xs0v4WlThv_zqLaMGkcj-36"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-39",
+          "type": "edge",
+          "parent": "1",
+          "source": "Xs0v4WlThv_zqLaMGkcj-32",
+          "target": "Xs0v4WlThv_zqLaMGkcj-36"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-46",
+          "type": "node",
+          "parent": "Xs0v4WlThv_zqLaMGkcj-39",
+          "label": "Bypass with direct query",
+          "html": "<div><font style=\"font-size: 13px;\">Bypass with direct query</font></div>"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-47",
+          "type": "node",
+          "parent": "1"
+        },
+        {
+          "id": "Xs0v4WlThv_zqLaMGkcj-48",
+          "type": "node",
+          "parent": "1"
+        }
+      ]
+    }
+  ]
+}

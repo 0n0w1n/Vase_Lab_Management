@@ -1,0 +1,153 @@
+{
+  "version": "31.4.4",
+  "pages": [
+    {
+      "id": "wWbOfQIpW6WnrJUZJLoI",
+      "name": "Page-1",
+      "cells": [
+        {
+          "id": "fU53eEEF4nSyb954GRxx-6",
+          "type": "edge",
+          "parent": "1",
+          "source": "fU53eEEF4nSyb954GRxx-2",
+          "target": "fU53eEEF4nSyb954GRxx-3"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-2",
+          "type": "node",
+          "parent": "1"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-10",
+          "type": "edge",
+          "parent": "1",
+          "source": "fU53eEEF4nSyb954GRxx-3",
+          "target": "fU53eEEF4nSyb954GRxx-9"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-3",
+          "type": "node",
+          "parent": "1",
+          "label": "Lab manager open operation dashboard",
+          "html": "<font style=\"font-size: 12px;\">Lab manager open operation dashboard</font>"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-12",
+          "type": "edge",
+          "parent": "1",
+          "source": "fU53eEEF4nSyb954GRxx-9",
+          "target": "fU53eEEF4nSyb954GRxx-11"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-9",
+          "type": "node",
+          "parent": "1",
+          "label": "Authorised?"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-21",
+          "type": "edge",
+          "parent": "1",
+          "source": "fU53eEEF4nSyb954GRxx-11",
+          "target": "fU53eEEF4nSyb954GRxx-19"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-11",
+          "type": "node",
+          "parent": "1",
+          "label": "System reject the request",
+          "html": "<font style=\"font-size: 12px;\">System reject the request</font>"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-13",
+          "type": "node",
+          "parent": "1",
+          "label": "No"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-24",
+          "type": "edge",
+          "parent": "1",
+          "source": "fU53eEEF4nSyb954GRxx-15",
+          "target": "fU53eEEF4nSyb954GRxx-23"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-15",
+          "type": "node",
+          "parent": "1",
+          "label": "System open the operation dashboard",
+          "html": "<font style=\"font-size: 12px;\">System open the operation dashboard</font>"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-16",
+          "type": "edge",
+          "parent": "1",
+          "source": "fU53eEEF4nSyb954GRxx-9",
+          "target": "fU53eEEF4nSyb954GRxx-15"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-17",
+          "type": "node",
+          "parent": "1",
+          "label": "Yes"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-19",
+          "type": "node",
+          "parent": "1"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-20",
+          "type": "node",
+          "parent": "1"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-26",
+          "type": "edge",
+          "parent": "1",
+          "source": "fU53eEEF4nSyb954GRxx-23",
+          "target": "fU53eEEF4nSyb954GRxx-25"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-23",
+          "type": "node",
+          "parent": "1",
+          "label": "Refresh the dashboard",
+          "html": "<font style=\"font-size: 12px;\">Refresh the dashboard</font>"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-27",
+          "type": "edge",
+          "parent": "1",
+          "source": "fU53eEEF4nSyb954GRxx-25",
+          "target": "fU53eEEF4nSyb954GRxx-23"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-28",
+          "type": "edge",
+          "parent": "1",
+          "source": "fU53eEEF4nSyb954GRxx-25",
+          "target": "fU53eEEF4nSyb954GRxx-19"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-25",
+          "type": "node",
+          "parent": "1",
+          "label": "Closed?"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-29",
+          "type": "node",
+          "parent": "1",
+          "label": "Yes"
+        },
+        {
+          "id": "fU53eEEF4nSyb954GRxx-30",
+          "type": "node",
+          "parent": "1",
+          "label": "No"
+        }
+      ]
+    }
+  ]
+}

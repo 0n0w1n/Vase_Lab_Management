@@ -1,0 +1,105 @@
+{
+  "version": "31.4.4",
+  "data": "<mxfile host=\"app.diagrams.net\"><diagram name=\"Page-1\" id=\"Cq06jEhcP0c7u_2JN-v6\"><mxGraphModel dx=\"1134\" dy=\"755\" grid=\"0\" gridSize=\"10\" guides=\"1\" tooltips=\"1\" connect=\"1\" arrows=\"1\" fold=\"1\" page=\"0\" pageScale=\"1\" pageWidth=\"827\" pageHeight=\"1169\" math=\"0\" shadow=\"0\"><root><mxCell id=\"0\"/><mxCell id=\"1\" parent=\"0\"/><mxCell id=\"g0\" parent=\"1\" style=\"shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=20;fillColor=#7EA6E0;strokeColor=#3D6EB0;fontColor=#FFFFFF;\" value=\"&lt;b&gt;G-0&lt;/b&gt;&lt;div&gt;&lt;br/&gt;&lt;/div&gt;\" vertex=\"1\"><mxGeometry height=\"80\" width=\"340\" x=\"410\" y=\"40\" as=\"geometry\"/></mxCell><mxCell id=\"and\" parent=\"1\" style=\"ellipse;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#000000;\" value=\"\" vertex=\"1\"><mxGeometry height=\"14\" width=\"14\" x=\"573\" y=\"193\" as=\"geometry\"/></mxCell><mxCell id=\"sg1\" parent=\"1\" style=\"shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=16;fillColor=#B1DDF0;strokeColor=#10739E;\" value=\"&lt;b&gt;SG-1&lt;/b&gt;&lt;div&gt;&lt;br/&gt;&lt;/div&gt;\" vertex=\"1\"><mxGeometry height=\"90\" width=\"200\" x=\"40\" y=\"310\" as=\"geometry\"/></mxCell><mxCell id=\"sg2\" parent=\"1\" style=\"shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=16;fillColor=#B1DDF0;strokeColor=#10739E;\" value=\"&lt;b&gt;SG-2&lt;/b&gt;&lt;div&gt;&lt;br/&gt;&lt;/div&gt;\" vertex=\"1\"><mxGeometry height=\"90\" width=\"200\" x=\"260\" y=\"310\" as=\"geometry\"/></mxCell><mxCell id=\"sg3\" parent=\"1\" style=\"shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=16;fillColor=#B1DDF0;strokeColor=#10739E;\" value=\"&lt;b&gt;SG-3&lt;/b&gt;&lt;div&gt;&lt;br/&gt;&lt;/div&gt;\" vertex=\"1\"><mxGeometry height=\"90\" width=\"200\" x=\"480\" y=\"310\" as=\"geometry\"/></mxCell><mxCell id=\"sg4\" parent=\"1\" style=\"shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=16;fillColor=#B1DDF0;strokeColor=#10739E;\" value=\"&lt;b&gt;SG-4&lt;/b&gt;&lt;div&gt;&lt;br/&gt;&lt;/div&gt;\" vertex=\"1\"><mxGeometry height=\"90\" width=\"200\" x=\"700\" y=\"310\" as=\"geometry\"/></mxCell><mxCell id=\"sg5\" parent=\"1\" style=\"shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;size=16;fillColor=#B1DDF0;strokeColor=#10739E;\" value=\"&lt;b&gt;SG-5&lt;/b&gt;&lt;div&gt;&lt;br/&gt;&lt;/div&gt;\" vertex=\"1\"><mxGeometry height=\"90\" width=\"200\" x=\"920\" y=\"310\" as=\"geometry\"/></mxCell><mxCell id=\"e0\" edge=\"1\" parent=\"1\" source=\"and\" style=\"edgeStyle=orthogonalEdgeStyle;html=1;endArrow=classic;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;\" target=\"g0\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"/></mxGeometry></mxCell><mxCell id=\"e1\" edge=\"1\" parent=\"1\" source=\"sg1\" style=\"edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;\" target=\"and\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"140\" y=\"200\"/></Array></mxGeometry></mxCell><mxCell id=\"e2\" edge=\"1\" parent=\"1\" source=\"sg2\" style=\"edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;\" target=\"and\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"360\" y=\"200\"/></Array></mxGeometry></mxCell><mxCell id=\"e3\" edge=\"1\" parent=\"1\" source=\"sg3\" style=\"edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;\" target=\"and\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"/></mxGeometry></mxCell><mxCell id=\"e4\" edge=\"1\" parent=\"1\" source=\"sg4\" style=\"edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;\" target=\"and\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"800\" y=\"200\"/></Array></mxGeometry></mxCell><mxCell id=\"e5\" edge=\"1\" parent=\"1\" source=\"sg5\" style=\"edgeStyle=orthogonalEdgeStyle;html=1;endArrow=none;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;\" target=\"and\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"1020\" y=\"200\"/></Array></mxGeometry></mxCell></root></mxGraphModel></diagram></mxfile>",
+  "pages": [
+    {
+      "id": "Cq06jEhcP0c7u_2JN-v6",
+      "name": "Page-1",
+      "cells": [
+        {
+          "id": "1",
+          "type": "layer"
+        },
+        {
+          "id": "g0",
+          "type": "node",
+          "parent": "1",
+          "label": "G-0",
+          "html": "<b>G-0</b><div><br/></div>"
+        },
+        {
+          "id": "and",
+          "type": "node",
+          "parent": "1"
+        },
+        {
+          "id": "sg1",
+          "type": "node",
+          "parent": "1",
+          "label": "SG-1",
+          "html": "<b>SG-1</b><div><br/></div>"
+        },
+        {
+          "id": "sg2",
+          "type": "node",
+          "parent": "1",
+          "label": "SG-2",
+          "html": "<b>SG-2</b><div><br/></div>"
+        },
+        {
+          "id": "sg3",
+          "type": "node",
+          "parent": "1",
+          "label": "SG-3",
+          "html": "<b>SG-3</b><div><br/></div>"
+        },
+        {
+          "id": "sg4",
+          "type": "node",
+          "parent": "1",
+          "label": "SG-4",
+          "html": "<b>SG-4</b><div><br/></div>"
+        },
+        {
+          "id": "sg5",
+          "type": "node",
+          "parent": "1",
+          "label": "SG-5",
+          "html": "<b>SG-5</b><div><br/></div>"
+        },
+        {
+          "id": "e0",
+          "type": "edge",
+          "parent": "1",
+          "source": "and",
+          "target": "g0"
+        },
+        {
+          "id": "e1",
+          "type": "edge",
+          "parent": "1",
+          "source": "sg1",
+          "target": "and"
+        },
+        {
+          "id": "e2",
+          "type": "edge",
+          "parent": "1",
+          "source": "sg2",
+          "target": "and"
+        },
+        {
+          "id": "e3",
+          "type": "edge",
+          "parent": "1",
+          "source": "sg3",
+          "target": "and"
+        },
+        {
+          "id": "e4",
+          "type": "edge",
+          "parent": "1",
+          "source": "sg4",
+          "target": "and"
+        },
+        {
+          "id": "e5",
+          "type": "edge",
+          "parent": "1",
+          "source": "sg5",
+          "target": "and"
+        }
+      ]
+    }
+  ]
+}
