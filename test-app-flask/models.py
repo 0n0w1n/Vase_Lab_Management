@@ -32,7 +32,7 @@ class Equipment(db.Model):
         default="available",
     )
     EquipmentType = db.Column(
-        db.Enum("...", name="equipment_type"), # To finish enum , I need your values for this one
+        db.Enum("Usable" , "Unusable" , name="equipment_type"), # To finish enum , I need your values for this one
         nullable=False,
     )
     EquipmentDescription = db.Column(db.Text)
@@ -64,7 +64,7 @@ class Request(db.Model):
 
     UserID = db.Column(db.Integer, db.ForeignKey("Users.UserID"), nullable=False)
     EquipmentID = db.Column(
-        db.Integer, db.ForeignKey("Equipment.EquipmentID"), nullable=False
+        db.Integer, db.ForeignKey("Equipment.EquipmentID"), nullable=True
     )
 
 
@@ -88,7 +88,7 @@ class File(db.Model):
 
     FileID = db.Column(db.Integer, primary_key=True)
     FileName = db.Column(db.String(100), nullable=False)
-    FilePath = db.Column(db.String(512), nullable=False)
+    FilePath = db.Column(db.String(512), nullable=True)
 
     RequestID = db.Column(db.Integer, db.ForeignKey("Request.RequestID"), nullable=False)
     UserID = db.Column(db.Integer, db.ForeignKey("Users.UserID"), nullable=False)

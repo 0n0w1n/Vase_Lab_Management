@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from testviews import test_pages
 from extensions import db, migrate # Import ORM and Migration Instances
+import seeds
 
 
 def create_app(test_config=None):
@@ -26,39 +27,8 @@ def create_app(test_config=None):
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from models import User
 
     app.register_blueprint(test_pages, url_prefix="/test")
 
-    @app.cli.command("seed")
-    def seed():
-        rows = [
-            ("admin@lab.local",   "John Admin",    "admin",       "Kasetsart University", "admin123"),
-            ("manager@lab.local", "Jane Manager",  "lab_manager", "Kasetsart University", "manager123"),
-            ("ta@lab.local",      "Bob TA",        "lab_ta",      "Kasetsart University", "ta123"),
-            ("member@lab.local",  "Alice Member",  "lab_member",  "Kasetsart University", "member123"),
-            ("guest@lab.local",   "Guest User",    "visitor",     None,                   "guest123"),
-        ]
-
-        created = 0
-        
-        for email, name, role, org, password in rows:
-            exists = db.session.execute(                
-                db.select(User).filter_by(Email=email)
-            ).scalar_one_or_none()
-
-            if exists is None:
-                    db.session.add(
-                        User(
-                            Email=email,
-                            UserName=name,
-                            UserRole=role,
-                            UserOrganization=org,
-                            PasswordHash=password, # Will need a way to hash later /!\  
-                        )
-                    )
-                    created += 1
-
-        db.session.commit()
-        print(f"{created} users seeded ({len(rows) - created} already existed)")
+    seeds.init_app(app)
     return app
