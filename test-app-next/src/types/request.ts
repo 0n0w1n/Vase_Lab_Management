@@ -61,3 +61,13 @@ export type LabRequest = {
   /** Oldest first, the way a chat thread reads. */
   messages: LogMessage[];
 };
+
+/** What the New Request form submits; the server fills in everything else. */
+export type NewRequestInput = {
+  title: string;
+  /** Optional free text; empty string when left blank. */
+  notes: string;
+  priority: RequestPriority;
+  /** ISO 8601 date (YYYY-MM-DD). */
+  deadline: string;
+};

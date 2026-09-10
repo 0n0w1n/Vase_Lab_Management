@@ -16,7 +16,7 @@ export default async function ManageRequestsPage() {
   const requests = await getRequests()
   return (
     <div className="relative isolate min-h-screen overflow-hidden py-14">
-      <div className="absolute inset-0">
+      <div className="pointer-events-none absolute inset-0">
         <div className="absolute top-20 left-[38%] size-80 rounded-full bg-[#5B92F5]/50 blur-sm" />
         <div className="absolute -bottom-28 -left-24 size-96 rounded-full bg-[#93E8C1]/50 blur-sm" />
         <div className="absolute -bottom-20 left-[52%] size-64 rounded-full bg-[#93E8C1]/50 blur-xl" />
@@ -29,8 +29,10 @@ export default async function ManageRequestsPage() {
             Manage Request
           </h1>
           <button type="button" className={`${mainButton} text-brand`}>
-            <Plus className="size-3.5" />
-            Access Request
+            <Link href="/Request/new" className={`${mainButton} text-brand`}>
+              <Plus className="size-3.5" />
+              New Request
+            </Link>
           </button>
         </header>
 

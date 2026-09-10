@@ -1,4 +1,4 @@
-import type { LabRequest } from "@/types/request";
+import type { LabRequest, NewRequestInput } from "@/types/request";
 
 /**
  * Mock data stand-in for the Flask API. Swap the two accessors below for
@@ -275,4 +275,31 @@ export async function getRequests(): Promise<LabRequest[]> {
 
 export async function getRequest(id: string): Promise<LabRequest | undefined> {
   return REQUESTS.find((request) => request.id === id);
+}
+
+/**
+ * Mock stand-in for `POST /requests`. Once the Flask endpoint exists, replace
+ * the body with a fetch that maps onto the `Request` model:
+ *
+ *   const res = await fetch("http://flask-app:8000/requests", {
+ *     method: "POST",
+ *     headers: { "Content-Type": "application/json" },
+ *     body: JSON.stringify({
+ *       RequestTitle: input.title,
+ *       RequestDetails: input.notes || null,
+ *       RequestPriority: input.priority,
+ *       RequestDeadline: input.deadline,
+ *     }),
+ *   });
+ *   if (!res.ok) throw new Error(`Create request failed: ${res.status}`);
+ *   return res.json();
+ *
+ * The model also requires `UserID` (from the session) and `EquipmentID`,
+ * neither of which this form collects.
+ */
+export async function createRequest(
+  input: NewRequestInput
+): Promise<{ id: string }> {
+  console.info("[mock] createRequest", input);
+  return { id: String(Date.now()) };
 }
