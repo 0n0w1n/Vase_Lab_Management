@@ -1,4 +1,5 @@
 export type RequestStatus =
+  | "open"
   | "pending-review"
   | "in-progress"
   | "completed"
@@ -43,9 +44,13 @@ export type LogMessage = {
 export type LabRequest = {
   id: string;
   title: string;
+  /** Area the request belongs to, e.g. "Lab Equipment". */
+  category: string;
   requestedBy: string;
   /** ISO 8601 timestamp of submission. */
   submittedAt: string;
+  /** ISO 8601 date the request should be resolved by. */
+  deadline: string;
   priority: RequestPriority;
   assignedTo: string | null;
   description: string;

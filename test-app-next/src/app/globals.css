@@ -52,6 +52,7 @@
   --color-warn-soft: var(--warn-soft);
   --color-surface: var(--surface);
   --color-surface-border: var(--surface-border);
+  --color-canvas: var(--canvas);
   --color-sidebar-muted: var(--sidebar-muted);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
@@ -90,6 +91,7 @@
   --warn-soft: #fdf1e7;
   --surface: #f7f9fa;
   --surface-border: #e6ecf0;
+  --canvas: #eef7f5;
 
   --sidebar: #31353E;
   --sidebar-foreground: #eaf0f5;
@@ -134,6 +136,7 @@
   --warn-soft: #33241a;
   --surface: oklch(0.185 0 0);
   --surface-border: oklch(1 0 0 / 10%);
+  --canvas: oklch(0.16 0 0);
 
   --sidebar: #222b37;
   --sidebar-foreground: #eaf0f5;

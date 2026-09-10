@@ -9,8 +9,10 @@ const REQUESTS: LabRequest[] = [
   {
     id: "12345",
     title: "Equipment Maintenance",
+    category: "Lab Equipment",
     requestedBy: "Definate",
     submittedAt: "2023-10-24T10:42:00Z",
+    deadline: "2023-10-31",
     priority: "high",
     assignedTo: "Sarah Jenkins",
     description:
@@ -109,8 +111,10 @@ const REQUESTS: LabRequest[] = [
   {
     id: "12346",
     title: "Reagent Restock — Ethanol 99%",
+    category: "Consumables",
     requestedBy: "Definate",
     submittedAt: "2023-10-25T08:15:00Z",
+    deadline: "2023-10-27",
     priority: "medium",
     assignedTo: "Mike Chen",
     description:
@@ -143,8 +147,10 @@ const REQUESTS: LabRequest[] = [
   {
     id: "12347",
     title: "Fume Hood Airflow Check",
+    category: "Safety & Compliance",
     requestedBy: "Sarah Jenkins",
     submittedAt: "2023-10-20T14:02:00Z",
+    deadline: "2023-11-15",
     priority: "low",
     assignedTo: null,
     description:
@@ -165,6 +171,98 @@ const REQUESTS: LabRequest[] = [
         actor: { name: "System", initials: "SYS" },
         at: "2023-10-20T14:02:00Z",
         message: "Request #12347 created by Sarah Jenkins.",
+      },
+    ],
+    messages: [],
+  },
+  {
+    id: "12348",
+    title: "Lab Access Card — New Research Assistant",
+    category: "Facility Access",
+    requestedBy: "Mike Chen",
+    submittedAt: "2023-10-26T09:30:00Z",
+    deadline: "2023-10-30",
+    priority: "high",
+    assignedTo: null,
+    description:
+      "A new research assistant starts on Monday and needs a keycard with access to Labs 2A and 4B.",
+    status: "open",
+    attachments: [],
+    activity: [
+      {
+        id: "e1",
+        actor: { name: "System", initials: "SYS" },
+        at: "2023-10-26T09:30:00Z",
+        message: "Request #12348 created by Mike Chen.",
+      },
+    ],
+    messages: [],
+  },
+  {
+    id: "12349",
+    title: "Microscope Imaging Software Update",
+    category: "IT Support",
+    requestedBy: "Definate",
+    submittedAt: "2023-10-23T13:10:00Z",
+    deadline: "2023-10-28",
+    priority: "medium",
+    assignedTo: "Mike Chen",
+    description:
+      "The imaging software on the confocal microscope workstation crashes on export. Requesting an update to the latest version.",
+    status: "in-progress",
+    attachments: [],
+    activity: [
+      {
+        id: "e1",
+        actor: { name: "System", initials: "SYS" },
+        at: "2023-10-23T13:10:00Z",
+        message: "Request #12349 created by Definate.",
+      },
+    ],
+    messages: [],
+  },
+  {
+    id: "12350",
+    title: "Nitrile Gloves Order (Size M)",
+    category: "Consumables",
+    requestedBy: "Sarah Jenkins",
+    submittedAt: "2023-10-22T07:55:00Z",
+    deadline: "2023-10-26",
+    priority: "low",
+    assignedTo: null,
+    description:
+      "Requesting ten boxes of size M nitrile gloves for the teaching lab.",
+    status: "rejected",
+    attachments: [],
+    activity: [
+      {
+        id: "e1",
+        actor: { name: "System", initials: "SYS" },
+        at: "2023-10-22T07:55:00Z",
+        message: "Request #12350 created by Sarah Jenkins.",
+      },
+    ],
+    messages: [],
+  },
+  {
+    id: "12351",
+    title: "Cold Room Temperature Alarm",
+    category: "Facilities",
+    requestedBy: "Definate",
+    submittedAt: "2023-10-26T18:20:00Z",
+    deadline: "2023-10-29",
+    priority: "medium",
+    assignedTo: null,
+    description:
+      "The cold room alarm has triggered twice overnight. The display reads 6°C against a 4°C setpoint.",
+    status: "open",
+    attachments: [],
+    activity: [
+      {
+        id: "e1",
+        actor: { name: "System", initials: "SYS" },
+        at: "2023-10-26T18:20:00Z",
+        message: "Request #12351 created by Definate.",
       },
     ],
     messages: [],

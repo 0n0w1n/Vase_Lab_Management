@@ -16,7 +16,7 @@ export default function LoginPage() {
         <span className="text-brand">VASE</span> LAB
       </h1>
 
-      <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 relative z-1 mt-20 w-full max-w-sm rounded-[70px] bg-white/50 p-8 px-16">
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 backdrop-blur-sm relative z-1 mt-20 w-full max-w-sm rounded-[70px] bg-white/50 p-8 px-16">
         <h2 className="text-2xl font-bold text-white">Login</h2>
 
         <form className="mt-5 flex flex-col gap-5">

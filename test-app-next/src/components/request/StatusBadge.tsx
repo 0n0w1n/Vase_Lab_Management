@@ -1,4 +1,11 @@
-import { CheckCircle2, Clock, Loader, XCircle, type LucideIcon } from "lucide-react";
+import {
+  CheckCircle2,
+  CircleDot,
+  Clock,
+  Loader,
+  XCircle,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "cn";
 import type { RequestStatus } from "@/types/request";
 
@@ -6,6 +13,11 @@ const STATUS: Record<
   RequestStatus,
   { label: string; icon: LucideIcon; className: string }
 > = {
+  open: {
+    label: "Open",
+    icon: CircleDot,
+    className: "text-blue-600 ring-blue-500",
+  },
   "pending-review": {
     label: "Pending Review",
     icon: Clock,

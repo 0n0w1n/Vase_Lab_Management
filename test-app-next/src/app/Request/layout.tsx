@@ -1,9 +1,5 @@
 import AppShell from "@/components/layout/AppShell";
 
-type Props = {
-  children: React.ReactNode;
-};
-
-export default function RequestLayout({ children }: Props) {
+export default function RequestLayout({children} : {children : React.ReactNode}) {
   return <AppShell>{children}</AppShell>;
 }
