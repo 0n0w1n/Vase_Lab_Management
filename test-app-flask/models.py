@@ -50,7 +50,7 @@ class Request(db.Model):
     RequestTitle = db.Column(db.String(255), nullable=False)
     RequestDetails = db.Column(db.Text)
     RequestState = db.Column(
-        db.Enum("pending", "approved", "rejected", "returned", name="request_state"),
+        db.Enum("pending", "in-progress", "review", "close", "reject", name="request_state"),
         nullable=False,
         default="pending",
     )
