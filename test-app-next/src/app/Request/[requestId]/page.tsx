@@ -22,7 +22,11 @@ export default async function RequestDetailPage({ params }: Props) {
         <DetailField label="Requested By">{request.requestedBy}</DetailField>
 
         <DetailField label="Date Submitted">
-          {formatDateTime(request.submittedAt)}
+          {request.submittedAt ? (
+            formatDateTime(request.submittedAt)
+          ) : (
+            <span className="text-muted-foreground">—</span>
+          )}
         </DetailField>
         <DetailField label="Priority">
           <PriorityLabel priority={request.priority} />

@@ -13,27 +13,27 @@ const STATUS: Record<
   RequestStatus,
   { label: string; icon: LucideIcon; className: string }
 > = {
-  open: {
-    label: "Open",
+  pending: {
+    label: "Pending",
     icon: CircleDot,
     className: "text-blue-600 ring-blue-500",
-  },
-  "pending-review": {
-    label: "Pending Review",
-    icon: Clock,
-    className: "text-brand ring-brand",
   },
   "in-progress": {
     label: "In Progress",
     icon: Loader,
     className: "text-sky-600 ring-sky-500",
   },
-  completed: {
-    label: "Completed",
+  review: {
+    label: "Review",
+    icon: Clock,
+    className: "text-brand ring-brand",
+  },
+  close: {
+    label: "Close",
     icon: CheckCircle2,
     className: "text-emerald-600 ring-emerald-500",
   },
-  rejected: {
+  reject: {
     label: "Rejected",
     icon: XCircle,
     className: "text-destructive ring-destructive",

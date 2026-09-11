@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createRequest } from "@/lib/requests";
+import { createRequest, RequestValidationError } from "@/lib/requests";
 import type { NewRequestInput, RequestPriority } from "@/types/request";
 
 const PRIORITIES: RequestPriority[] = ["low", "medium", "high"];
@@ -60,7 +60,10 @@ export async function submitNewRequest(
       ...values,
       priority: values.priority as RequestPriority,
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof RequestValidationError) {
+      return { values, errors: error.errors };
+    }
     return {
       values,
       errors: {},

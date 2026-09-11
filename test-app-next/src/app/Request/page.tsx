@@ -52,7 +52,7 @@ export default async function ManageRequestsPage() {
             <div className="min-w-[44rem]">
               <div className={`${columns} rounded-lg bg-black/10 py-2.5 text-[0.6rem] font-bold tracking-wide`}>
                 <span>REQUEST ID</span>
-                <span>TITLE &amp; CATEGORY</span>
+                <span>TITLE</span>
                 <span>STATUS</span>
                 <span>PRIORITY</span>
                 <span>DATE DEADLINE</span>
@@ -65,21 +65,20 @@ export default async function ManageRequestsPage() {
                       <span className="text-sm font-bold text-[#4F46E5]">
                         REQ-{request.id}
                       </span>
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold">
-                          {request.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {request.category}
-                        </p>
-                      </div>
+                      <p className="min-w-0 text-sm font-semibold">
+                        {request.title}
+                      </p>
                       <span>
                         <StatusPill status={request.status} />
                       </span>
                       <PriorityDot priority={request.priority} />
-                      <time dateTime={request.deadline} className="text-sm text-muted-foreground">
-                        {formatDate(request.deadline)}
-                      </time>
+                      {request.deadline ? (
+                        <time dateTime={request.deadline} className="text-sm text-muted-foreground">
+                          {formatDate(request.deadline)}
+                        </time>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">—</span>
+                      )}
                     </Link>
                   </li>
                 ))}

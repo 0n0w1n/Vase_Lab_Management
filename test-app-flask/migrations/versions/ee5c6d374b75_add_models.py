@@ -49,7 +49,7 @@ def upgrade():
     sa.Column('RequestID', sa.Integer(), nullable=False),
     sa.Column('RequestTitle', sa.String(length=255), nullable=False),
     sa.Column('RequestDetails', sa.Text(), nullable=True),
-    sa.Column('RequestState', sa.Enum('pending', 'approved', 'rejected', 'returned', name='request_state'), nullable=False),
+    sa.Column('RequestState', sa.Enum('pending', 'in-progress', 'review', 'close', 'reject', name='request_state'), nullable=False),
     sa.Column('AprovedBy', sa.String(length=255), nullable=True),
     sa.Column('RequestPriority', sa.Enum('low', 'medium', 'high', name='request_priority'), nullable=False),
     sa.Column('RequestDeadline', sa.DateTime(), nullable=True),
