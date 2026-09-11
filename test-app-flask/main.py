@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from testviews import test_pages
+from views import test_pages
 from extensions import db, migrate # Import ORM and Migration Instances
 import seeds
 
@@ -28,7 +28,7 @@ def create_app(test_config=None):
     migrate.init_app(app, db)
 
 
-    app.register_blueprint(test_pages, url_prefix="/test")
+    app.register_blueprint(test_pages, url_prefix="/")
 
     seeds.init_app(app)
     return app
