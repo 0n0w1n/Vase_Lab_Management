@@ -26,9 +26,9 @@
 ├── docs/                # Project documents and diagrams
 │   ├── Diagram/         # Architecture, sequence, and use case diagrams
 │   └── GantChart/       # Project schedule / Gantt charts
-├── test-app-db/         # MySQL database service/config
 ├── test-app-flask/      # Flask backend API
-└── test-app-next/       # Next.js frontend
+├── test-app-next/       # Next.js frontend
+└── vaselab-app-db/      # MySQL database service/config
 ```
 
 ## Documents & Diagrams
