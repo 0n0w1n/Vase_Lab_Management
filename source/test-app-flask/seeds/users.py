@@ -1,5 +1,6 @@
 from models import User
 from .base import get_or_create
+from security import hash_password
 
 ROWS = [
     ("admin@lab.local",   "John Admin",   "admin",       "Kasetsart University", "admin123"),
@@ -18,10 +19,10 @@ def run():
     for email, name, role, org, password in ROWS:
         _, new = get_or_create(
             User, {"Email": email},
-            UserName=name,
+            UserFullName=name,
             UserRole=role,
             UserOrganization=org,
-            PasswordHash=password,  # Need to do password hash
+            PasswordHash=hash_password(password),  # <-- seeder hashing done
         )
         created += new
     return created
