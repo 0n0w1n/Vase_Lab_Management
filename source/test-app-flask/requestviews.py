@@ -26,9 +26,9 @@ def iso(value):
 
 
 def person(user):
-    parts = user.UserName.split()
-    initials = "".join(p[0] for p in parts[:2]) if len(parts) > 1 else user.UserName[:2]
-    return {"name": user.UserName, "initials": initials.upper()}
+    parts = user.UserFullName.split()
+    initials = "".join(p[0] for p in parts[:2]) if len(parts) > 1 else user.UserFullName[:2]
+    return {"name": user.UserFullName, "initials": initials.upper()}
 
 
 def summary(req, requester):
@@ -38,14 +38,14 @@ def summary(req, requester):
         "status": req.RequestState,
         "priority": req.RequestPriority,
         "deadline": req.RequestDeadline.date().isoformat() if req.RequestDeadline else None,
-        "requestedBy": requester.UserName,
+        "requestedBy": requester.UserFullName,
         "assignedTo": req.AprovedBy,
     }
 
 
 def activity_message(log, req_id, actor):
     if log.Action == "create":
-        return f"Request #{req_id} created by {actor.UserName}."
+        return f"Request #{req_id} created by {actor.UserFullName}."
     if log.Action == "delete":
         return f"Request #{req_id} deleted."
     new_state = (log.NewValue or {}).get("RequestState")
