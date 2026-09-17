@@ -32,17 +32,12 @@ export default async function RequestDetailPage({ params }: Props) {
           <PriorityLabel priority={request.priority} />
         </DetailField>
 
-        <DetailField label="Assigned To">
-          {request.assignedTo ?? (
-            <span className="text-muted-foreground">Unassigned</span>
-          )}
-        </DetailField>
-        <DetailField label="Description">
-          <p className="leading-relaxed font-normal">{request.description}</p>
+        <DetailField label="Details">
+          <p className="leading-relaxed font-normal">{request.details}</p>
         </DetailField>
       </div>
 
-      <AttachmentList attachments={request.attachments} />
+      <AttachmentList attachments={request.files} />
     </div>
   );
 }

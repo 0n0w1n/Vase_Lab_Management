@@ -13,8 +13,9 @@ export default async function MessageLogPage({ params }: Props) {
   if (!request) notFound();
 
   return (
+    // wait for endpoint finish
     <MessageLog
-      messages={request.messages}
+      messages={[]}
       author={{ name: "Definate", initials: "DF" }}
     />
   );
