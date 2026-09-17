@@ -32,8 +32,15 @@ export default async function RequestDetailPage({ params }: Props) {
           <PriorityLabel priority={request.priority} />
         </DetailField>
 
-        <DetailField label="Details">
-          <p className="leading-relaxed font-normal">{request.details}</p>
+        <DetailField label="Assigned To">
+          {request.assignedTo ?? (
+            <span className="text-muted-foreground">Unassigned</span>
+          )}
+        </DetailField>
+
+        {/* Free text, so it gets the full width rather than half a row. */}
+        <DetailField label="Description" className="md:col-span-2">
+          <p className="leading-relaxed font-normal">{request.description}</p>
         </DetailField>
       </div>
 

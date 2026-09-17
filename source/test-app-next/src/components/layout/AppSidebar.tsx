@@ -38,7 +38,7 @@ export default function AppSidebar({
   const pathname = usePathname();
 
   return (
-    <div className="relative shrink-0">
+    <div className="shrink-0">
       <aside
         className={cn(
           "sticky top-0 flex h-screen flex-col rounded-tr-[2.5rem] bg-sidebar text-sidebar-foreground transition-[width] duration-200",
@@ -134,19 +134,21 @@ export default function AppSidebar({
             {!collapsed && <span>Log out</span>}
           </button>
         </div>
-      </aside>
 
-      <button
-        type="button"
-        onClick={() => setCollapsed((value) => !value)}
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        aria-expanded={!collapsed}
-        className="absolute top-24 -right-4 z-10 grid size-8 place-items-center rounded-full bg-white text-slate-700 shadow-md ring-1 ring-black/5 transition-colors hover:bg-slate-50"
-      >
-        <ChevronLeft
-          className={cn("size-4 transition-transform", collapsed && "rotate-180")}
-        />
-      </button>
+        {/* Inside the sticky <aside> so the handle stays pinned while the
+            page scrolls; sticky is a positioned ancestor, so it anchors this. */}
+        <button
+          type="button"
+          onClick={() => setCollapsed((value) => !value)}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-expanded={!collapsed}
+          className="absolute top-19 -right-4 z-10 grid size-8 place-items-center rounded-full bg-white text-slate-700 shadow-md ring-1 ring-black/5 transition-colors hover:bg-slate-50"
+        >
+          <ChevronLeft
+            className={cn("size-4 transition-transform", collapsed && "rotate-180")}
+          />
+        </button>
+      </aside>
     </div>
   );
 }
