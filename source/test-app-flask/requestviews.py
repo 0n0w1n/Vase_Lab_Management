@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from extensions import db
+from flask_jwt_extended import jwt_required, current_user
 from models import *
 from datetime import date, datetime
 
@@ -72,13 +73,14 @@ def get_request_details(request_id: int):
     return result
 
 @request_api.post("/create")
+@jwt_required()
 def create_request():
 
     TITLE_MAX = 255
     DETAILS_MAX = 2000
     PRIORITIES = {"low", "medium", "high"}
     EXPECTED_KEYS = ["title", "details", "priority", "deadline"]
-    userID = 1 # placeholder
+    userID = current_user.UserID
 
     user_input = request.get_json(silent=True)
     if user_input is None:
