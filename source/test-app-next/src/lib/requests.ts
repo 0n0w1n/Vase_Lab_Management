@@ -11,7 +11,7 @@ import type {
 const API_URL = process.env.API_URL ?? "http://flask-app:8000";
 
 export async function getRequests(): Promise<RequestSummary[]> {
-  const res = await fetch(`${API_URL}/requests/`, { cache: "no-store" });
+  const res = await fetch(`${API_URL}/requests/list`, { cache: "no-store" });
   if (!res.ok) throw new Error(`List requests failed: ${res.status}`);
   return res.json();
 }
@@ -19,34 +19,47 @@ export async function getRequests(): Promise<RequestSummary[]> {
 export async function getRequest(id: string): Promise<LabRequest | undefined> {
   if (!/^\d+$/.test(id)) return undefined;
 
-  const res = await fetch(`${API_URL}/requests/${id}`, { cache: "no-store" });
+  const res = await fetch(`${API_URL}/requests/details/${id}`, { cache: "no-store" });
   if (res.status === 404) return undefined;
   if (!res.ok) throw new Error(`Get request ${id} failed: ${res.status}`);
   return res.json();
 }
 
-/** Flask rejected the input, errors is keyed like NewRequestInput */
+const ERROR_FIELDS: Record<string, keyof NewRequestInput> = {
+  "20": "title",
+  "21": "details",
+  "22": "priority",
+  "23": "deadline",
+  "30": "title",
+  "31": "details",
+  "32": "priority",
+  "33": "deadline",
+  "34": "deadline",
+};
+
 export class RequestValidationError extends Error {
   constructor(
-    public errors: Partial<Record<keyof NewRequestInput, string>>
+    public errorCode: string,
+    message: string,
+    public field?: keyof NewRequestInput
   ) {
-    super("Request validation failed");
+    super(message);
   }
 }
 
-/**
- * POST /requests/ Flask attaches the request to a placeholder user until
- * login exists current_user in requestviews.py
- */
 export async function createRequest(
   input: NewRequestInput
-): Promise<{ id: string }> {
-  const res = await fetch(`${API_URL}/requests/`, {
+): Promise<{ id: number }> {
+  const res = await fetch(`${API_URL}/requests/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
-  if (res.status === 400) throw new RequestValidationError((await res.json()).errors);
+  const body = await res.json().catch(() => null);
+  if (body?.errorCode !== undefined) {
+    const code = String(body.errorCode);
+    throw new RequestValidationError(code, body.error, ERROR_FIELDS[code]);
+  }
   if (!res.ok) throw new Error(`Create request failed: ${res.status}`);
-  return res.json();
+  return body;
 }

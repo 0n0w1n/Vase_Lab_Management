@@ -1,4 +1,4 @@
-import { Download, FileText, FileVideo, Paperclip } from "lucide-react";
+import { Download, FileText, Paperclip } from "lucide-react";
 import { formatDate, formatFileSize } from "@/lib/format";
 import type { Attachment } from "@/types/request";
 
@@ -24,18 +24,20 @@ export default function AttachmentList({ attachments }: Props) {
       ) : (
         <ul className="flex flex-col gap-2">
           {attachments.map((file) => {
-            const Icon = file.kind === "media" ? FileVideo : FileText;
+            const details = [
+              file.bytes === "Unknown" ? "Unknown size" : formatFileSize(file.bytes),
+              file.uploadedAt && `Uploaded ${formatDate(file.uploadedAt)}`,
+            ].filter(Boolean);
             return (
               <li
                 key={file.id}
                 className="flex items-center gap-3 rounded-lg bg-surface px-4 py-3"
               >
-                <Icon className="size-5 shrink-0 text-brand" />
+                <FileText className="size-5 shrink-0 text-brand" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold">{file.name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {formatFileSize(file.bytes)} · Uploaded{" "}
-                    {formatDate(file.uploadedAt)}
+                    {details.join(" · ")}
                   </p>
                 </div>
                 <a

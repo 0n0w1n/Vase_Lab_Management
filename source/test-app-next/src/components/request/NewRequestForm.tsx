@@ -12,7 +12,7 @@ import {
 import type { RequestPriority } from "@/types/request";
 
 const INITIAL_STATE: NewRequestState = {
-  values: { title: "", notes: "", priority: "", deadline: "" },
+  values: { title: "", details: "", priority: "", deadline: "" },
   errors: {},
 };
 
@@ -78,14 +78,15 @@ export default function NewRequestForm() {
         />
       </Field>
 
-      <Field id="notes" label="Notes" error={errors.notes}>
+      <Field id="details" label="Details" error={errors.details}>
         <textarea
-          id="notes"
-          name="notes"
+          id="details"
+          name="details"
+          maxLength={2000}
           placeholder="Enter Detail"
-          defaultValue={values.notes}
+          defaultValue={values.details}
           className={cn(inputBox, "h-24 resize-none py-2.5")}
-          {...errorProps("notes", errors.notes)}
+          {...errorProps("details", errors.details)}
         />
       </Field>
 

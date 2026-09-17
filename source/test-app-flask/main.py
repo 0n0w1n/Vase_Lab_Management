@@ -1,8 +1,8 @@
 import os
 from flask import Flask
-from views import test_pages
 from requestviews import request_api
-from extensions import db, migrate # Import ORM and Migration Instances
+from authviews import auth_api
+from extensions import db, migrate, jwt
 import seeds
 
 
@@ -13,6 +13,7 @@ def create_app(test_config=None):
         SECRET_KEY="dev",
         SQLALCHEMY_DATABASE_URI=os.environ["DATABASE_URL"],
         SQLALCHEMY_TRACK_MODIFICATIONS=False, # Disable modification tracker
+        JWT_SECRET_KEY="dev",
     )
 
     if test_config is None:
@@ -27,10 +28,11 @@ def create_app(test_config=None):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    jwt.init_app(app)
 
 
-    app.register_blueprint(test_pages, url_prefix="/")
     app.register_blueprint(request_api, url_prefix="/requests")
+    app.register_blueprint(auth_api, url_prefix="/auth")
 
     seeds.init_app(app)
     return app
