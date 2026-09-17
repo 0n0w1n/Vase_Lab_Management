@@ -37,7 +37,9 @@ export default async function RequestDetailPage({ params }: Props) {
             <span className="text-muted-foreground">Unassigned</span>
           )}
         </DetailField>
-        <DetailField label="Description">
+
+        {/* Free text, so it gets the full width rather than half a row. */}
+        <DetailField label="Description" className="md:col-span-2">
           <p className="leading-relaxed font-normal">{request.description}</p>
         </DetailField>
       </div>
