@@ -47,11 +47,11 @@ services:
     environment:
     #   - WATCHBACK_POLLING=true
       - DATABASE_URL=mysql+mysqlconnector://root:abc@mysql-db:3306/VaseLab
-    # develop:
-    #   watch:
-    #     - action: sync
-    #       path: ./test-app-flask
-    #       target: /usr/src/app
+    develop:
+      watch:
+        - action: sync
+          path: ./test-app-flask
+          target: /usr/src/app
 
 
   mysql-db:
