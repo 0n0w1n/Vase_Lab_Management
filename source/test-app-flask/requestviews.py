@@ -73,14 +73,14 @@ def get_request_details(request_id: int):
     return result
 
 @request_api.post("/create")
-@jwt_required()
+# @jwt_required()
 def create_request():
 
     TITLE_MAX = 255
     DETAILS_MAX = 2000
     PRIORITIES = {"low", "medium", "high"}
     EXPECTED_KEYS = ["title", "details", "priority", "deadline"]
-    userID = current_user.UserID
+    userID = 1 # Placeholder
 
     user_input = request.get_json(silent=True)
     if user_input is None:
