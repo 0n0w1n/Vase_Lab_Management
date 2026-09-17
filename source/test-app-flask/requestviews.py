@@ -1,117 +1,129 @@
-from datetime import date, datetime
-from flask import Blueprint, abort, request
+from flask import Blueprint, request
 from extensions import db
-from models import Request, User, File, Comment, ActivityLog
-
+from models import *
+from datetime import date, datetime
 
 request_api = Blueprint("request_api", __name__)
 
-MEDIA_TYPES = ("image", "video", "audio")
-PRIORITIES = ("low", "medium", "high")
-TITLE_MAX = 255
+@request_api.get("/list")
+def get_requests_list():
+    requests: tuple[list[Request], list[User]] = db.session.execute(
+        db.select(Request, User) \
+            .join(User, Request.UserID == User.UserID) \
+            .order_by(Request.RequestID.desc())
+    ).all()
 
-# replace later when the login is finish
-PLACEHOLDER_USER_EMAIL = "definate@lab.local"
+    result = []
+    for req, requester in requests:
+        result.append({
+            "id": str(req.RequestID),
+            "title": req.RequestTitle,
+            "status": req.RequestState,
+            "priority": req.RequestPriority,
+            "deadline": req.RequestDeadline.date().isoformat() if req.RequestDeadline else None,
+            "requestedBy": requester.UserFullName,
+        })
 
+    return result
 
-def current_user():
-    return db.session.execute(
-        db.select(User).filter_by(Email=PLACEHOLDER_USER_EMAIL)
-    ).scalar_one_or_none()
+@request_api.get("/details/<int:request_id>")
+def get_request_details(request_id: int):
+    data: tuple[Request, User] = db.session.execute(db.select(Request, User).join(User, Request.UserID == User.UserID).where(Request.RequestID == request_id)).first()
+    if data is None:
+        return {"errorCode": "10", "error": "Not found"}, 404
 
+    req = data[0]
+    user = data[1]
 
-def iso(value):
-    # DB timestamps are naive UTC; the "Z" keeps the front from reading them as local time
-    return value.isoformat() + "Z" if value else None
+    files = db.session.execute(
+        db.select(File).where(File.RequestID == request_id).order_by(File.CreatedAt)
+    ).all()
 
+    submissionTime = db.session.execute(
+        db.select(ActivityLog.CreatedAt)\
+        .where(
+            ActivityLog.EntityType == "request"\
+            and request_id == ActivityLog.EntityID\
+            and ActivityLog.Action == "create"
+        )
+    ).scalar()
+    if submissionTime is not None:
+        submissionTime: datetime
+        submissionTime = submissionTime.isoformat()+"Z"
 
-def person(user):
-    parts = user.UserFullName.split()
-    initials = "".join(p[0] for p in parts[:2]) if len(parts) > 1 else user.UserFullName[:2]
-    return {"name": user.UserFullName, "initials": initials.upper()}
-
-
-def summary(req, requester):
-    return {
+    result = {
         "id": str(req.RequestID),
         "title": req.RequestTitle,
+        "details": req.RequestDetails,
         "status": req.RequestState,
         "priority": req.RequestPriority,
-        "deadline": req.RequestDeadline.date().isoformat() if req.RequestDeadline else None,
-        "requestedBy": requester.UserFullName,
-        "assignedTo": req.AprovedBy,
+        "deadline": req.RequestDeadline.date().isoformat(),
+        "requestedBy": user.UserFullName,
+        "submittedAt": submissionTime,
+        "files": []
     }
+    for file in files:
+        createdAt = file.CreatedAt.isoformat()+"Z" if not None else None
+        result["files"].append({
+            "id": file.FileID,
+            "name": file.FileName,
+            "bytes": file.FileSize or "Unknown",
+            "uploadedAt": createdAt
+        })
 
+    return result
 
-def activity_message(log, req_id, actor):
-    if log.Action == "create":
-        return f"Request #{req_id} created by {actor.UserFullName}."
-    if log.Action == "delete":
-        return f"Request #{req_id} deleted."
-    new_state = (log.NewValue or {}).get("RequestState")
-    return f"Status changed to {new_state}." if new_state else "Request updated."
-
-
-def with_requester():
-    return db.select(Request, User).join(User, Request.UserID == User.UserID)
-
-
-@request_api.get("/")
-def list_requests():
-    rows = db.session.execute(with_requester().order_by(Request.RequestID.desc())).all()
-    return [summary(req, user) for req, user in rows]
-
-
-def parse_new_request(data):
-    """Returns (fields, errors); errors are keyed like the New Request form's inputs."""
-    errors = {}
-
-    title = str(data.get("title") or "").strip()
-    if not title:
-        errors["title"] = "Please enter a header."
-    elif len(title) > TITLE_MAX:
-        errors["title"] = f"Header must be {TITLE_MAX} characters or fewer."
-
-    priority = data.get("priority")
-    if priority not in PRIORITIES:
-        errors["priority"] = "Please select a priority."
-
-    deadline = None
-    try:
-        deadline = datetime.strptime(str(data.get("deadline") or ""), "%Y-%m-%d")
-    except ValueError:
-        errors["deadline"] = "Please select a deadline."
-    else:
-        if deadline.date() < date.today():
-            errors["deadline"] = "Deadline can't be in the past."
-
-    notes = str(data.get("notes") or "").strip() or None
-
-    fields = {
-        "RequestTitle": title,
-        "RequestDetails": notes,
-        "RequestPriority": priority,
-        "RequestDeadline": deadline,
-    }
-    return fields, errors
-
-
-@request_api.post("/")
+@request_api.post("/create")
 def create_request():
-    fields, errors = parse_new_request(request.get_json(silent=True) or {})
-    if errors:
-        return {"errors": errors}, 400
 
-    user = current_user()
-    if user is None:
-        return {"message": f"No user {PLACEHOLDER_USER_EMAIL} — run `flask seed`."}, 500
+    TITLE_MAX = 255
+    DETAILS_MAX = 2000
+    PRIORITIES = {"low", "medium", "high"}
+    EXPECTED_KEYS = {"title", "details", "priority", "deadline"}
+    userID = 1 # placeholder
 
-    req = Request(**fields, UserID=user.UserID)
-    db.session.add(req)
-    db.session.flush()  # Assigns RequestID for the log entry
+    user_input = request.get_json(silent=True)
+    if user_input is None:
+        return {"errorCode": "10", "error": "JSON unparseable"}, 400
+    if not isinstance(dict, user_input):
+        return {"errorCode": "11", "error": "Not valid JSON"}, 400
+    user_input: dict
 
-    db.session.add(ActivityLog(
-        UserID=user.UserID,
+    input_keys = user_input.keys()
+    for i, expected_key in enumerate(EXPECTED_KEYS):
+        if expected_key not in input_keys:
+            return {"errorCode": f"2{i}", "error": f"Key '{expected_key}' not found"}, 400
+
+    title = user_input.get("title")
+    if len(title) > TITLE_MAX:
+        return {"errorCode": "30", "error": "Title is too long"}, 400
+
+    details = user_input["details"]
+    if len(details) > DETAILS_MAX:
+        return {"errorCode": "31", "error": "Details are too long"}, 400
+
+    priority = user_input["priority"]
+    if priority not in PRIORITIES:
+        return {"errorCode": "32", "error": "Invalid priority"}, 400
+
+    deadline = user_input["deadline"]
+    try:
+        deadline = datetime.strptime(deadline, "%Y-%m-%d")
+    except ValueError:
+        return {"errorCode": "33", "error": "Invalid date format"}, 400
+    if deadline.date() < date.today():
+        return {"errorcode": "34", "error": "Invalid date"}, 400
+
+    req = Request(
+        RequestTitle=title,
+        RequestDetails=details,
+        RequestPriority=priority,
+        RequestDeadline=deadline.date().isoformat()
+    )
+    reqID = req.RequestID
+
+    log = ActivityLog(
+        UserID=userID,
         Action="create",
         EntityType="request",
         EntityID=req.RequestID,
@@ -120,73 +132,10 @@ def create_request():
             "RequestState": req.RequestState,
             "RequestPriority": req.RequestPriority,
             "RequestDeadline": req.RequestDeadline.date().isoformat(),
-        },
-    ))
-    db.session.commit()  # Request and its log entry land together or not at all
+        }
+    )
 
-    return {"id": str(req.RequestID)}, 201
-
-
-@request_api.get("/<int:request_id>")
-def get_request(request_id):
-    row = db.session.execute(
-        with_requester().where(Request.RequestID == request_id)
-    ).first()
-    if row is None:
-        abort(404)
-    req, requester = row
-
-    files = db.session.execute(
-        db.select(File).where(File.RequestID == request_id).order_by(File.CreatedAt)
-    ).scalars()
-
-    logs = db.session.execute(
-        db.select(ActivityLog, User)
-        .join(User, ActivityLog.UserID == User.UserID)
-        .where(ActivityLog.EntityType == "request", ActivityLog.EntityID == request_id)
-        .order_by(ActivityLog.CreatedAt.desc(), ActivityLog.LogID.desc())
-    ).all()
-
-    comments = db.session.execute(
-        db.select(Comment, User)
-        .join(User, Comment.UserID == User.UserID)
-        .where(Comment.RequestID == request_id)
-        .order_by(Comment.CreatedAt, Comment.CommentID)
-    ).all()
-
-    # No CreatedAt on Request: the "create" log entry is the submission time
-    created = next((log for log, _ in logs if log.Action == "create"), None)
-
-    return {
-        **summary(req, requester),
-        "submittedAt": iso(created.CreatedAt) if created else None,
-        "description": req.RequestDetails or "",
-        "attachments": [
-            {
-                "id": str(f.FileID),
-                "name": f.FileName,
-                "bytes": f.FileSize or 0,
-                "uploadedAt": iso(f.CreatedAt),
-                "kind": "media" if (f.FileType or "").split("/")[0] in MEDIA_TYPES else "document",
-            }
-            for f in files
-        ],
-        "activity": [
-            {
-                "id": str(log.LogID),
-                "actor": person(user),
-                "at": iso(log.CreatedAt),
-                "message": activity_message(log, request_id, user),
-            }
-            for log, user in logs
-        ],
-        "messages": [
-            {
-                "id": str(c.CommentID),
-                "author": person(user),
-                "at": iso(c.CreatedAt),
-                "body": c.CommentText,
-            }
-            for c, user in comments
-        ],
-    }
+    db.session.add(req)
+    db.session.add(log)
+    db.session.commit()
+    return {"id": reqID}, 201
