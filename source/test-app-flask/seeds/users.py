@@ -1,6 +1,6 @@
 from models import User
 from .base import get_or_create
-from security import hash_password
+from authviews import hash_password
 
 ROWS = [
     ("admin@lab.local",   "John Admin",   "admin",       "Kasetsart University", "admin123"),

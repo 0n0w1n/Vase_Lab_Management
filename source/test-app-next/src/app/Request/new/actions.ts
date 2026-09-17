@@ -7,8 +7,8 @@ import type { NewRequestInput, RequestPriority } from "@/types/request";
 
 const PRIORITIES: RequestPriority[] = ["low", "medium", "high"];
 
-/** Matches `RequestTitle = db.String(255)` in the Flask model. */
 const TITLE_MAX = 255;
+const DETAILS_MAX = 2000;
 
 export type NewRequestField = keyof NewRequestInput;
 
@@ -33,7 +33,7 @@ export async function submitNewRequest(
 
   const values = {
     title: String(formData.get("title") ?? "").trim(),
-    notes: String(formData.get("notes") ?? "").trim(),
+    details: String(formData.get("details") ?? "").trim(),
     priority: String(formData.get("priority") ?? ""),
     deadline: String(formData.get("deadline") ?? ""),
   };
@@ -43,6 +43,9 @@ export async function submitNewRequest(
   if (!values.title) errors.title = "Please enter a header.";
   else if (values.title.length > TITLE_MAX)
     errors.title = `Header must be ${TITLE_MAX} characters or fewer.`;
+
+  if (values.details.length > DETAILS_MAX)
+    errors.details = `Details must be ${DETAILS_MAX} characters or fewer.`;
 
   if (!isPriority(values.priority)) errors.priority = "Please select a priority.";
 
@@ -62,7 +65,7 @@ export async function submitNewRequest(
     });
   } catch (error) {
     if (error instanceof RequestValidationError) {
-      return { values, errors: error.errors };
+      return error.field ? { values, errors: { [error.field]: error.message } } : { values, errors: {}, message: error.message };
     }
     return {
       values,
