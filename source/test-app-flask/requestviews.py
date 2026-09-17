@@ -47,9 +47,7 @@ def get_request_details(request_id: int):
             and ActivityLog.Action == "create"
         )
     ).scalar()
-    if submissionTime is not None:
-        submissionTime: datetime
-        submissionTime = submissionTime.isoformat()+"Z"
+    submissionTime: datetime
 
     result = {
         "id": str(req.RequestID),
@@ -59,7 +57,7 @@ def get_request_details(request_id: int):
         "priority": req.RequestPriority,
         "deadline": req.RequestDeadline.date().isoformat(),
         "requestedBy": user.UserFullName,
-        "submittedAt": submissionTime,
+        "submittedAt": submissionTime.isoformat()+"Z" if not None else None,
         "files": []
     }
     for file in files:
@@ -79,13 +77,13 @@ def create_request():
     TITLE_MAX = 255
     DETAILS_MAX = 2000
     PRIORITIES = {"low", "medium", "high"}
-    EXPECTED_KEYS = {"title", "details", "priority", "deadline"}
+    EXPECTED_KEYS = ["title", "details", "priority", "deadline"]
     userID = 1 # placeholder
 
     user_input = request.get_json(silent=True)
     if user_input is None:
         return {"errorCode": "10", "error": "JSON unparseable"}, 400
-    if not isinstance(dict, user_input):
+    if type(user_input) != dict:
         return {"errorCode": "11", "error": "Not valid JSON"}, 400
     user_input: dict
 
@@ -118,8 +116,11 @@ def create_request():
         RequestTitle=title,
         RequestDetails=details,
         RequestPriority=priority,
-        RequestDeadline=deadline.date().isoformat()
+        RequestDeadline=deadline.date().isoformat(),
+        UserID=userID
     )
+    db.session.add(req)
+    db.session.flush()
     reqID = req.RequestID
 
     log = ActivityLog(
@@ -131,11 +132,10 @@ def create_request():
             "RequestTitle": req.RequestTitle,
             "RequestState": req.RequestState,
             "RequestPriority": req.RequestPriority,
-            "RequestDeadline": req.RequestDeadline.date().isoformat(),
+            "RequestDeadline": deadline.date().isoformat(),
         }
     )
 
-    db.session.add(req)
     db.session.add(log)
     db.session.commit()
     return {"id": reqID}, 201
