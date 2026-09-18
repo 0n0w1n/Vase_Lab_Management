@@ -13,27 +13,29 @@
 
 🚧 **In Development**
 
-- Docker Compose setup
-- MySQL test database created automatically on startup
-- Flask backend — actively being extended (extensions added recently)
-- Next.js frontend — hot reloading configured and working
+- Login on the web
+- Request ownership
+- Status change and assignment
+- Attachments and comments
 
 ## Project Structure
 
 ```
 .
-├── docker-compose.yml   # Orchestrates db, flask, and next services
-├── docs/                # Project documents and diagrams
-│   ├── Diagram/         # Architecture, sequence, and use case diagrams
-│   └── GantChart/       # Project schedule / Gantt charts
-├── test-app-flask/      # Flask backend API
-├── test-app-next/       # Next.js frontend
-└── vaselab-app-db/      # MySQL database service/config
+├── docs/                      # Project documents and diagrams
+│   ├── Diagram/               # Architecture, sequence, and use case diagrams
+│   └── GantChart/             # Project schedule / Gantt charts
+└── source/
+    ├── docker-compose.yml     # Orchestrates node-app, flask-app, and mysql-db
+    ├── test-app-flask/        # Flask backend API
+    ├── test-app-next/         # Next.js frontend
+    └── vaselab-app-db/        # MySQL database service/config
 ```
 
 ## Documents & Diagrams
 
 - Project proposal: [docs/SoftwareProposal.pdf](docs/SoftwareProposal.pdf)
 - Iteration 1 report: [docs/Iteration1_Report.pdf](docs/Iteration1_Report.pdf)
+- Iteration 2 report: [docs/Iteration2_Report.pdf](docs/Iteration2_Report.pdf)
 - Gantt chart: [docs/GantChart/](docs/GantChart/)
 - Architecture / sequence / use case diagrams: [docs/Diagram/](docs/Diagram/)
