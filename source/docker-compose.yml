@@ -11,28 +11,11 @@ services:
     networks:
       - backend
     # command: ["bash", "start_prod.sh"]
-    command: ["npm", "run", "dev"]
-
-    environment:
-      - WATCHBACK_POLLING=true
-    develop:
-      watch:
-        - action: sync
-          path: ./test-app-next
-          target: /home/node/app
-          ignore:
-            - node_modules/
-            - .next/
-        - action: rebuild
-          path: package.json
-
 
   flask-app:
     build:
       context: ./test-app-flask
     user: 'python'
-    ports:
-      - '8000:8000'
     depends_on:
       mysql-db:
         condition: service_healthy
@@ -41,24 +24,13 @@ services:
       - db
     volumes:
       - ./test-app-flask/migrations:/usr/src/app/migrations
+    post_start:
+      - command: /venv/bin/python3 -m flask db upgrade
     # command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0", "main:create_app()"]
-    command: ["/venv/bin/python3", "-m", "flask", "--app", "main", "run", "--host=0.0.0.0", "--debug", "--port", "8000"]
-
-    environment:
-    #   - WATCHBACK_POLLING=true
-      - DATABASE_URL=mysql+mysqlconnector://root:abc@mysql-db:3306/VaseLab
-    develop:
-      watch:
-        - action: sync
-          path: ./test-app-flask
-          target: /usr/src/app
 
 
   mysql-db:
-    build:
-      context: ./vaselab-app-db
-    environment:
-      MYSQL_ROOT_PASSWORD: abc # by god please change this in prod
+    image: mysql:26
     volumes:
       - db_data:/var/lib/mysql
     ports:
@@ -67,12 +39,10 @@ services:
       - db
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pabc"]
-      interval: 5s
+      interval: 2s
       timeout: 5s
       retries: 10
 
-# creates a network link between containers
-# technically it would also work without it but its good practice
 networks:
   backend:
     driver: bridge
