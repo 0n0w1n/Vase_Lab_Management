@@ -24,13 +24,17 @@ services:
     environment:
       - WATCHBACK_POLLING=true
       - DATABASE_URL=mysql+mysqlconnector://root:abc@mysql-db:3306/VaseLabDev
+      - SECRET_KEY=dev
+      - JWT_SECRET_KEY=dev
+
+    post_start:
+      - command: /venv/bin/python3 -m flask seed
 
     develop:
       watch:
         - action: sync
           path: ./test-app-flask
           target: /usr/src/app
-
 
   mysql-db:
     environment:

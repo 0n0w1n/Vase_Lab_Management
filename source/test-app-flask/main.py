@@ -10,10 +10,10 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY="dev",
+        SECRET_KEY=os.environ["SECRET_KEY"],
         SQLALCHEMY_DATABASE_URI=os.environ["DATABASE_URL"],
         SQLALCHEMY_TRACK_MODIFICATIONS=False, # Disable modification tracker
-        JWT_SECRET_KEY="dev",
+        JWT_SECRET_KEY=os.environ["JWT_SECRET_KEY"],
     )
 
     if test_config is None:
