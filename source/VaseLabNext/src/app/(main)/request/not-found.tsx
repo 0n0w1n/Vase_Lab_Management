@@ -8,7 +8,7 @@ export default function RequestNotFound() {
         This request may have been removed, or the ID is wrong.
       </p>
       <Link
-        href="/Request"
+        href="/request"
         className="mt-5 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground transition-colors hover:bg-brand/85"
       >
         Back to Manage Requests

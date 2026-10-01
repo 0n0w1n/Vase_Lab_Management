@@ -13,6 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "cn";
+import type { User } from "@/lib/auth";
 
 type NavItem = {
   label: string;
@@ -21,19 +22,17 @@ type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Manage Requests", href: "/Request", icon: ClipboardList },
-  { label: "Manage Equipments", href: "/Equipment", icon: SlidersHorizontal },
-  { label: "Operational Dashboard", href: "/Dashboard", icon: LayoutGrid },
+  { label: "Manage Requests", href: "/request", icon: ClipboardList },
+  { label: "Manage Equipments", href: "/equipment", icon: SlidersHorizontal },
+  { label: "Operational Dashboard", href: "/dashboard", icon: LayoutGrid },
 ];
 
 type Props = {
   /** Signed-in user shown in the profile block at the bottom. */
-  user?: { role: string; email: string };
+  user: User;
 };
 
-export default function AppSidebar({
-  user = { role: "LAB MEMBER", email: "Definate@example.com" },
-}: Props) {
+export default function AppSidebar({ user }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
 

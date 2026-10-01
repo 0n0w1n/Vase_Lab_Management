@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function RequestTabs({ requestId }: Props) {
-  const base = `/Request/${requestId}`;
+  const base = `/request/${requestId}`;
   const pathname = usePathname();
 
   const tabs = [

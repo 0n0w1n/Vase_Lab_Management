@@ -8,8 +8,8 @@ import {
   submitNewRequest,
   type NewRequestField,
   type NewRequestState,
-} from "@/app/Request/new/actions";
-import type { RequestPriority } from "@/types/request";
+} from "@/app/(main)/request/new/actions";
+import type { RequestPriority } from "@/types/request";``
 
 const INITIAL_STATE: NewRequestState = {
   values: { title: "", details: "", priority: "", deadline: "" },
@@ -138,7 +138,7 @@ export default function NewRequestForm() {
 
       <div className="flex justify-end gap-3 pt-1">
         <Link
-          href="/Request"
+          href="/request"
           className="grid h-10 place-items-center rounded-lg border border-[#44607F]/40 bg-white/70 px-6 text-sm font-semibold text-[#44607F] transition-colors hover:bg-white"
         >
           Cancel

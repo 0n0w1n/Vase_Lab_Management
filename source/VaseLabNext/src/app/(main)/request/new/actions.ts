@@ -74,6 +74,6 @@ export async function submitNewRequest(
     };
   }
 
-  revalidatePath("/Request");
-  redirect("/Request");
+  revalidatePath("/request");
+  redirect("/request");
 }

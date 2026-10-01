@@ -19,7 +19,7 @@ export default function NewRequestPage() {
 
       <div className="px-10">
         <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
-          <Link href="/Request" className="transition-colors hover:text-foreground">
+          <Link href="/request" className="transition-colors hover:text-foreground">
             Manage Requests
           </Link>
           <span className="px-1.5">/</span>

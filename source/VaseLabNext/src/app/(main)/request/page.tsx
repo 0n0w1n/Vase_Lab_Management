@@ -68,7 +68,7 @@ function PageHeader() {
       <h1 className="text-4xl font-extrabold text-brand">Manage Request</h1>
 
       {/* A single link styled as a button — not a button wrapping a link. */}
-      <Link href="/Request/new" className={cn(actionButton, "text-brand")}>
+      <Link href="/request/new" className={cn(actionButton, "text-brand")}>
         <Plus className="size-3.5" />
         New Request
       </Link>
@@ -113,7 +113,7 @@ function RequestRow({ request }: { request: Request }) {
   return (
     <li>
       <Link
-        href={`/Request/${request.id}`}
+        href={`/request/${request.id}`}
         className={cn(
           rowColumns,
           "rounded-lg bg-white py-4 ring-1 ring-black/5 hover:ring-black/30"

@@ -27,7 +27,7 @@ export default async function RequestDetailLayout({ children, params }: Props) {
       <div className="mx-auto max-w-5xl px-6">
         <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
           <Link
-            href="/Request"
+            href="/request"
             className="transition-colors hover:text-foreground"
           >
             Manage Requests

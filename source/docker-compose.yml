@@ -1,7 +1,7 @@
 services:
   node-app:
     build:
-      context: ./test-app-next
+      context: ./VaseLabNext
     user: 'node'
     working_dir: /home/node/app
     ports: # connect port 3000 in the container to port 3000 in the real world
@@ -14,7 +14,7 @@ services:
 
   flask-app:
     build:
-      context: ./test-app-flask
+      context: ./VaseLabFlask
     user: 'python'
     depends_on:
       mysql-db:
@@ -23,7 +23,7 @@ services:
       - backend
       - db
     volumes:
-      - ./test-app-flask/migrations:/usr/src/app/migrations
+      - ./VaseLabFlask/migrations:/usr/src/app/migrations
     post_start:
       - command: /venv/bin/python3 -m flask db upgrade
     # command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0", "main:create_app()"]

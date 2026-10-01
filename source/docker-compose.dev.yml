@@ -7,7 +7,7 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./test-app-next
+          path: ./VaseLabNext
           target: /home/node/app
           ignore:
             - node_modules/
@@ -34,7 +34,7 @@ services:
     develop:
       watch:
         - action: sync
-          path: ./test-app-flask
+          path: ./VaseLabFlask
           target: /usr/src/app
           initial_sync: true
 
