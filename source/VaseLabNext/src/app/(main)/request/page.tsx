@@ -1,16 +1,18 @@
 import Link from "next/link";
-import { ChevronsUpDown, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import PriorityDot from "@/components/request/PriorityDot";
+import RequestFilters from "@/components/request/RequestFilters";
 import StatusPill from "@/components/request/StatusPill";
 import { formatDate } from "@/lib/format";
 import { getRequests } from "@/lib/requests";
+import { REQUEST_PRIORITIES, REQUEST_STATUSES } from "@/types/request";
 import { cn } from "cn";
 
 export const metadata = {
   title: "Manage Requests",
 };
 
-// Shared button look for the header actions and table filters.
+// Shared button look for the header actions.
 const actionButton =
   "flex items-center gap-1.5 rounded-md bg-sidebar px-3 py-2 text-xs font-semibold transition-colors hover:bg-sidebar/85";
 
@@ -21,8 +23,21 @@ const rowColumns =
 
 type Request = Awaited<ReturnType<typeof getRequests>>[number];
 
-export default async function ManageRequestsPage() {
-  const requests = await getRequests();
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export default async function ManageRequestsPage({ searchParams }: Props) {
+  const params = await searchParams;
+  // Anything that isn't a known value (typo, hand-edited URL) means no filter.
+  const status = REQUEST_STATUSES.find((value) => value === params.status);
+  const priority = REQUEST_PRIORITIES.find((value) => value === params.priority);
+
+  const requests = (await getRequests()).filter(
+    (request) =>
+      (!status || request.status === status) &&
+      (!priority || request.priority === priority)
+  );
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden py-14">
@@ -32,7 +47,7 @@ export default async function ManageRequestsPage() {
         <PageHeader />
 
         <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
-          <TableFilters />
+          <RequestFilters status={status} priority={priority} />
 
           <div className="overflow-x-auto">
             <div className="min-w-[44rem]">
@@ -42,6 +57,13 @@ export default async function ManageRequestsPage() {
                   <RequestRow key={request.id} request={request} />
                 ))}
               </ul>
+              {requests.length === 0 && (
+                <p className="py-10 text-center text-sm text-muted-foreground">
+                  {status || priority
+                    ? "No requests match these filters."
+                    : "No requests yet."}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -73,22 +95,6 @@ function PageHeader() {
         New Request
       </Link>
     </header>
-  );
-}
-
-function TableFilters() {
-  return (
-    <div className="flex justify-end gap-2 pb-4">
-      {/* TODO: wire these up — currently decorative, no filtering happens yet. */}
-      <button type="button" className={cn(actionButton, "text-white")}>
-        Status Filter
-        <ChevronsUpDown className="size-3.5" />
-      </button>
-      <button type="button" className={cn(actionButton, "text-white")}>
-        Priority Filter
-        <ChevronsUpDown className="size-3.5" />
-      </button>
-    </div>
   );
 }
 
