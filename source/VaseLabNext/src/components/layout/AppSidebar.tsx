@@ -13,19 +13,20 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "cn";
-import type { User } from "@/lib/auth";
+import type { User, UserRole } from "@/lib/auth";
 import { logout } from "@/app/(auth)/login/actions";
 
 type NavItem = {
   label: string;
   href: string;
   icon: LucideIcon;
+  roles?: UserRole[];
 };
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Manage Requests", href: "/request", icon: ClipboardList },
   { label: "Manage Equipments", href: "/equipment", icon: SlidersHorizontal },
-  { label: "Operational Dashboard", href: "/dashboard", icon: LayoutGrid },
+  { label: "Operational Dashboard", href: "/dashboard", icon: LayoutGrid, roles: ["lab_manager"] },
 ];
 
 type Props = {
@@ -62,7 +63,9 @@ export default function AppSidebar({ user }: Props) {
           {!collapsed && (
             <p className="text-sm font-semibold text-sidebar-foreground">Menu</p>
           )}
-          {NAV_ITEMS.map((item) => {
+          {NAV_ITEMS.filter(
+            (item) => !item.roles || item.roles.includes(user.role)
+          ).map((item) => {
             const active = pathname.startsWith(item.href);
             const Icon = item.icon;
             return (

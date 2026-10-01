@@ -3,6 +3,7 @@ import type {
   NewRequestInput,
   RequestSummary,
 } from "@/types/request";
+import { forbidden } from "next/navigation";
 import { authFetch } from "@/lib/auth";
 
 // no-store so the list isn't prerendered at build time when Flask is down
@@ -18,6 +19,7 @@ export async function getRequest(id: string): Promise<LabRequest | undefined> {
 
   const res = await authFetch(`/requests/details/${id}`, { cache: "no-store" });
   if (res.status === 404) return undefined;
+  if (res.status === 403) forbidden();
   if (!res.ok) throw new Error(`Get request ${id} failed: ${res.status}`);
   return res.json();
 }

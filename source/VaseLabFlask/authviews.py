@@ -18,6 +18,11 @@ auth_api = Blueprint("auth_api", __name__)
 
 INVALID_HASH = ph.hash("invalid")
 
+STAFF_ROLES = {"admin", "lab_manager", "lab_ta"}
+
+def can_view_all_requests(user: User) -> bool:
+    return user.UserRole in STAFF_ROLES
+
 def hash_password(password: str) -> str:
     return ph.hash(password)
 
