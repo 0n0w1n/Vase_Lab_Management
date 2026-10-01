@@ -58,11 +58,11 @@ def get_request_details(request_id: int):
         "priority": req.RequestPriority,
         "deadline": req.RequestDeadline.date().isoformat(),
         "requestedBy": user.UserFullName,
-        "submittedAt": submissionTime.isoformat()+"Z" if not None else None,
+        "submittedAt": submissionTime.isoformat()+"Z" if submissionTime else None,
         "files": []
     }
     for file in files:
-        createdAt = file.CreatedAt.isoformat()+"Z" if not None else None
+        createdAt = file.CreatedAt.isoformat()+"Z" if file.CreatedAt else None
         result["files"].append({
             "id": file.FileID,
             "name": file.FileName,
