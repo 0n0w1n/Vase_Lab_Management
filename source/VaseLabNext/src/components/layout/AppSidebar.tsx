@@ -15,6 +15,8 @@ import {
 import { cn } from "cn";
 import type { User } from "@/lib/auth";
 
+import Image from "next/image";
+
 type NavItem = {
   label: string;
   href: string;
@@ -98,7 +100,9 @@ export default function AppSidebar({ user }: Props) {
 
         <div className="border-b border-white/15" />
 
-        <div className="py-6">
+        <Link 
+        className="py-6"
+        href={`/profile/${user.id}`}>
           {!collapsed && (
             <p className="pb-4 text-sm font-semibold text-sidebar-foreground">
               Profile
@@ -110,9 +114,12 @@ export default function AppSidebar({ user }: Props) {
               collapsed && "justify-center"
             )}
           >
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand text-sm font-bold text-brand-foreground">
+
+            <Image src="/TripleTAvatar.svg" alt="Profile" width={67} height={67} className="rounded-full" />
+
+            {/* <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand text-sm font-bold text-brand-foreground">
               {user.email.slice(0, 1).toUpperCase()}
-            </span>
+            </span> */}
             {!collapsed && (
               <div className="min-w-0">
                 <p className="text-sm font-semibold">{user.role}</p>
@@ -132,7 +139,7 @@ export default function AppSidebar({ user }: Props) {
             <LogOut className="size-4 text-sky-600" />
             {!collapsed && <span>Log out</span>}
           </button>
-        </div>
+        </Link>
 
         {/* Inside the sticky <aside> so the handle stays pinned while the
             page scrolls; sticky is a positioned ancestor, so it anchors this. */}
