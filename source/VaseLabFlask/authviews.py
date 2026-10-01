@@ -7,7 +7,7 @@ IMPORTANT CLARIFICATIONS ON THE ERRORS IMPORTED :
 """
 from flask import Blueprint, request
 from extensions import db, jwt
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, current_user
 from models import *
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError
@@ -15,6 +15,8 @@ from argon2.exceptions import VerifyMismatchError, VerificationError
 ph = PasswordHasher()
 
 auth_api = Blueprint("auth_api", __name__)
+
+INVALID_HASH = ph.hash("invalid")
 
 def hash_password(password: str) -> str:
     return ph.hash(password)
@@ -55,10 +57,23 @@ def login():
 
     user = db.session.execute(db.select(User).where(User.Email == user_input["email"])).scalar()
     if user is None:
-        return {"errorCode": "30", "error": "Invalid user/password"}, 401
-    user: User
+        password = (INVALID_HASH, INVALID_HASH) # doing this so invalid users and invalid passwords have the same timing
+    else:
+        user: User
+        password = (user.PasswordHash, user_input["password"])
 
-    if not verify_password(user.PasswordHash, user_input["password"]):
+    if not verify_password(*password):
         return {"errorCode": "30", "error": "Invalid user/password"}, 401
 
     return {"access_token": create_access_token(identity=user)}
+
+@auth_api.get("/me")
+@jwt_required()
+def me():
+    user: User = current_user
+    return {
+        "id": str(user.UserID),
+        "name": user.UserFullName,
+        "email": user.Email,
+        "role": user.UserRole,
+    }

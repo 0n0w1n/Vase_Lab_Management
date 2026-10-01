@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { createRequest, RequestValidationError } from "@/lib/requests";
 import type { NewRequestInput, RequestPriority } from "@/types/request";
 
@@ -28,8 +28,8 @@ export async function submitNewRequest(
   _prev: NewRequestState,
   formData: FormData
 ): Promise<NewRequestState> {
-  // TODO: check the signed-in user here once auth exists — Server Actions can
-  // be hit by a direct POST, not only through this form.
+  // No user check needed here: createRequest sends the token cookie and Flask
+  // rejects the call without a valid one, even on a direct POST to this action.
 
   const values = {
     title: String(formData.get("title") ?? "").trim(),
@@ -64,6 +64,8 @@ export async function submitNewRequest(
       priority: values.priority as RequestPriority,
     });
   } catch (error) {
+    // Let the expired-session redirect to /login through.
+    unstable_rethrow(error);
     if (error instanceof RequestValidationError) {
       return error.field ? { values, errors: { [error.field]: error.message } } : { values, errors: {}, message: error.message };
     }
