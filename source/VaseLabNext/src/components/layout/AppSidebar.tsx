@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "cn";
 import type { User } from "@/lib/auth";
+import { logout } from "@/app/(auth)/login/actions";
 
 type NavItem = {
   label: string;
@@ -115,23 +116,25 @@ export default function AppSidebar({ user }: Props) {
             </span>
             {!collapsed && (
               <div className="min-w-0">
-                <p className="text-sm font-semibold">{user.role}</p>
+                <p className="text-sm font-semibold">{user.role.replaceAll("_", " ").toUpperCase()}</p>
                 <p className="truncate text-sm text-sidebar-muted">
                   {user.email}
                 </p>
               </div>
             )}
           </div>
-          <button
-            type="button"
-            title={collapsed ? "Log out" : undefined}
-            className={cn(
-              "flex w-full items-center justify-center gap-2 rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-100"
-            )}
-          >
-            <LogOut className="size-4 text-sky-600" />
-            {!collapsed && <span>Log out</span>}
-          </button>
+          <form action={logout}>
+            <button
+              type="submit"
+              title={collapsed ? "Log out" : undefined}
+              className={cn(
+                "flex w-full items-center justify-center gap-2 rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-100"
+              )}
+            >
+              <LogOut className="size-4 text-sky-600" />
+              {!collapsed && <span>Log out</span>}
+            </button>
+          </form>
         </div>
 
         {/* Inside the sticky <aside> so the handle stays pinned while the

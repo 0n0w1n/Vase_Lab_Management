@@ -7,6 +7,7 @@ from datetime import date, datetime
 request_api = Blueprint("request_api", __name__)
 
 @request_api.get("/list")
+@jwt_required()
 def get_requests_list():
     requests: tuple[list[Request], list[User]] = db.session.execute(
         db.select(Request, User) \
@@ -28,6 +29,7 @@ def get_requests_list():
     return result
 
 @request_api.get("/details/<int:request_id>")
+@jwt_required()
 def get_request_details(request_id: int):
     data: tuple[Request, User] = db.session.execute(db.select(Request, User).join(User, Request.UserID == User.UserID).where(Request.RequestID == request_id)).first()
     if data is None:
@@ -73,14 +75,14 @@ def get_request_details(request_id: int):
     return result
 
 @request_api.post("/create")
-# @jwt_required()
+@jwt_required()
 def create_request():
 
     TITLE_MAX = 255
     DETAILS_MAX = 2000
     PRIORITIES = {"low", "medium", "high"}
     EXPECTED_KEYS = ["title", "details", "priority", "deadline"]
-    userID = 1 # Placeholder
+    userID = current_user.UserID
 
     user_input = request.get_json(silent=True)
     if user_input is None:
@@ -112,7 +114,7 @@ def create_request():
     except ValueError:
         return {"errorCode": "33", "error": "Invalid date format"}, 400
     if deadline.date() < date.today():
-        return {"errorcode": "34", "error": "Invalid date"}, 400
+        return {"errorCode": "34", "error": "Invalid date"}, 400
 
     req = Request(
         RequestTitle=title,

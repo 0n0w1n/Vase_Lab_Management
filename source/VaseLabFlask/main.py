@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from flask import Flask
 from requestviews import request_api
 from authviews import auth_api
@@ -14,6 +15,7 @@ def create_app(test_config=None):
         SQLALCHEMY_DATABASE_URI=os.environ["DATABASE_URL"],
         SQLALCHEMY_TRACK_MODIFICATIONS=False, # Disable modification tracker
         JWT_SECRET_KEY=os.environ["JWT_SECRET_KEY"],
+        JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=3), # Default is 15 min; no refresh tokens yet
     )
 
     if test_config is None:
