@@ -16,6 +16,8 @@ ph = PasswordHasher()
 
 auth_api = Blueprint("auth_api", __name__)
 
+INVALID_HASH = ph.hash("invalid")
+
 def hash_password(password: str) -> str:
     return ph.hash(password)
 
@@ -55,10 +57,12 @@ def login():
 
     user = db.session.execute(db.select(User).where(User.Email == user_input["email"])).scalar()
     if user is None:
-        return {"errorCode": "30", "error": "Invalid user/password"}, 401
-    user: User
+        password = (INVALID_HASH, INVALID_HASH) # doing this so invalid users and invalid passwords have the same timing
+    else:
+        user: User
+        password = (user.PasswordHash, user_input["password"])
 
-    if not verify_password(user.PasswordHash, user_input["password"]):
+    if not verify_password(*password):
         return {"errorCode": "30", "error": "Invalid user/password"}, 401
 
     return {"access_token": create_access_token(identity=user)}
