@@ -39,7 +39,7 @@ services:
       - db
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pabc"]
-      interval: 5s
+      interval: 2s
       timeout: 5s
       retries: 10
 
