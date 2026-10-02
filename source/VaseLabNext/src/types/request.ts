@@ -1,12 +1,15 @@
 /** Mirrors RequestState in the Flask model */
-export type RequestStatus =
-  | "pending"
-  | "in-progress"
-  | "review"
-  | "close"
-  | "reject";
+export const REQUEST_STATUSES = [
+  "pending",
+  "in-progress",
+  "review",
+  "close",
+  "reject",
+] as const;
+export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 
-export type RequestPriority = "low" | "medium" | "high";
+export const REQUEST_PRIORITIES = ["low", "medium", "high"] as const;
+export type RequestPriority = (typeof REQUEST_PRIORITIES)[number];
 
 export type Attachment = {
   id: number;
