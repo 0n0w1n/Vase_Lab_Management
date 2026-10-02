@@ -14,7 +14,11 @@ def get_current():
     return get_user(current_user.UserID)
 
 @user_api.get("/<int:user_id>")
+@jwt_required()
 def get_user(user_id: int):
+    if user_id != current_user.UserID: # Hugo : Added the detection of the current session
+        return {"errorCode": "10", "error": "Not found"}, 404
+
     user: User = db.session.execute(db.select(User).where(User.UserID == user_id)).scalar()
     if user is None:
         return {"errorCode": "10", "error": "Not found"}, 404
