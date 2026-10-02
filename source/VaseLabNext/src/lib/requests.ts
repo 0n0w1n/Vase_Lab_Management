@@ -9,7 +9,7 @@ import { authFetch } from "@/lib/auth";
 // no-store so the list isn't prerendered at build time when Flask is down
 
 export async function getRequests(): Promise<RequestSummary[]> {
-  const res = await authFetch("/requests/list", { cache: "no-store" });
+  const res = await authFetch("/request/list", { cache: "no-store" });
   if (!res.ok) throw new Error(`List requests failed: ${res.status}`);
   return res.json();
 }
@@ -17,7 +17,7 @@ export async function getRequests(): Promise<RequestSummary[]> {
 export async function getRequest(id: string): Promise<LabRequest | undefined> {
   if (!/^\d+$/.test(id)) return undefined;
 
-  const res = await authFetch(`/requests/details/${id}`, { cache: "no-store" });
+  const res = await authFetch(`/request/details/${id}`, { cache: "no-store" });
   if (res.status === 404) return undefined;
   if (res.status === 403) forbidden();
   if (!res.ok) throw new Error(`Get request ${id} failed: ${res.status}`);
@@ -49,7 +49,7 @@ export class RequestValidationError extends Error {
 export async function createRequest(
   input: NewRequestInput
 ): Promise<{ id: number }> {
-  const res = await authFetch("/requests/create", {
+  const res = await authFetch("/request/create", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),

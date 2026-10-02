@@ -18,11 +18,6 @@ auth_api = Blueprint("auth_api", __name__)
 
 INVALID_HASH = ph.hash("invalid")
 
-STAFF_ROLES = {"admin", "lab_manager", "lab_ta"}
-
-def can_view_all_requests(user: User) -> bool:
-    return user.UserRole in STAFF_ROLES
-
 def hash_password(password: str) -> str:
     return ph.hash(password)
 
@@ -71,14 +66,3 @@ def login():
         return {"errorCode": "30", "error": "Invalid user/password"}, 401
 
     return {"access_token": create_access_token(identity=user)}
-
-@auth_api.get("/me")
-@jwt_required()
-def me():
-    user: User = current_user
-    return {
-        "id": str(user.UserID),
-        "name": user.UserFullName,
-        "email": user.Email,
-        "role": user.UserRole,
-    }

@@ -1,11 +1,12 @@
 import os
 from datetime import timedelta
 from flask import Flask
-from requestviews import request_api
-from authviews import auth_api
 from extensions import db, migrate, jwt
 import seeds
 
+from views.requestviews import request_api
+from views.authviews import auth_api
+from views.userviews import user_api
 
 def create_app(test_config=None):
     # create and configure the app
@@ -33,8 +34,9 @@ def create_app(test_config=None):
     jwt.init_app(app)
 
 
-    app.register_blueprint(request_api, url_prefix="/requests")
+    app.register_blueprint(request_api, url_prefix="/request")
     app.register_blueprint(auth_api, url_prefix="/auth")
+    app.register_blueprint(user_api, url_prefix="/user")
 
     seeds.init_app(app)
     return app

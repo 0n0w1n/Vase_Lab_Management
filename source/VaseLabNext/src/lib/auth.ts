@@ -22,7 +22,7 @@ export async function getCurrentUser(): Promise<User | null> {
   const token = (await cookies()).get(TOKEN_COOKIE)?.value;
   if (!token) return null;
 
-  const res = await fetch(`${API_URL}/auth/me`, {
+  const res = await fetch(`${API_URL}/user/current`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
   });
@@ -77,3 +77,4 @@ export function tokenExpiry(token: string): Date | undefined {
     return undefined;
   }
 }
+

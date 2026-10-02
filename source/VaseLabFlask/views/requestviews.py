@@ -2,18 +2,23 @@ from flask import Blueprint, request
 from extensions import db
 from flask_jwt_extended import jwt_required, current_user
 from models import *
-from authviews import can_view_all_requests
 from datetime import date, datetime
 
 request_api = Blueprint("request_api", __name__)
 
+current_user: User
+STAFF = {"admin", "lab_manager", "lab_ta"}
+
 @request_api.get("/list")
 @jwt_required()
 def get_requests_list():
-    query = db.select(Request, User) \
+
+    query = \
+        db.select(Request, User) \
         .join(User, Request.UserID == User.UserID) \
         .order_by(Request.RequestID.desc())
-    if not can_view_all_requests(current_user):
+
+    if current_user.UserRole not in STAFF:
         query = query.where(Request.UserID == current_user.UserID)
 
     requests: tuple[list[Request], list[User]] = db.session.execute(query).all()
@@ -41,8 +46,8 @@ def get_request_details(request_id: int):
     req = data[0]
     user = data[1]
 
-    if not can_view_all_requests(current_user) and req.UserID != current_user.UserID:
-        return {"errorCode": "20", "error": "Forbidden"}, 403
+    if current_user.UserRole not in STAFF and req.UserID != current_user.UserID:
+        return {"errorCode": "11", "error": "Unauthorized"}, 403
 
     files = db.session.execute(
         db.select(File).where(File.RequestID == request_id).order_by(File.CreatedAt)

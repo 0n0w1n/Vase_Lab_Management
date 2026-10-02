@@ -16,6 +16,8 @@ import { cn } from "cn";
 import type { User, UserRole } from "@/lib/auth";
 import { logout } from "@/app/(auth)/login/actions";
 
+import Image from "next/image";
+
 type NavItem = {
   label: string;
   href: string;
@@ -108,15 +110,14 @@ export default function AppSidebar({ user }: Props) {
               Profile
             </p>
           )}
-          <div
+          <Link
+            href={`/profile/${user.id}`}
             className={cn(
               "flex items-center gap-3 pb-5",
               collapsed && "justify-center"
             )}
           >
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand text-sm font-bold text-brand-foreground">
-              {user.email.slice(0, 1).toUpperCase()}
-            </span>
+            <Image src="/TripleTAvatar.svg" alt="Profile" width={67} height={67} className="rounded-full" />
             {!collapsed && (
               <div className="min-w-0">
                 <p className="text-sm font-semibold">{user.role.replaceAll("_", " ").toUpperCase()}</p>
@@ -125,7 +126,7 @@ export default function AppSidebar({ user }: Props) {
                 </p>
               </div>
             )}
-          </div>
+          </Link>
           <form action={logout}>
             <button
               type="submit"
