@@ -34,7 +34,7 @@ def create_app(test_config=None):
     jwt.init_app(app)
 
 
-    app.register_blueprint(request_api, url_prefix="/requests")
+    app.register_blueprint(request_api, url_prefix="/request")
     app.register_blueprint(auth_api, url_prefix="/auth")
     app.register_blueprint(user_api, url_prefix="/user")
 
