@@ -42,3 +42,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: abc
       MYSQL_DATABASE: VaseLabDev
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=abc --execute \"SHOW DATABASES;\""
+      interval: 2s
+      timeout: 5s
+      retries: 10
