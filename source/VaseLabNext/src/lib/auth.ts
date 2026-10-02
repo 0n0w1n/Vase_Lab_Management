@@ -9,6 +9,8 @@ export type User = {
   name: string;
   email: string;
   role: UserRole;
+  organization: string | null;
+  createdAt: string | null;
 };
 
 /** httpOnly cookie holding the Flask JWT, so client JS can never read it. */
@@ -44,6 +46,16 @@ export async function authFetch(path: string, init: RequestInit = {}): Promise<R
   const res = await fetch(`${API_URL}${path}`, { ...init, headers });
   if (res.status === 401 || res.status === 422) redirect("/login");
   return res;
+}
+
+/** Hugo : Loads the user matching the profile URL, or null when it does not exist. */
+export async function getUser(id: string): Promise<User | null> {
+  if (!/^\d+$/.test(id)) return null;
+
+  const res = await authFetch(`/user/${id}`, { cache: "no-store" });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`Get user ${id} failed: ${res.status}`);
+  return res.json();
 }
 
 export class InvalidCredentialsError extends Error {}

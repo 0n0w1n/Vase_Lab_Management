@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { notFound } from "next/navigation"; // Hugo : When we don't find correspoding id
 import { Briefcase, Building2, CalendarDays, Clock, Mail } from "lucide-react";
 import BackgroundGlow from "@/components/layout/BackgroundGlow";
 import InitialsAvatar from "@/components/request/InitialsAvatar";
+import { getUser } from "@/lib/auth"; // Hugo : function created in auth.ts , 
+import { formatDate } from "@/lib/format"; // Hugo : used on line 46 
 
 // Spacing 1 unit in tailwinds = 0.25 rems = 4 px
 // Foreground -- color bind to main color of the page color: var(--foreground)
@@ -30,22 +33,17 @@ type Props = {
   params: Promise<{ profileId: string }>;
 };
 
-// TODO: replace with real data from the backend once there is a profile API.
-const user = {
-  name: "Sarah Jenkins",
-  initials: "SJ",
-  role: "Lab Member",
-  email: "sarah.jenkins@vaselab.edu",
-  lab: "VASE Lab",
-  position: "Teacher Assistant (TA)",
-  joined: "Oct 2023",
-};
-
 // White inner card, shared by the header card and the contact card.
 const card = "rounded-2xl bg-white p-5 ring-1 ring-black/5";
 
 export default async function ProfilePage({ params }: Props) {
   const { profileId } = await params;
+  const user = await getUser(profileId);
+  if (!user) notFound();
+
+  const initials = user.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
+  const role = user.role.replaceAll("_", " ").toUpperCase();
+  const joined = user.createdAt ? formatDate(user.createdAt) : "Not provided"; // Profile creation date
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden py-14">
@@ -67,22 +65,22 @@ export default async function ProfilePage({ params }: Props) {
           {/* Header card: stacks on mobile, side by side from md up */}
           <section className={`${card} flex flex-col gap-4 md:flex-row md:items-center md:justify-between`}>
             <div className="flex items-center gap-4">
-              <InitialsAvatar initials={user.initials} className="size-16 text-lg" />
+              <InitialsAvatar initials={initials} className="size-16 text-lg" />
 
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-2xl font-bold">{user.name}</h2>
                   <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand ring-1 ring-brand">
-                    {user.role}
+                    {role}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">{user.email}</p>
                 <div className="flex gap-4 pt-1 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
-                    <Building2 className="size-3.5" /> {user.lab}
+                    <Building2 className="size-3.5" /> {user.organization ?? "Not provided"}
                   </span>
                   <span className="flex items-center gap-1">
-                    <CalendarDays className="size-3.5" /> Joined {user.joined}
+                    <CalendarDays className="size-3.5" /> Joined {joined}
                   </span>
                 </div>
               </div>
@@ -104,9 +102,9 @@ export default async function ProfilePage({ params }: Props) {
             <h3 className="pb-3 font-bold">Contact &amp; Organization</h3>
             <ul className="flex flex-col gap-3 text-sm font-medium">
               <ContactRow icon={<Mail className="size-4" />} text={user.email} />
-              <ContactRow icon={<Building2 className="size-4" />} text={user.lab} />
-              <ContactRow icon={<Briefcase className="size-4" />} text={user.position} />
-              <ContactRow icon={<Clock className="size-4" />} text={`Created: ${user.joined}`} />
+              <ContactRow icon={<Building2 className="size-4" />} text={user.organization ?? "Not provided"} />
+              <ContactRow icon={<Briefcase className="size-4" />} text={role} />
+              <ContactRow icon={<Clock className="size-4" />} text={`Created: ${joined}`} />
             </ul>
           </section>
         </div>
