@@ -66,14 +66,3 @@ def login():
         return {"errorCode": "30", "error": "Invalid user/password"}, 401
 
     return {"access_token": create_access_token(identity=user)}
-
-@auth_api.get("/me")
-@jwt_required()
-def me():
-    user: User = current_user
-    return {
-        "id": str(user.UserID),
-        "name": user.UserFullName,
-        "email": user.Email,
-        "role": user.UserRole,
-    }
