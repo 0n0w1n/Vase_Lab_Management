@@ -34,7 +34,7 @@ export type LogMessage = {
   body: string;
 };
 
-/** One row of GET /requests/list */
+/** One row of GET /request/list */
 export type RequestSummary = {
   id: string;
   title: string;
