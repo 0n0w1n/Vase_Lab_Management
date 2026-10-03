@@ -1,11 +1,12 @@
 import re
 from flask import Blueprint, request
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from views.authviews import hash_password, verify_password
 from extensions import db
 from flask_jwt_extended import jwt_required, current_user
 from models import *
 from datetime import date, datetime
+from lib.requestUtils import verify_user_input
+from lib.authUtils import hash_password, verify_password
 
 user_api = Blueprint("user_api", __name__)
 
@@ -16,74 +17,73 @@ def validation_error(message, field=None):
     return {"error": message, "field": field}, 400
 
 
-@user_api.patch("/current")
+@user_api.post("/update/profile")
 @jwt_required()
 def update_current():
-    data = request.get_json(silent=True)
-    allowed = {"name", "email", "organization"}
-    if not isinstance(data, dict) or not data or set(data) - allowed:
-        return validation_error("Provide only name, email, or organization.")
+    EXPECTED_KEYS = set()
+    NAME_MAX = 255
+    ORG_MAX = 150
 
-    values = {}
-    for field, limit in (("name", 255), ("email", 254), ("organization", 150)):
-        if field not in data:
-            continue
-        value = data[field]
-        if field == "organization" and value is None:
-            values[field] = None
-            continue
-        if not isinstance(value, str):
-            return validation_error("Must be text.", field)
-        value = value.strip()
-        if (field != "organization" and not value) or len(value) > limit:
-            return validation_error(f"Enter {'1' if field != 'organization' else '0'} to {limit} characters.", field)
-        if field == "email" and not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", value):
-            return validation_error("Enter a valid email address.", field)
-        values[field] = value or None
+    user_input = request.get_json(silent=True)
+    result = verify_user_input(user_input, EXPECTED_KEYS)
+    if result[1] != 200:
+        return result
+    user_input: dict
 
-    if "email" in values:
-        duplicate = db.session.execute(db.select(User).where(
-            User.Email == values["email"], User.UserID != current_user.UserID
-        )).scalar_one_or_none()
-        if duplicate:
-            return {"error": "This email is already in use.", "field": "email"}, 409
+    if "name" in user_input.keys():
+        if len(user_input["name"]) <= 0:
+            return {"errorCode": "30", "error": "Name is too short"}, 400
+        if len(user_input["name"]) > NAME_MAX:
+            return {"errorCode": "31", "error": "Name is too long"}, 400
+        name = user_input["name"]
+    else: name = current_user.UserFullName
 
-    for field, column in (("name", "UserFullName"), ("email", "Email"), ("organization", "UserOrganization")):
-        if field in values:
-            setattr(current_user, column, values[field])
+    if "organization" in user_input.keys():
+        if len(user_input["organization"]) > ORG_MAX:
+            return {"errorCode": "32", "error": "Organization is too long"}, 400
+        org = user_input["organization"]
+    else: org = current_user.UserOrganization
+
+    current_user.UserFullName = name
+    current_user.UserOrganization = org
     try:
         db.session.commit()
-    except IntegrityError:
-        db.session.rollback()
-        return {"error": "This email is already in use.", "field": "email"}, 409
     except SQLAlchemyError:
         db.session.rollback()
-        return {"error": "Could not save your profile."}, 500
+        return {{"errorCode": "40", "error": "Unknown error occured"}, 500}
     return get_current()
 
 
-@user_api.patch("/current/password")
+@user_api.post("/update/password")
 @jwt_required()
 def update_password():
-    data = request.get_json(silent=True)
-    if not isinstance(data, dict) or set(data) != {"currentPassword", "newPassword"}:
-        return validation_error("Provide currentPassword and newPassword.")
-    old_password, new_password = data["currentPassword"], data["newPassword"]
-    if not isinstance(old_password, str) or not 1 <= len(old_password) <= 1024:
-        return validation_error("Enter your current password.", "currentPassword")
-    if not isinstance(new_password, str) or not 12 <= len(new_password) <= 128:
-        return validation_error("Use 12 to 128 characters.", "newPassword")
-    if not verify_password(current_user.PasswordHash, old_password):
-        return validation_error("Current password is incorrect.", "currentPassword")
-    if old_password == new_password:
-        return validation_error("Choose a different password.", "newPassword")
+    EXPECTED_KEYS = {"currentPassword", "newPassword"}
+    NEW_MIN = 12
+    NEW_MAX = 128
+    user_input = request.get_json(silent=True)
+    result = verify_user_input(user_input, EXPECTED_KEYS)
+    if result[1] != 200:
+        return result
+
+    current_password, new_password = user_input["currentPassword"], user_input["newPassword"]
+    current_password_hash = current_user.PasswordHash
+
+    if not verify_password(current_password_hash, current_password):
+        return {"errorCode": "30", "error": "Invalid current password"}, 400
+    if len(new_password) < NEW_MIN:
+        return {"errorCode": "31", "error": "New password too short"}, 400
+    if len(new_password) > NEW_MAX:
+        return {"errorCode": "32", "error": "New password too long"}, 400
+    if current_password == new_password:
+        return {"errorCode": "33", "error": "New password should be different from the current password"}, 400
+
     current_user.PasswordHash = hash_password(new_password)
     try:
         db.session.commit()
     except SQLAlchemyError:
         db.session.rollback()
-        return {"error": "Could not change your password."}, 500
-    return {"message": "Password updated."}
+        return {"errorCode": "40", "error": "Unknown error occured"}, 500
+    return {"message": "Password updated"}, 200
 
 @user_api.get("/current")
 @jwt_required()
@@ -93,8 +93,9 @@ def get_current():
 @user_api.get("/<int:user_id>")
 @jwt_required()
 def get_user(user_id: int):
-    if user_id != current_user.UserID: # Hugo : Added the detection of the current session
-        return {"errorCode": "10", "error": "Not found"}, 404
+    is_owner = False
+    if user_id == current_user.UserID: # Hugo : Added the detection of the current session
+        is_owner = True
 
     user: User = db.session.execute(db.select(User).where(User.UserID == user_id)).scalar()
     if user is None:
@@ -106,5 +107,6 @@ def get_user(user_id: int):
         "email": user.Email,
         "role": user.UserRole,
         "organization": user.UserOrganization,
-        "createdAt": user.CreatedAt.isoformat()+"Z" if user.CreatedAt else None
+        "createdAt": user.CreatedAt.isoformat()+"Z" if user.CreatedAt else None,
+        "isOwner": is_owner
     }

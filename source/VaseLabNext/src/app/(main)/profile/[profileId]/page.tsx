@@ -44,6 +44,7 @@ export default async function ProfilePage({ params }: Props) {
   const initials = user.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
   const role = user.role.replaceAll("_", " ").toUpperCase();
   const joined = user.createdAt ? formatDate(user.createdAt) : "Not provided"; // Profile creation date
+  const isOwner = user.isOwner
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden py-14">
@@ -86,14 +87,18 @@ export default async function ProfilePage({ params }: Props) {
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              <Link href={`/profile/${user.id}/edit`} className="rounded-lg bg-brand px-4 py-2 text-center text-sm font-semibold text-brand-foreground hover:bg-brand/85">
-                Edit Profile
-              </Link>
-              <Link href={`/profile/${user.id}/edit#password`} className="rounded-lg bg-white px-4 py-2 text-center text-sm font-semibold ring-1 ring-black/10 hover:bg-black/5">
-                Account Settings
-              </Link>
-            </div>
+            { isOwner && (
+              <div className="flex flex-col gap-2">
+                <Link href={`/profile/${user.id}/edit`} className="rounded-lg bg-brand px-4 py-1.5 text-center text-sm font-semibold text-brand-foreground hover:bg-brand/85">
+                  Edit Profile
+                </Link>
+                <Link href={`/profile/${user.id}/edit#password`} className="rounded-lg bg-white px-4 py-1.5 text-center text-sm font-semibold ring-1 ring-black/10 hover:bg-black/5">
+                  Account Settings
+                </Link>
+              </div>
+              )
+            }
+
           </section>
 
           {/* Contact card */}

@@ -11,6 +11,7 @@ export type User = {
   role: UserRole;
   organization: string | null;
   createdAt: string | null;
+  isOwner: Boolean;
 };
 
 /** httpOnly cookie holding the Flask JWT, so client JS can never read it. */

@@ -5,8 +5,8 @@ import { redirect, unstable_rethrow } from "next/navigation";
 import { authFetch, type User } from "@/lib/auth";
 
 export type ProfileState = {
-  values: { name: string; email: string; organization: string };
-  errors: Partial<Record<"name" | "email" | "organization", string>>;
+  values: { name: string; organization: string };
+  errors: Partial<Record<"name" | "organization", string>>;
   message?: string;
 };
 
@@ -19,27 +19,28 @@ export type PasswordState = {
 export async function updateProfile(_previous: ProfileState, formData: FormData): Promise<ProfileState> {
   const values = {
     name: String(formData.get("name") ?? "").trim(),
-    email: String(formData.get("email") ?? "").trim(),
     organization: String(formData.get("organization") ?? "").trim(),
   };
   const errors: ProfileState["errors"] = {};
   if (!values.name || values.name.length > 255) errors.name = "Enter 1 to 255 characters.";
-  if (values.email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errors.email = "Enter a valid email address.";
   if (values.organization.length > 150) errors.organization = "Use at most 150 characters.";
   if (Object.keys(errors).length) return { values, errors };
 
   let user: User;
   try {
-    const response = await authFetch("/user/current", {
-      method: "PATCH",
+    const response = await authFetch("/user/update/profile", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
     const body = await response.json();
     if (!response.ok) {
-      if ((response.status === 400 || response.status === 409) && typeof body.error === "string") {
-        if (["name", "email", "organization"].includes(body.field)) {
-          return { values, errors: { [body.field]: body.error } };
+      if ((response.status === 400)) {
+        if (["20", "21"].includes(body.errorCode)) {
+          let field: Partial<Record<"name" | "organization", string>> = {};
+          if (body.errorCode === "20") {field = {"name": body.error};};
+          if (body.errorCode === "21") {field = {"organization": body.error};};
+          return { values, errors: field };
         }
         return { values, errors: {}, message: body.error };
       }
@@ -66,8 +67,8 @@ export async function updatePassword(_previous: PasswordState, formData: FormDat
   if (Object.keys(errors).length) return { errors };
 
   try {
-    const response = await authFetch("/user/current/password", {
-      method: "PATCH",
+    const response = await authFetch("/user/update/password", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ currentPassword, newPassword }),
     });
