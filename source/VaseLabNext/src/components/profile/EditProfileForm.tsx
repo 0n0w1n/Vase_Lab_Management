@@ -25,7 +25,7 @@ function Field({ id, label, error, children }: {
 
 export default function EditProfileForm({ user }: { user: User }) {
   const initial: ProfileState = {
-    values: { name: user.name, email: user.email, organization: user.organization ?? "" }, errors: {},
+    values: { name: user.name, organization: user.organization ?? "" }, errors: {},
   };
   const [profile, profileAction, saving] = useActionState(updateProfile, initial);
   // Controlled profile fields preserve edits when a server action returns errors.
@@ -40,11 +40,10 @@ export default function EditProfileForm({ user }: { user: User }) {
           <fieldset disabled={saving} className="space-y-5 disabled:opacity-60">
             {([
               { id: "name", label: "Full name", max: 255, autoComplete: "name" },
-              { id: "email", label: "Email", max: 254, autoComplete: "email" },
               { id: "organization", label: "Organization (optional)", max: 150, autoComplete: "organization" },
             ] as const).map(({ id, label, max, autoComplete }) => (
               <Field key={id} id={id} label={label} error={profile.errors[id]}>
-                <input id={id} name={id} type={id === "email" ? "email" : "text"}
+                <input id={id} name={id} type={"text"}
                   required={id !== "organization"} maxLength={max} autoComplete={autoComplete}
                   value={values[id]} onChange={(event) => setValues({ ...values, [id]: event.target.value })}
                   className={inputClass} aria-invalid={!!profile.errors[id]}
