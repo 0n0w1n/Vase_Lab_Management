@@ -86,14 +86,13 @@ export default async function ProfilePage({ params }: Props) {
               </div>
             </div>
 
-            {/* TODO: wire these up — no edit or settings pages yet. */}
             <div className="flex flex-col gap-2">
-              <button type="button" className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-brand-foreground hover:bg-brand/85">
+              <Link href={`/profile/${user.id}/edit`} className="rounded-lg bg-brand px-4 py-2 text-center text-sm font-semibold text-brand-foreground hover:bg-brand/85">
                 Edit Profile
-              </button>
-              <button type="button" className="rounded-lg bg-white px-4 py-2 text-sm font-semibold ring-1 ring-black/10 hover:bg-black/5">
+              </Link>
+              <Link href={`/profile/${user.id}/edit#password`} className="rounded-lg bg-white px-4 py-2 text-center text-sm font-semibold ring-1 ring-black/10 hover:bg-black/5">
                 Account Settings
-              </button>
+              </Link>
             </div>
           </section>
 

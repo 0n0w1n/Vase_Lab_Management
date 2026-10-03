@@ -112,6 +112,8 @@ export default function AppSidebar({ user }: Props) {
           )}
           <Link
             href={`/profile/${user.id}`}
+            aria-label={`View ${user.name}'s profile`}
+            title={user.name}
             className={cn(
               "flex items-center gap-3 pb-5",
               collapsed && "justify-center"
@@ -120,7 +122,7 @@ export default function AppSidebar({ user }: Props) {
             <Image src="/TripleTAvatar.svg" alt="Profile" width={67} height={67} className="rounded-full" />
             {!collapsed && (
               <div className="min-w-0">
-                <p className="text-sm font-semibold">{user.role.replaceAll("_", " ").toUpperCase()}</p>
+                <p className="truncate text-sm font-semibold">{user.name}</p>
                 <p className="truncate text-sm text-sidebar-muted">
                   {user.email}
                 </p>
