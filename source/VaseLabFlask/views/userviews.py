@@ -93,8 +93,9 @@ def get_current():
 @user_api.get("/<int:user_id>")
 @jwt_required()
 def get_user(user_id: int):
-    if user_id != current_user.UserID: # Hugo : Added the detection of the current session
-        return {"errorCode": "10", "error": "Not found"}, 404
+    is_owner = False
+    if user_id == current_user.UserID: # Hugo : Added the detection of the current session
+        is_owner = True
 
     user: User = db.session.execute(db.select(User).where(User.UserID == user_id)).scalar()
     if user is None:
@@ -106,5 +107,6 @@ def get_user(user_id: int):
         "email": user.Email,
         "role": user.UserRole,
         "organization": user.UserOrganization,
-        "createdAt": user.CreatedAt.isoformat()+"Z" if user.CreatedAt else None
+        "createdAt": user.CreatedAt.isoformat()+"Z" if user.CreatedAt else None,
+        "isOwner": is_owner
     }
