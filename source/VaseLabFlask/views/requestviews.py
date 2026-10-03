@@ -3,6 +3,7 @@ from extensions import db
 from flask_jwt_extended import jwt_required, current_user
 from models import *
 from datetime import date, datetime
+from lib.requestUtils import verify_user_input
 
 request_api = Blueprint("request_api", __name__)
 
@@ -96,18 +97,12 @@ def create_request():
     userID = current_user.UserID
 
     user_input = request.get_json(silent=True)
-    if user_input is None:
-        return {"errorCode": "10", "error": "JSON unparseable"}, 400
-    if type(user_input) != dict:
-        return {"errorCode": "11", "error": "Not valid JSON"}, 400
-    user_input: dict
 
-    input_keys = user_input.keys()
-    for i, expected_key in enumerate(EXPECTED_KEYS):
-        if expected_key not in input_keys:
-            return {"errorCode": f"2{i}", "error": f"Key '{expected_key}' not found"}, 400
+    result = verify_user_input(user_input, EXPECTED_KEYS)
+    if result[1] != 200:
+        return result
 
-    title = user_input.get("title")
+    title = user_input["title"]
     if len(title) > TITLE_MAX:
         return {"errorCode": "30", "error": "Title is too long"}, 400
 
