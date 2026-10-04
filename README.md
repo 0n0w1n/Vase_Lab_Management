@@ -13,10 +13,13 @@
 
 🚧 **In Development**
 
-- Login on the web
-- Request ownership
-- Status change and assignment
-- Attachments and comments
+**Done in Iteration 3**
+- Web login wired to the JWT API
+- Requests are saved under, and filtered by, the signed-in user
+- Role check with an access denied page
+- Staff can view all requests and filter by status and priority
+- Profile page (view and edit name, password, and organisation)
+- App routing split into `(auth)` and `(main)`
 
 ## Project Structure
 
@@ -27,9 +30,9 @@
 │   └── GantChart/             # Project schedule / Gantt charts
 └── source/
     ├── docker-compose.yml     # Orchestrates node-app, flask-app, and mysql-db
-    ├── test-app-flask/        # Flask backend API
-    ├── test-app-next/         # Next.js frontend
-    └── vaselab-app-db/        # MySQL database service/config
+    ├── docker-compose.dev.yml # Development compose setup
+    ├── VaseLabFlask/          # Flask backend API
+    └── VaseLabNext/           # Next.js frontend
 ```
 
 ## Documents & Diagrams
@@ -37,5 +40,6 @@
 - Project proposal: [docs/SoftwareProposal.pdf](docs/SoftwareProposal.pdf)
 - Iteration 1 report: [docs/Iteration1_Report.pdf](docs/Iteration1_Report.pdf)
 - Iteration 2 report: [docs/Iteration2_Report.pdf](docs/Iteration2_Report.pdf)
+- Iteration 3 report: [docs/Iteration3_Report.pdf](docs/Iteration3_Report.pdf)
 - Gantt chart: [docs/GantChart/](docs/GantChart/)
 - Architecture / sequence / use case diagrams: [docs/Diagram/](docs/Diagram/)
