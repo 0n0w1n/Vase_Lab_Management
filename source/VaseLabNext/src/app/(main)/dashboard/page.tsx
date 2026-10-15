@@ -1,21 +1,28 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CalendarDays } from "lucide-react";
 import StatCard from "@/components/dashboard/StatCard";
 import BackgroundGlow from "@/components/layout/BackgroundGlow";
+import PriorityDot from "@/components/request/PriorityDot";
+import StatusPill from "@/components/request/StatusPill";
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboard } from "@/lib/dashboard";
 import { formatDate } from "@/lib/format";
+import type { DashboardRequest } from "@/types/dashboard";
+import { cn } from "cn";
 
 export const metadata = {
   title: "Operational Dashboard",
 };
+
+const rowColumns = "grid grid-cols-[minmax(0,1fr)_6rem_7rem_6rem_5.5rem_5.5rem] items-center gap-4 px-4";
 
 export default async function DashboardPage() {
   // Lab managers only
   const user = await getCurrentUser();
   if (user?.role !== "lab_manager") redirect("/request");
 
-  const { stats } = await getDashboard();
+  const { stats, requests } = await getDashboard();
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden px-8 py-14">
@@ -45,7 +52,18 @@ export default async function DashboardPage() {
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
           {/* Current table*/}
           <section className="min-h-96 rounded-3xl bg-white/60 p-4 ring-3 ring-black/10 backdrop-blur-xl">
-            <h2 className="text-xl font-bold">Current</h2>
+            <h2 className="pb-4 text-xl font-bold">Current</h2>
+
+            <div className="overflow-x-auto">
+              <div className="min-w-[48rem]">
+                <TableHeaderRow />
+                <ul className="flex flex-col gap-1 pt-2">
+                  {requests.map((request) => (
+                    <RequestRow key={request.id} request={request} />
+                  ))}
+                </ul>
+              </div>
+            </div>
           </section>
 
           {/* Awaiting Decisions + TA Workload*/}
@@ -56,5 +74,47 @@ export default async function DashboardPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function TableHeaderRow() {
+  return (
+    <div
+      className={cn(
+        rowColumns,
+        "rounded-lg bg-black/10 py-2.5 text-[0.6rem] font-bold tracking-wide"
+      )}
+    >
+      <span>REQUEST</span>
+      <span>REQUESTER</span>
+      <span>STATUS</span>
+      <span>OWNER</span>
+      <span>PRIORITY</span>
+      <span>TIME PASSED</span>
+    </div>
+  );
+}
+
+function RequestRow({ request }: { request: DashboardRequest }) {
+  return (
+    <li>
+      <Link
+        href={`/request/${request.id}`}
+        className={cn(
+          rowColumns,
+          "rounded-lg bg-white py-4 ring-1 ring-black/5 hover:ring-black/30"
+        )}
+      >
+        <div className="min-w-0">
+          <p className="text-sm font-bold text-[#4F46E5]">REQ-{request.id}</p>
+          <p className="truncate text-xs font-semibold">{request.title}</p>
+        </div>
+        <span className="truncate text-xs">{request.requestedBy}</span>
+        <StatusPill status={request.status} />
+        <span />
+        <PriorityDot priority={request.priority} />
+        <span />
+      </Link>
+    </li>
   );
 }
