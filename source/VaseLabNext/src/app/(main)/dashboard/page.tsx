@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { CalendarDays } from "lucide-react";
+import StatCard from "@/components/dashboard/StatCard";
 import BackgroundGlow from "@/components/layout/BackgroundGlow";
 import { getCurrentUser } from "@/lib/auth";
+import { getDashboard } from "@/lib/dashboard";
 import { formatDate } from "@/lib/format";
 
 export const metadata = {
@@ -13,11 +15,13 @@ export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (user?.role !== "lab_manager") redirect("/request");
 
+  const { stats } = await getDashboard();
+
   return (
     <div className="relative isolate min-h-screen overflow-hidden px-8 py-14">
       <BackgroundGlow />
 
-      <div className="mx-auto max-w-7xl">
+      <div className="relative mx-auto max-w-7xl">
         <header className="flex flex-wrap items-center justify-between gap-4 pb-6">
           <h1 className="text-4xl font-extrabold text-brand">Operational Dashboard</h1>
           <p className="flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold ring-1 ring-black/10">
@@ -28,9 +32,14 @@ export default async function DashboardPage() {
 
         {/* Stat cards*/}
         <div className="grid grid-cols-2 gap-4 pb-8 lg:grid-cols-4">
-          {["Total Active", "Pending Approval", "In Progress", "Completed"].map((label) => (
-            <div key={label} className="h-28 rounded-2xl bg-white/60 ring-1 ring-black/5" />
-          ))}
+          <StatCard label="Total Active Requests" value={stats.totalActive} />
+          <StatCard
+            label="Pending Approval"
+            value={stats.pendingApproval}
+            alert={stats.pendingApproval > 0 ? "Action Required" : undefined}
+          />
+          <StatCard label="In Progress" value={stats.inProgress} />
+          <StatCard label="Completed This Month" value={stats.completedThisMonth} />
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
