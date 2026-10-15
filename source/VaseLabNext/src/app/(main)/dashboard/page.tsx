@@ -62,6 +62,11 @@ export default async function DashboardPage() {
                     <RequestRow key={request.id} request={request} />
                   ))}
                 </ul>
+                {requests.length === 0 && (
+                  <p className="py-10 text-center text-sm text-muted-foreground">
+                    No active requests.
+                  </p>
+                )}
               </div>
             </div>
           </section>
@@ -96,6 +101,8 @@ function TableHeaderRow() {
 }
 
 function RequestRow({ request }: { request: DashboardRequest }) {
+  const unassigned = !request.owner;
+
   return (
     <li>
       <Link
@@ -106,15 +113,31 @@ function RequestRow({ request }: { request: DashboardRequest }) {
         )}
       >
         <div className="min-w-0">
-          <p className="text-sm font-bold text-[#4F46E5]">REQ-{request.id}</p>
+          <p className="flex items-center gap-2">
+            <span className="text-sm font-bold text-[#4F46E5]">REQ-{request.id}</span>
+            {request.isEquipment && (
+              <span className="rounded bg-black/5 px-1.5 py-0.5 text-[0.6rem] font-medium text-muted-foreground">
+                Equipment
+              </span>
+            )}
+          </p>
           <p className="truncate text-xs font-semibold">{request.title}</p>
         </div>
         <span className="truncate text-xs">{request.requestedBy}</span>
         <StatusPill status={request.status} />
-        <span />
+        <span className={cn("text-sm", unassigned && "font-semibold text-red-600")}>
+          {request.owner ?? "Unassigned"}
+        </span>
         <PriorityDot priority={request.priority} />
-        <span />
+        <span className={cn("text-sm", unassigned && "font-semibold text-red-600")}>
+          {timePassed(request.createdAt)}
+        </span>
       </Link>
     </li>
   );
+}
+
+function timePassed(iso: string): string {
+  const hours = Math.floor((Date.now() - new Date(iso).getTime()) / 3_600_000);
+  return `${Math.floor(hours / 24)} d ${hours % 24} h`;
 }
