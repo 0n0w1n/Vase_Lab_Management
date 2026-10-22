@@ -51,6 +51,8 @@ export type LabRequest = RequestSummary & {
   submittedAt: string | null;
   details: string;
   files: Attachment[];
+  /** Not sent by GET /request/details yet, so it shows "Unassigned" until it is */
+  assignedTo?: string | null;
 };
 
 /** What the New Request form submits the server fills in everything else */
