@@ -6,7 +6,7 @@ import { getRequest } from "@/lib/requests";
 
 type Props = {
   children: React.ReactNode;
-  params: Promise<{ ProfileId: string }>;
+  params: Promise<{ profileId: string }>;
 };
 
 /**
@@ -15,7 +15,7 @@ type Props = {
  * navigating between Detail / Activity History / Message Log.
  */
 export default async function RequestDetailLayout({ children, params }: Props) {
-  const { ProfileId } = await params;
+  const { profileId } = await params;
 
 
   return (

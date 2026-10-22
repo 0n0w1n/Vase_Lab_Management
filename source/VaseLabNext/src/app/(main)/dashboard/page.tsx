@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, ChevronRight } from "lucide-react";
+import DecisionButtons from "@/components/dashboard/DecisionButtons";
 import StatCard from "@/components/dashboard/StatCard";
 import BackgroundGlow from "@/components/layout/BackgroundGlow";
 import PriorityDot from "@/components/request/PriorityDot";
 import StatusPill from "@/components/request/StatusPill";
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboard } from "@/lib/dashboard";
-import { formatDate } from "@/lib/format";
+import { getDecisions } from "@/lib/decisions";
+import { formatDate, timeAgo, timePassed } from "@/lib/format";
 import type { DashboardRequest } from "@/types/dashboard";
 import { cn } from "cn";
 
@@ -23,6 +25,9 @@ export default async function DashboardPage() {
   if (user?.role !== "lab_manager") redirect("/request");
 
   const { stats, requests } = await getDashboard();
+  // Pending Approval = TA asks still waiting, same data as /dashboard/decisions
+  const waitingAsks = (await getDecisions()).filter((ask) => ask.state === "waiting");
+  const pendingApproval = waitingAsks.length;
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden px-8 py-14">
@@ -40,11 +45,13 @@ export default async function DashboardPage() {
         {/* Stat cards*/}
         <div className="grid grid-cols-2 gap-4 pb-8 lg:grid-cols-4">
           <StatCard label="Total Active Requests" value={stats.totalActive} />
-          <StatCard
-            label="Pending Approval"
-            value={stats.pendingApproval}
-            alert={stats.pendingApproval > 0 ? "Action Required" : undefined}
-          />
+          <Link href="/dashboard/decisions" className="rounded-2xl transition-shadow hover:shadow-md">
+            <StatCard
+              label="Pending Approval"
+              value={pendingApproval}
+              alert={pendingApproval > 0 ? "Action Required" : undefined}
+            />
+          </Link>
           <StatCard label="In Progress" value={stats.inProgress} />
           <StatCard label="Completed This Month" value={stats.completedThisMonth} />
         </div>
@@ -73,7 +80,40 @@ export default async function DashboardPage() {
 
           {/* Awaiting Decisions + TA Workload*/}
           <div className="flex flex-col gap-6">
-            <section className="h-64 rounded-3xl bg-white/60 ring-3 ring-black/10 backdrop-blur-xl" />
+            <section className="rounded-3xl bg-white/60 p-4 ring-3 ring-black/10 backdrop-blur-xl">
+              <header className="flex items-center justify-between gap-2">
+                <h2 className="text-sm font-bold tracking-wide">AWAITING DECISIONS</h2>
+                <Link
+                  href="/dashboard/decisions"
+                  className="flex items-center gap-1 rounded-lg bg-sidebar px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-sidebar/85"
+                >
+                  View all
+                  <ChevronRight className="size-3.5" />
+                </Link>
+              </header>
+
+              {/* Newest two only; View all has the rest */}
+              <ul className="flex flex-col gap-3 pt-4">
+                {waitingAsks.slice(0, 2).map((ask) => (
+                  <li key={ask.id} className="rounded-2xl bg-white p-4 ring-1 ring-black/5">
+                    <p className="text-sm font-semibold">
+                      {ask.ta.name} wants{" "}
+                      <Link href={`/request/${ask.request.id}`} className="font-bold text-[#4F46E5] hover:underline">
+                        REQ-{ask.request.id}
+                      </Link>
+                    </p>
+                    <p className="truncate pt-0.5 text-xs text-muted-foreground">{ask.request.title}</p>
+                    <p className="text-xs text-muted-foreground">asked {timeAgo(ask.askedAt)}</p>
+                    <div className="pt-3">
+                      <DecisionButtons askId={ask.id} full={ask.request.assignedCount >= ask.request.capacity} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              {waitingAsks.length === 0 && (
+                <p className="py-8 text-center text-sm text-muted-foreground">No TA requests waiting.</p>
+              )}
+            </section>
             <section className="h-48 rounded-3xl bg-white/60 ring-3 ring-black/10 backdrop-blur-xl" />
           </div>
         </div>
@@ -135,9 +175,4 @@ function RequestRow({ request }: { request: DashboardRequest }) {
       </Link>
     </li>
   );
-}
-
-function timePassed(iso: string): string {
-  const hours = Math.floor((Date.now() - new Date(iso).getTime()) / 3_600_000);
-  return `${Math.floor(hours / 24)} d ${hours % 24} h`;
 }
