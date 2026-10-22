@@ -117,3 +117,22 @@ class ActivityLog(db.Model):
     OldValue = db.Column(db.JSON)
     NewValue = db.Column(db.JSON)
     CreatedAt = db.Column(db.DateTime, server_default=db.func.now())
+
+class RequestAssignment(db.Model):
+    __tablename__ = "RequestAssignment"
+
+    RequestID = db.Column(
+        db.Integer, db.ForeignKey("Request.RequestID"), primary_key=True
+    )
+    UserID = db.Column(
+        db.Integer, db.ForeignKey("Users.UserID"), primary_key=True
+    )
+    Message = db.Column(db.Text)
+    State = db.Column(
+        db.Enum("Refused", "Approved", name="assignment_state"),
+        nullable=False,
+    )
+    DecidedAt = db.Column(db.DateTime, server_default=db.func.now())
+    UpdatedAt = db.Column(
+        db.DateTime, server_default=db.func.now(), onupdate=datetime.utcnow
+    )
