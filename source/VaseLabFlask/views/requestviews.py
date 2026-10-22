@@ -1,5 +1,4 @@
 from flask import Blueprint, request
-from sqlalchemy import and_, or_
 from extensions import db
 from flask_jwt_extended import jwt_required, current_user
 from models import *
@@ -11,29 +10,20 @@ request_api = Blueprint("request_api", __name__)
 current_user: User
 STAFF = {"admin", "lab_manager", "lab_ta"}
 
-def get_accessible_request(request_id: int):
+def verify_request(request_id: int, user: User):
     query = (
-        db.select(Request, User)
-        .join(User, Request.UserID == User.UserID)
+        db.select(Request.RequestID)
         .where(Request.RequestID == request_id)
     )
-    data: tuple[Request, User] = db.session.execute(query).first()
+    if user.UserRole not in STAFF:
+        query = query.where(Request.UserID == user.UserID)
+    data = db.session.execute(query).first()
 
+    # both request not found and unauthorized returns 404
     if data is None:
-        return None, ({"errorCode": "10", "error": "Not found"}, 404)
+        return {"errorCode": "10", "error": "Not found"}, 404
 
-    req = data[0]
-    if current_user.UserRole not in STAFF and req.UserID != current_user.UserID:
-        return None, ({"errorCode": "11", "error": "Unauthorized"}, 403)
-
-    return data, None
-
-def person(user: User):
-    parts = user.UserFullName.split()[:2]
-    return {
-        "name": user.UserFullName,
-        "initials": "".join(part[0] for part in parts).upper(),
-    }
+    return {"errorCode": "0", "error": "None"}, 200
 
 @request_api.get("/list")
 @jwt_required()
@@ -58,6 +48,60 @@ def get_requests_list():
             "priority": req.RequestPriority,
             "deadline": req.RequestDeadline.date().isoformat() if req.RequestDeadline else None,
             "requestedBy": requester.UserFullName,
+            "requesterID": requester.UserID
+        })
+
+    return result
+
+@request_api.get("/details/<int:request_id>")
+@jwt_required()
+def get_request_details(request_id: int):
+
+    result = verify_request(request_id, current_user)
+    if result[1] != 200:
+        return result
+
+    req, user = db.session.execute(
+        db.select(Request, User)
+        .join(User, Request.UserID == User.UserID)
+        .where(Request.RequestID == request_id)
+    ).first()
+    req: Request
+    user: User
+
+    files = db.session.execute(
+        db.select(File).where(File.RequestID == request_id).order_by(File.CreatedAt)
+    ).all()
+
+    submissionTime = db.session.execute(
+        db.select(ActivityLog.CreatedAt)
+            .where(
+                (ActivityLog.EntityType == "request")
+                & (ActivityLog.EntityID == request_id)
+                & (ActivityLog.Action == "create")
+            )
+    ).scalar()
+    submissionTime: datetime
+
+    result = {
+        "id": str(req.RequestID),
+        "title": req.RequestTitle,
+        "details": req.RequestDetails,
+        "status": req.RequestState,
+        "priority": req.RequestPriority,
+        "deadline": req.RequestDeadline.date().isoformat(),
+        "requestedBy": user.UserFullName,
+        "requestedID": user.UserID,
+        "submittedAt": submissionTime.isoformat()+"Z" if submissionTime else None,
+        "files": []
+    }
+    for file in files:
+        createdAt = file.CreatedAt.isoformat()+"Z" if file.CreatedAt else None
+        result["files"].append({
+            "id": file.FileID,
+            "name": file.FileName,
+            "bytes": file.FileSize or "Unknown",
+            "uploadedAt": createdAt
         })
 
     return result
@@ -102,7 +146,7 @@ def create_request():
         RequestTitle=title,
         RequestDetails=details,
         RequestPriority=priority,
-        RequestDeadline=deadline.date().isoformat(),
+        RequestDeadline=deadline.date().isoformat()+"Z",
         UserID=userID
     )
     db.session.add(req)
@@ -118,7 +162,7 @@ def create_request():
             "RequestTitle": req.RequestTitle,
             "RequestState": req.RequestState,
             "RequestPriority": req.RequestPriority,
-            "RequestDeadline": deadline.date().isoformat(),
+            "RequestDeadline": deadline.date().isoformat()+"Z",
         }
     )
 
@@ -126,58 +170,13 @@ def create_request():
     db.session.commit()
     return {"id": reqID}, 201
 
-@request_api.get("/details/<int:request_id>")
+@request_api.get("/comments/<int:request_id>")
 @jwt_required()
-def get_request_details(request_id: int):
+def get_request_comments(request_id: int):
 
-    data, error = get_accessible_request(request_id)
-    if error:
-        return error
-    req, user = data
-
-    files = db.session.execute(
-        db.select(File).where(File.RequestID == request_id).order_by(File.CreatedAt)
-    ).all()
-
-    submissionTime = db.session.execute(
-        db.select(ActivityLog.CreatedAt)\
-        .where(
-            ActivityLog.EntityType == "request",
-            ActivityLog.EntityID == request_id,
-            ActivityLog.Action == "create",
-        )
-    ).scalar()
-    submissionTime: datetime
-
-    result = {
-        "id": str(req.RequestID),
-        "title": req.RequestTitle,
-        "details": req.RequestDetails,
-        "status": req.RequestState,
-        "priority": req.RequestPriority,
-        "deadline": req.RequestDeadline.date().isoformat(),
-        "requestedBy": user.UserFullName,
-        "submittedAt": submissionTime.isoformat()+"Z" if submissionTime else None,
-        "files": []
-    }
-    for file in files:
-        createdAt = file.CreatedAt.isoformat()+"Z" if file.CreatedAt else None
-        result["files"].append({
-            "id": file.FileID,
-            "name": file.FileName,
-            "bytes": file.FileSize or "Unknown",
-            "uploadedAt": createdAt
-        })
-
-    return result
-
-@request_api.get("/messages/<int:request_id>")
-@jwt_required()
-def get_request_messages(request_id: int):
-
-    _, error = get_accessible_request(request_id)
-    if error:
-        return error
+    result = verify_request(request_id, current_user)
+    if result[1] != 200:
+        return result
 
     query = (
         db.select(Comment, User)
@@ -189,26 +188,29 @@ def get_request_messages(request_id: int):
 
     result = []
     for comment, author in comments:
+        comment: Comment
+        author: User
         result.append({
             "id": str(comment.CommentID),
-            "author": person(author),
+            "author": author.UserFullName,
+            "authorID": author.UserID,
             "at": comment.CreatedAt.isoformat()+"Z" if comment.CreatedAt else None,
             "body": comment.CommentText,
         })
 
     return result
 
-@request_api.post("/messages/<int:request_id>")
+@request_api.post("/comments/<int:request_id>")
 @jwt_required()
-def create_request_messages(request_id: int):
+def create_request_comments(request_id: int):
 
-    _, error = get_accessible_request(request_id)
-    if error:
-        return error
+    result = verify_request(request_id, current_user)
+    if result[1] != 200:
+        return result
 
     MESSAGE_MAX = 2000
     userID = current_user.UserID
-    EXPECTED_KEYS = ["body"]
+    EXPECTED_KEYS = ["text"]
 
     user_input = request.get_json(silent=True)
 
@@ -216,7 +218,7 @@ def create_request_messages(request_id: int):
     if result[1] != 200:
         return result
 
-    body = user_input["body"]
+    body = user_input["text"]
     if type(body) != str or not body.strip():
         return {"errorCode": "30", "error": "Message is empty"}, 400
     body = body.strip()
@@ -242,34 +244,32 @@ def create_request_messages(request_id: int):
     db.session.commit()
     return {
         "id": str(comment.CommentID),
-        "author": person(current_user),
+        "author": current_user.UserFullName,
+        "authorID": current_user.UserID,
         "at": comment.CreatedAt.isoformat()+"Z" if comment.CreatedAt else None,
         "body": comment.CommentText,
     }, 201
 
-# (Action, EntityType) -> what the activity history says the user did
-ACTIVITY_MESSAGES = {
-    ("create", "request"): "created the request",
-    ("create", "comment"): "posted a message",
-}
-
-@request_api.get("/activity/<int:request_id>")
+# Given the current headache its been, we may have to rework activity log
+'''
+@request_api.get("/<int:request_id>/activity")
 @jwt_required()
 def get_request_activity(request_id: int):
 
-    _, error = get_accessible_request(request_id)
-    if error:
-        return error
+    result = verify_request(request_id, current_user)
+    if result[1] != 200:
+        return result
 
     # Comment logs point at the comment, so they are matched through the request's comments
-    comment_ids = db.select(Comment.CommentID).where(Comment.RequestID == request_id)
+    comments = db.select(Comment.CommentID, Comment.CommentText).where(Comment.RequestID == request_id)
+    comments = dict(zip(comments))
 
     query = (
         db.select(ActivityLog, User)
         .join(User, ActivityLog.UserID == User.UserID)
-        .where(or_(
-            and_(ActivityLog.EntityType == "request", ActivityLog.EntityID == request_id),
-            and_(ActivityLog.EntityType == "comment", ActivityLog.EntityID.in_(comment_ids)),
+        .where(
+            ((ActivityLog.EntityType == "request") & (ActivityLog.EntityID == request_id))
+            | ((ActivityLog.EntityType == "comment") & (ActivityLog.EntityID.in_(comments.keys())),
         ))
         .order_by(ActivityLog.CreatedAt, ActivityLog.LogID)
     )
@@ -277,14 +277,25 @@ def get_request_activity(request_id: int):
 
     result = []
     for log, actor in logs:
-        message = ACTIVITY_MESSAGES.get(
-            (log.Action, log.EntityType), f"{log.Action}d the {log.EntityType}"
-        )
-        result.append({
-            "id": str(log.LogID),
-            "actor": person(actor),
-            "at": log.CreatedAt.isoformat()+"Z" if log.CreatedAt else None,
-            "message": message,
-        })
+        log: ActivityLog
+        actor: User
+        record = {
+                "id": str(log.LogID),
+                "type": log.EntityType,
+                "action": log.Action,
+                "actor": actor.UserFullName,
+                "actorID": actor.UserID,
+                "time": log.CreatedAt.isoformat()+"Z" if log.CreatedAt else None,
+            }
+        if log.EntityType == "comment" and log.Action == "create":
+            record["message"] = comments[log.EntityID]
+        elif log.EntityType == "request" and log.Action == "update":
+            record["message"] = log.NewValue
+        elif log.EntityType == "request" and log.Action == "create":
+            record["message"] = None
+        else:
+            record["message"] = None
+        result.append(record)
 
     return result
+'''
