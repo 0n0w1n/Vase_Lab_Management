@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from models import Request, User, Equipment
 from .base import get_or_create, get_one, dt
 
@@ -65,5 +67,8 @@ def run():
         )
         # Refresh existing demo requests too when this seeder is rerun.
         request.Capacity = capacity
+        # A seeded closed request needs a completion timestamp for dashboard stats.
+        if state == "close" and request.CompletedAt is None:
+            request.CompletedAt = datetime.utcnow()
         created += new
     return created
