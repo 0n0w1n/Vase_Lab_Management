@@ -48,3 +48,12 @@ def get_equipment_list():
     ).all()
     borrows = _active_borrows()
     return [_serialize(item, borrows.get(item.EquipmentID)) for item in equipment]
+
+@equipment_api.get("/details/<int:equipment_id>")
+@jwt_required()
+def get_equipment_details(equipment_id: int):
+    equipment = db.session.get(Equipment, equipment_id)
+    if equipment is None:
+        return {"errorCode": "10", "error": "Not found"}, 404
+    borrows = _active_borrows(Request.EquipmentID == equipment_id)
+    return _serialize(equipment, borrows.get(equipment_id))
