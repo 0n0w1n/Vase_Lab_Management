@@ -1,18 +1,18 @@
 FROM python:3
 
-WORKDIR /usr/src/app
-
-
-ENV FLASK_APP=main:create_app
 RUN groupadd -r python && useradd --no-log-init -r -g python python
+RUN mkdir --parents /venv /home/python /usr/src/app
+RUN chown -R python:python /venv /home/python /usr/src/app
 
-COPY . .
-# do pip install when building
-RUN python3 -m venv /venv
+USER python
 ENV PATH="/venv/bin:$PATH"
-RUN pip install --no-cache-dir --root-user-action ignore -r requirements.txt
+ENV FLASK_APP=main:create_app
 
-RUN chown -R python:python /usr/src/app
-RUN chown -R python:python /venv
+RUN python3 -m venv /venv
+COPY requirements.txt /venv
+RUN pip install -r /venv/requirements.txt
+
+WORKDIR /usr/src/app
+COPY --chown=python . .
 
 EXPOSE 8000
