@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from models import Request, RequestAssignment, User
-from .base import get_one, get_or_create
+from .base import get_one, get_or_create, delete_table
 
 # (request title, TA email, state, message)
 ROWS = [
@@ -28,6 +28,7 @@ ROWS = [
 
 def run():
     created = 0
+    delete_table(RequestAssignment)
     for request_title, email, state, message in ROWS:
         request = get_one(Request, RequestTitle=request_title)
         user = get_one(User, Email=email)

@@ -2,7 +2,6 @@ services:
   node-app:
     command: ["npm", "run", "dev"]
 
-    environment:
     develop:
       watch:
         - action: sync
