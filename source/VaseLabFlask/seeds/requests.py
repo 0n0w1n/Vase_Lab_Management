@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from models import Request, User, Equipment
-from .base import get_or_create, get_one, dt
+from .base import get_or_create, get_one, dt, delete_table
 
 # RequestState: pending | in-progress | review | close | reject
 ROWS = [
@@ -50,6 +50,7 @@ ROWS = [
 
 def run():
     created = 0
+    delete_table(Request)
     for title, email, equipment_name, state, priority, deadline, capacity, approved_by, details in ROWS:
         user = get_one(User, Email=email)
         equipment = get_one(Equipment, EquipmentName=equipment_name)
