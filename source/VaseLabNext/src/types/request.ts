@@ -1,3 +1,5 @@
+import type { AskState } from "@/types/decision";
+
 /** Mirrors RequestState in the Flask model */
 export const REQUEST_STATUSES = [
   "pending",
@@ -51,8 +53,13 @@ export type LabRequest = RequestSummary & {
   submittedAt: string | null;
   details: string;
   files: Attachment[];
-  /** Not sent by GET /request/details yet, so it shows "Unassigned" until it is */
-  assignedTo?: string | null;
+  /** how many TAs the lab manager allows on it */
+  capacity: number;
+  assignedCount: number;
+  /** names of the approved TAs */
+  assignees: string[];
+  /** the signed-in TA's own ask, null when they haven't asked */
+  myAsk: AskState | null;
 };
 
 /** What the New Request form submits the server fills in everything else */

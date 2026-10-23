@@ -2,7 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import RequestTabs from "@/components/request/RequestTabs";
 import StatusBadge from "@/components/request/StatusBadge";
+import WorkOnButton from "@/components/request/WorkOnButton";
+import { getCurrentUser } from "@/lib/auth";
 import { getRequest } from "@/lib/requests";
+import type { LabRequest } from "@/types/request";
+import { cn } from "cn";
 
 type Props = {
   children: React.ReactNode;
@@ -19,6 +23,8 @@ export default async function RequestDetailLayout({ children, params }: Props) {
   const request = await getRequest(requestId);
 
   if (!request) notFound();
+
+  const user = await getCurrentUser();
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden py-12">
@@ -44,7 +50,10 @@ export default async function RequestDetailLayout({ children, params }: Props) {
             <h2 className="font-heading text-2xl font-bold text-[#44607F]">
               Request #{request.id}
             </h2>
-            <StatusBadge status={request.status} />
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              {user?.role === "lab_ta" && <WorkOnStatus request={request} />}
+              <StatusBadge status={request.status} />
+            </div>
           </header>
 
           <RequestTabs requestId={request.id} />
@@ -53,6 +62,30 @@ export default async function RequestDetailLayout({ children, params }: Props) {
         </section>
       </div>
     </div>
+  );
+}
+
+const ASK_CHIPS = {
+  waiting: { label: "Asked · waiting", className: "text-muted-foreground ring-surface-border" },
+  approved: { label: "You're on this", className: "text-emerald-700 ring-emerald-500" },
+  declined: { label: "Declined", className: "text-red-700 ring-red-400" },
+};
+
+/** TA only: the Work on button, or where their ask stands once they've sent one. */
+function WorkOnStatus({ request }: { request: LabRequest }) {
+  if (request.status === "close" || request.status === "reject") return null;
+
+  const chip = request.myAsk
+    ? ASK_CHIPS[request.myAsk]
+    : request.assignedCount >= request.capacity
+      ? { label: "Full", className: "text-muted-foreground ring-surface-border" }
+      : null;
+
+  if (!chip) return <WorkOnButton requestId={request.id} />;
+  return (
+    <span className={cn("rounded-full bg-background px-4 py-1.5 text-sm font-semibold ring-1", chip.className)}>
+      {chip.label}
+    </span>
   );
 }
 

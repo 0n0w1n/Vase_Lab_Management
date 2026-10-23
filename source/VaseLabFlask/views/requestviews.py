@@ -1,9 +1,11 @@
 from flask import Blueprint, request
+from sqlalchemy import func
 from extensions import db
 from flask_jwt_extended import jwt_required, current_user
 from models import *
 from datetime import date, datetime
 from lib.requestUtils import verify_user_input
+from views.dashboardviews import ASSIGNMENT_STATES
 
 request_api = Blueprint("request_api", __name__)
 
@@ -54,15 +56,15 @@ def get_request_details(request_id: int):
         db.select(File).where(File.RequestID == request_id).order_by(File.CreatedAt)
     ).all()
 
-    submissionTime = db.session.execute(
-        db.select(ActivityLog.CreatedAt)\
-        .where(
-            ActivityLog.EntityType == "request"\
-            and request_id == ActivityLog.EntityID\
-            and ActivityLog.Action == "create"
-        )
-    ).scalar()
-    submissionTime: datetime
+    assignments: list[tuple[RequestAssignment, User]] = db.session.execute(
+        db.select(RequestAssignment, User)
+        .join(User, RequestAssignment.UserID == User.UserID)
+        .where(RequestAssignment.RequestID == request_id)
+        .order_by(RequestAssignment.DecidedAt)
+    ).all()
+    assignees = [ta.UserFullName for assignment, ta in assignments if assignment.State == "Approved"]
+    # The signed-in TA's own ask, so the page can show Work on / Waiting / Approved / Declined
+    my_state = next((assignment.State for assignment, _ in assignments if assignment.UserID == current_user.UserID), None)
 
     result = {
         "id": str(req.RequestID),
@@ -72,7 +74,11 @@ def get_request_details(request_id: int):
         "priority": req.RequestPriority,
         "deadline": req.RequestDeadline.date().isoformat(),
         "requestedBy": user.UserFullName,
-        "submittedAt": submissionTime.isoformat()+"Z" if submissionTime else None,
+        "submittedAt": req.CreatedAt.isoformat()+"Z" if req.CreatedAt else None,
+        "capacity": req.Capacity,
+        "assignedCount": len(assignees),
+        "assignees": assignees,
+        "myAsk": ASSIGNMENT_STATES.get(my_state),
         "files": []
     }
     for file in files:
@@ -149,3 +155,104 @@ def create_request():
     db.session.add(log)
     db.session.commit()
     return {"id": reqID}, 201
+
+@request_api.post("/capacity/<int:request_id>")
+@jwt_required()
+def set_request_capacity(request_id: int):
+
+    EXPECTED_KEYS = ["capacity"]
+
+    if current_user.UserRole != "lab_manager":
+        return {"errorCode": "12", "error": "Unauthorized"}, 403
+
+    # Locked so an approval can't land between the count below and the save
+    req = db.session.execute(
+        db.select(Request).where(Request.RequestID == request_id).with_for_update()
+    ).scalar()
+    if req is None:
+        return {"errorCode": "13", "error": "Not found"}, 404
+
+    user_input = request.get_json(silent=True)
+
+    result = verify_user_input(user_input, EXPECTED_KEYS)
+    if result[1] != 200:
+        return result
+
+    capacity = user_input["capacity"]
+    if type(capacity) != int or capacity < 1:
+        return {"errorCode": "30", "error": "Capacity must be a whole number of at least 1"}, 400
+
+    approved = db.session.scalar(
+        db.select(func.count())
+        .select_from(RequestAssignment)
+        .where(RequestAssignment.RequestID == request_id, RequestAssignment.State == "Approved")
+    )
+    if capacity < approved:
+        return {"errorCode": "31", "error": "Capacity is below the number of approved TAs"}, 400
+
+    if capacity != req.Capacity:
+        db.session.add(ActivityLog(
+            UserID=current_user.UserID,
+            Action="update",
+            EntityType="request",
+            EntityID=request_id,
+            OldValue={"Capacity": req.Capacity},
+            NewValue={"Capacity": capacity},
+        ))
+        req.Capacity = capacity
+    db.session.commit()
+    return {"capacity": capacity}
+
+@request_api.post("/ask/<int:request_id>")
+@jwt_required()
+def ask_to_work(request_id: int):
+
+    MESSAGE_MAX = 1000
+    EXPECTED_KEYS = ["message"]
+
+    if current_user.UserRole != "lab_ta":
+        return {"errorCode": "12", "error": "Unauthorized"}, 403
+
+    req = db.session.get(Request, request_id)
+    if req is None:
+        return {"errorCode": "13", "error": "Not found"}, 404
+
+    user_input = request.get_json(silent=True)
+
+    result = verify_user_input(user_input, EXPECTED_KEYS)
+    if result[1] != 200:
+        return result
+
+    message = user_input["message"]
+    if type(message) != str or len(message) > MESSAGE_MAX:
+        return {"errorCode": "30", "error": "Message is too long"}, 400
+
+    if req.RequestState in ("close", "reject"):
+        return {"errorCode": "31", "error": "Request is no longer open"}, 400
+
+    # One ask per TA per request (the table's key), so a declined TA can't ask again
+    if db.session.get(RequestAssignment, (request_id, current_user.UserID)) is not None:
+        return {"errorCode": "32", "error": "Already asked"}, 400
+
+    approved = db.session.scalar(
+        db.select(func.count())
+        .select_from(RequestAssignment)
+        .where(RequestAssignment.RequestID == request_id, RequestAssignment.State == "Approved")
+    )
+    if approved >= req.Capacity:
+        return {"errorCode": "33", "error": "Request is full"}, 400
+
+    db.session.add(RequestAssignment(
+        RequestID=request_id,
+        UserID=current_user.UserID,
+        Message=message.strip() or None,
+    ))
+    db.session.add(ActivityLog(
+        UserID=current_user.UserID,
+        Action="update",
+        EntityType="request",
+        EntityID=request_id,
+        NewValue={"Assignment": {"UserID": current_user.UserID, "State": "Waiting"}},
+    ))
+    db.session.commit()
+    return {}, 201
