@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/format";
 import { formatEquipmentId, getEquipmentById, getEquipmentUsage } from "@/lib/equipment";
+import type { EquipmentUsage } from "@/types/equipment";
 
 type Props = {
   params: Promise<{ equipmentId: string }>;
@@ -42,21 +43,20 @@ export default async function EquipmentUsagePage({ params }: Props) {
               <span>DEADLINE</span>
             </div>
             <ul className="flex flex-col gap-1 pt-2">
-              {usage.map((entry) => (
-                <li key={entry.requestId}>
-                  <Link
-                    href={`/request/${entry.requestId}`}
-                    className={`${rowColumns} rounded-lg bg-white py-4 ring-1 ring-black/5 hover:ring-black/30 focus-visible:outline-2 focus-visible:outline-brand`}
-                  >
-                    <span className="text-sm font-bold text-brand">
-                      REQ-{String(entry.requestId).padStart(2, "0")}
-                    </span>
-                    <span className="truncate text-sm font-medium">{entry.requestedBy}</span>
-                    <span className="text-sm capitalize">{entry.status.replaceAll("_", " ").replaceAll("-", " ")}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {entry.deadline ? formatDate(entry.deadline) : "—"}
-                    </span>
-                  </Link>
+              {usage.map((entry, i) => (
+                <li key={entry.requestId ?? `hidden-${i}`}>
+                  {entry.requestId === null ? (
+                    <div className={`${rowColumns} rounded-lg bg-white py-4 ring-1 ring-black/5`}>
+                      <UsageCells entry={entry} />
+                    </div>
+                  ) : (
+                    <Link
+                      href={`/request/${entry.requestId}`}
+                      className={`${rowColumns} rounded-lg bg-white py-4 ring-1 ring-black/5 hover:ring-black/30 focus-visible:outline-2 focus-visible:outline-brand`}
+                    >
+                      <UsageCells entry={entry} />
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -65,5 +65,23 @@ export default async function EquipmentUsagePage({ params }: Props) {
       )}
       <span className="sr-only">History for {formatEquipmentId(equipment.id)}</span>
     </section>
+  );
+}
+
+// ID and status will be null if the viewer isnt staff
+function UsageCells({ entry }: { entry: EquipmentUsage }) {
+  return (
+    <>
+      <span className="text-sm font-bold text-brand">
+        {entry.requestId === null ? "—" : `REQ-${String(entry.requestId).padStart(2, "0")}`}
+      </span>
+      <span className="truncate text-sm font-medium">{entry.requestedBy}</span>
+      <span className="text-sm capitalize">
+        {entry.status ? entry.status.replaceAll("_", " ").replaceAll("-", " ") : "—"}
+      </span>
+      <span className="text-sm text-muted-foreground">
+        {entry.deadline ? formatDate(entry.deadline) : "—"}
+      </span>
+    </>
   );
 }
