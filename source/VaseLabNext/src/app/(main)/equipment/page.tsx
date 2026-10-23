@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { formatDate } from "@/lib/format";
-import { formatEquipmentId, getCurrentUser, getEquipment } from "@/lib/equipment";
+import { getCurrentUser } from "@/lib/auth";
+import { formatEquipmentId, getEquipment } from "@/lib/equipment";
 import { type Equipment, type EquipmentState } from "@/types/equipment";
 import BackgroundGlow from "@/components/layout/BackgroundGlow";
 import { cn } from "cn";
@@ -22,7 +23,7 @@ const rowColumns =
 
 export default async function EquipmentPage() {
   const [items, user] = await Promise.all([getEquipment(), getCurrentUser()]);
-  const isLabManager = user.role === "lab_manager";
+  const isLabManager = user?.role === "lab_manager";
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden py-14">
