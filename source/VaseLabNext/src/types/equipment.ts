@@ -3,20 +3,20 @@ export type EquipmentState = "available" | "in_use" | "maintenance" | "retired";
 export type Equipment = {
   id: number;
   name: string;
-  model: string;
-  type: string; // to be finalised
+  model: string | null;
   state: EquipmentState;
   currentUser: string | null; // only meaningful when state is "in_use"
   expectedReturn: string | null; // ISO date, only meaningful when state is "in_use"
   addedAt: string; // ISO date
-  description: string;
+  description: string | null;
 };
 
 // One request that borrowed this equipment.
+// ID and status will be null if viewer isnt staff
 export type EquipmentUsage = {
-  requestId: number;
+  requestId: number | null;
   requestedBy: string;
-  status: string; // swap for your request status type later
+  status: string | null;
   deadline: string | null;
 };
 

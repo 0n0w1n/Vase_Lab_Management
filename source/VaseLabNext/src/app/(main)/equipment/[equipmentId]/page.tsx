@@ -22,7 +22,6 @@ export default async function EquipmentDetailPage({ params }: Props) {
       <div className="grid items-start gap-4 md:grid-cols-2">
         <DetailField label="Name">{equipment.name}</DetailField>
         <DetailField label="Model">{equipment.model || <MutedDash />}</DetailField>
-        <DetailField label="Type">{equipment.type || <MutedDash />}</DetailField>
         <DetailField label="Current User">
           {inUse && equipment.currentUser ? equipment.currentUser : <MutedDash />}
         </DetailField>

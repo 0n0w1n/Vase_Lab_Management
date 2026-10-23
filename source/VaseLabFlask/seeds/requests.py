@@ -45,6 +45,17 @@ ROWS = [
         "pending", "medium", "2026-10-29", 2, None,
         "The cold room alarm has triggered twice overnight. The display reads 6°C against a 4°C setpoint.",
     ),
+    # Past borrows so equipment usage history has more than one row
+    (
+        "Confocal Imaging — Cell Culture Samples", "member@lab.local", "Confocal Microscope",
+        "close", "low", "2026-10-20", 1, "Jane Manager",
+        "Need two hours on the confocal microscope to image fixed cell culture samples.",
+    ),
+    (
+        "Centrifuge Calibration Check", "sarah.jenkins@lab.local", "Centrifuge - Lab 4B",
+        "close", "medium", "2026-10-18", 1, None,
+        "Routine speed calibration check before the maintenance window.",
+    ),
 ]
 
 

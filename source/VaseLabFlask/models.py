@@ -52,12 +52,7 @@ class Equipment(db.Model):
         nullable=False,
         default="available",
     )
-    EquipmentType: str = mapped_column(
-        db.Enum("Usable", "Unusable", name="equipment_type"),
-        nullable=False,
-    )
     EquipmentDescription: str | None = mapped_column(db.Text)
-    ReturnAt: str | None = mapped_column(db.String(140))
     CreatedAt: datetime | None = mapped_column(
         db.DateTime, server_default=db.func.now()
     )
