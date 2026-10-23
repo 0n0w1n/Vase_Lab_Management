@@ -8,6 +8,7 @@ from views.requestviews import request_api
 from views.authviews import auth_api
 from views.userviews import user_api
 from views.dashboardviews import dashboard_api
+from views.equipmentviews import equipment_api
 
 def create_app(test_config=None):
     # create and configure the app
@@ -39,6 +40,7 @@ def create_app(test_config=None):
     app.register_blueprint(auth_api, url_prefix="/auth")
     app.register_blueprint(user_api, url_prefix="/user")
     app.register_blueprint(dashboard_api, url_prefix="/dashboard")
+    app.register_blueprint(equipment_api, url_prefix="/equipment")
 
     seeds.init_app(app)
     return app
