@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from extensions import db
 from sqlalchemy import delete
 
@@ -19,3 +19,7 @@ def get_one(model, **lookup):
 
 def dt(value):
     return datetime.fromisoformat(value.replace("Z", ""))
+
+def days_from_now(days, hours=0):
+    """Relative to seeding time, so demo timestamps don't go stale. Negative = in the past."""
+    return datetime.utcnow() + timedelta(days=days, hours=hours)

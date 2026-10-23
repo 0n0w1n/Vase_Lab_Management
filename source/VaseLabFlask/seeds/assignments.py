@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from models import Request, RequestAssignment, User
-from .base import get_one, get_or_create, delete_table
+from .base import get_one, get_or_create, delete_table, days_from_now
 
 # (request title, TA email, state, message)
 ROWS = [
@@ -29,7 +29,7 @@ ROWS = [
 def run():
     created = 0
     delete_table(RequestAssignment)
-    for request_title, email, state, message in ROWS:
+    for i, (request_title, email, state, message) in enumerate(ROWS):
         request = get_one(Request, RequestTitle=request_title)
         user = get_one(User, Email=email)
         _, new = get_or_create(
@@ -37,6 +37,8 @@ def run():
             {"RequestID": request.RequestID, "UserID": user.UserID},
             State=state,
             Message=message,
+            # Staggered 1-3 days back so "asked ... ago" differs per ask
+            CreatedAt=days_from_now(-(i + 1)),
             DecidedAt=datetime.utcnow() if state != "Waiting" else None,
         )
         created += new

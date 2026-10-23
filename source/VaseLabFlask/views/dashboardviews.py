@@ -5,7 +5,7 @@ from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import func
 
 from extensions import db
-from models import Request, RequestAssignment, User
+from models import ActivityLog, Request, RequestAssignment, User
 
 dashboard_api = Blueprint("dashboard_api", __name__)
 
@@ -210,5 +210,22 @@ def decide_assignment(assignment_id: str, decision: str):
         assignment.State = "Refused"
 
     assignment.DecidedAt = datetime.utcnow()
+
+    old_value = {}
+    new_value = {"Assignment": {"UserID": assignment.UserID, "State": assignment.State}}
+    # AD-2: the first approved TA starts the work
+    if assignment.State == "Approved" and request_obj.RequestState == "pending":
+        old_value["RequestState"] = request_obj.RequestState
+        request_obj.RequestState = "in-progress"
+        new_value["RequestState"] = request_obj.RequestState
+
+    db.session.add(ActivityLog(
+        UserID=current_user.UserID,
+        Action="update",
+        EntityType="request",
+        EntityID=request_obj.RequestID,
+        OldValue=old_value or None,
+        NewValue=new_value,
+    ))
     db.session.commit()
     return {}
