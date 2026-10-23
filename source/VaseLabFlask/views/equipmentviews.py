@@ -2,11 +2,18 @@ from flask import Blueprint
 from flask_jwt_extended import current_user, jwt_required
 
 from extensions import db
-from models import Equipment, Request, User
-from views.dashboardviews import ACTIVE_STATES
+from models import ActivityLog, Equipment, Request, User
+from views.dashboardviews import ACTIVE_STATES, _iso
 from views.requestviews import STAFF
 
 equipment_api = Blueprint("equipment_api", __name__)
+
+FIELD_LABELS = {
+    "EquipmentName": "Name",
+    "EquipmentModel": "Model",
+    "EquipmentState": "State",
+    "EquipmentDescription": "Description",
+}
 
 def _date(value):
     return value.date().isoformat() if value else None
@@ -40,6 +47,21 @@ def _serialize(equipment: Equipment, borrow):
         "currentUser": requester.UserFullName if requester else None,
         "expectedReturn": _date(req.RequestDeadline) if req else None,
     }
+
+def _describe(log: ActivityLog):
+    if log.Action == "create":
+        return "Equipment added"
+    if log.Action == "delete":
+        return "Equipment removed"
+    old = log.OldValue or {}
+    changes = []
+    for field, new in (log.NewValue or {}).items():
+        label = FIELD_LABELS.get(field, field)
+        if field == "EquipmentState" and field in old:
+            changes.append(f"{label} changed from {old[field].replace('_', ' ')} to {new.replace('_', ' ')}")
+        else:
+            changes.append(f"{label} edited")
+    return ", ".join(changes) or "Equipment updated"
 
 @equipment_api.get("/list")
 @jwt_required()
@@ -84,3 +106,29 @@ def get_equipment_usage(equipment_id: int):
             "deadline": _date(req.RequestDeadline),
         })
     return result
+
+@equipment_api.get("/activity/<int:equipment_id>")
+@jwt_required()
+def get_equipment_activity(equipment_id: int):
+    if db.session.get(Equipment, equipment_id) is None:
+        return {"errorCode": "10", "error": "Not found"}, 404
+
+    rows = db.session.execute(
+        db.select(ActivityLog, User)
+        .join(User, ActivityLog.UserID == User.UserID)
+        .where(
+            ActivityLog.EntityType == "equipment",
+            ActivityLog.EntityID == equipment_id,
+        )
+        .order_by(ActivityLog.CreatedAt.desc(), ActivityLog.LogID.desc())
+    ).all()
+
+    return [
+        {
+            "id": log.LogID,
+            "action": _describe(log),
+            "by": actor.UserFullName,
+            "at": _iso(log.CreatedAt),
+        }
+        for log, actor in rows
+    ]
