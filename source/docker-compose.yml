@@ -37,11 +37,6 @@ services:
       - '3307:3306'
     networks:
       - db
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pabc"]
-      interval: 2s
-      timeout: 5s
-      retries: 10
 
 networks:
   backend:
