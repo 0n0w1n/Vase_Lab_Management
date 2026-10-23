@@ -1,7 +1,7 @@
 from extensions import db
-from . import users, equipment, requests, assignments
+from . import users, equipment, requests, assignments, equipment_activity
 
-SEEDERS = [users, equipment, requests, assignments]
+SEEDERS = [users, equipment, requests, assignments, equipment_activity]
 
 def init_app(app):
     @app.cli.command("seed")
