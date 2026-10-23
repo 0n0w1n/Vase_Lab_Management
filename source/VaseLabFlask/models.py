@@ -95,6 +95,10 @@ class Request(db.Model):
     Capacity: int = mapped_column(
         db.Integer, nullable=False, default=1, server_default="1"
     )
+    CreatedAt: datetime = mapped_column(
+        db.DateTime, nullable=False, server_default=db.func.now()
+    )
+    CompletedAt: datetime | None = mapped_column(db.DateTime, nullable=True)
 
     UserID: int = mapped_column(
         db.Integer, db.ForeignKey("Users.UserID"), nullable=False

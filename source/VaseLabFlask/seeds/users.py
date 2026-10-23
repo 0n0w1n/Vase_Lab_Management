@@ -1,5 +1,5 @@
 from models import User
-from .base import get_or_create
+from .base import get_or_create, delete_table
 from lib.authUtils import hash_password
 
 ROWS = [
@@ -16,6 +16,7 @@ ROWS = [
 
 def run():
     created = 0
+    delete_table(User)
     for email, name, role, org, password in ROWS:
         _, new = get_or_create(
             User, {"Email": email},

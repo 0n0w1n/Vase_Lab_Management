@@ -25,9 +25,9 @@ export default async function DashboardPage() {
   if (user?.role !== "lab_manager") redirect("/request");
 
   const { stats, requests } = await getDashboard();
-  // Pending Approval = TA asks still waiting, same data as /dashboard/decisions
+  // The decisions list feeds the preview; the dashboard API supplies the count.
   const waitingAsks = (await getDecisions()).filter((ask) => ask.state === "waiting");
-  const pendingApproval = waitingAsks.length;
+  const pendingApproval = stats.pendingApproval;
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden px-8 py-14">

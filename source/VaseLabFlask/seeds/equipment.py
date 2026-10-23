@@ -1,5 +1,5 @@
 from models import Equipment
-from .base import get_or_create
+from .base import get_or_create, delete_table
 
 ROWS = [
     # (name, model, type, state, description)
@@ -15,6 +15,7 @@ ROWS = [
 
 def run():
     created = 0
+    delete_table(Equipment)
     for name, model, type_, state, description in ROWS:
         _, new = get_or_create(
             Equipment, {"EquipmentName": name},
