@@ -141,11 +141,11 @@ def create_request():
     reqID = req.RequestID
 
     log = ActivityLog(
-        UserID=userID,
-        Action="create",
         EntityType="request",
         EntityID=req.RequestID,
-        NewValue={
+        Action="create",
+        fields={
+            "userID": userID,
             "RequestTitle": req.RequestTitle,
             "RequestState": req.RequestState,
             "RequestPriority": req.RequestPriority,
@@ -193,12 +193,13 @@ def set_request_capacity(request_id: int):
 
     if capacity != req.Capacity:
         db.session.add(ActivityLog(
-            UserID=current_user.UserID,
-            Action="update",
             EntityType="request",
             EntityID=request_id,
-            OldValue={"Capacity": req.Capacity},
-            NewValue={"Capacity": capacity},
+            Action="update-capacity",
+            fields={
+                "userID": current_user.UserID,
+                "Capacity": capacity,
+            },
         ))
         req.Capacity = capacity
     db.session.commit()
@@ -249,11 +250,12 @@ def ask_to_work(request_id: int):
         Message=message.strip() or None,
     ))
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
-        Action="update",
         EntityType="request",
         EntityID=request_id,
-        NewValue={"Assignment": {"UserID": current_user.UserID, "State": "Waiting"}},
+        Action="update-ask-assignment",
+        NewValue={
+            "userID": current_user.UserID,
+        },
     ))
     db.session.commit()
     return {}, 201

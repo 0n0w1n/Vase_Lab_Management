@@ -53,9 +53,9 @@ def _describe(log: ActivityLog):
         return "Equipment added"
     if log.Action == "delete":
         return "Equipment removed"
-    old = log.OldValue or {}
+    old = log.fields["old_value"] or {}
     changes = []
-    for field, new in (log.NewValue or {}).items():
+    for field, new in (log.fields["new_value"] or {}).items():
         label = FIELD_LABELS.get(field, field)
         if field == "EquipmentState" and field in old:
             changes.append(f"{label} changed from {old[field].replace('_', ' ')} to {new.replace('_', ' ')}")
@@ -115,7 +115,7 @@ def get_equipment_activity(equipment_id: int):
 
     rows = db.session.execute(
         db.select(ActivityLog, User)
-        .join(User, ActivityLog.UserID == User.UserID)
+        .join(User, ActivityLog.fields["userID"] == User.UserID)
         .where(
             ActivityLog.EntityType == "equipment",
             ActivityLog.EntityID == equipment_id,

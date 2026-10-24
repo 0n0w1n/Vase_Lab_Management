@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import Blueprint, request
 from flask_jwt_extended import current_user, jwt_required
@@ -32,7 +32,7 @@ def get_workload():
         .where(ActivityLog.EntityType == "request")
         .group_by(ActivityLog.EntityID)
     ).all())
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     month_start = datetime(now.year, now.month, 1)
     next_month = datetime(now.year + (now.month == 12), now.month % 12 + 1, 1)
     by_ta = {}
@@ -69,69 +69,70 @@ def get_workload():
     return sorted(result, key=lambda ta: -ta["openCount"])
 
 
-# Workload is derived from assignments; no separate workload table is needed.
-# POST assigns a TA, PATCH changes the assignment state, DELETE unassigns them.
-@workload_api.route("/<int:request_id>/<int:ta_id>", methods=["POST", "PATCH", "DELETE"])
-@jwt_required()
-def change_workload(request_id: int, ta_id: int):
-    if not is_manager():
-        return {"errorCode": "11", "error": "Unauthorized"}, 403
+##### Already implemented in other functions, commented out in case I missed something though
+# # Workload is derived from assignments; no separate workload table is needed.
+# # POST assigns a TA, PATCH changes the assignment state, DELETE unassigns them.
+# @workload_api.route("/<int:request_id>/<int:ta_id>", methods=["POST", "PATCH", "DELETE"])
+# @jwt_required()
+# def change_workload(request_id: int, ta_id: int):
+#     if not is_manager():
+#         return {"errorCode": "11", "error": "Unauthorized"}, 403
 
-    req = db.session.execute(
-        db.select(Request).where(Request.RequestID == request_id).with_for_update()
-    ).scalar_one_or_none()
-    ta = db.session.get(User, ta_id)
-    if req is None or ta is None or ta.UserRole != "lab_ta":
-        return {"errorCode": "10", "error": "Not found"}, 404
-    if req.RequestState not in ACTIVE_STATES:
-        return {"errorCode": "31", "error": "Request is no longer open"}, 409
+#     req = db.session.execute(
+#         db.select(Request).where(Request.RequestID == request_id).with_for_update()
+#     ).scalar_one_or_none()
+#     ta = db.session.get(User, ta_id)
+#     if req is None or ta is None or ta.UserRole != "lab_ta":
+#         return {"errorCode": "10", "error": "Not found"}, 404
+#     if req.RequestState not in ACTIVE_STATES:
+#         return {"errorCode": "31", "error": "Request is no longer open"}, 409
 
-    assignment = db.session.get(RequestAssignment, (request_id, ta_id))
-    if request.method == "POST" and assignment is not None:
-        return {"errorCode": "32", "error": "Already assigned or asked"}, 409
-    if request.method != "POST" and assignment is None:
-        return {"errorCode": "10", "error": "Not found"}, 404
+#     assignment = db.session.get(RequestAssignment, (request_id, ta_id))
+#     if request.method == "POST" and assignment is not None:
+#         return {"errorCode": "32", "error": "Already assigned or asked"}, 409
+#     if request.method != "POST" and assignment is None:
+#         return {"errorCode": "10", "error": "Not found"}, 404
 
-    state = "Approved"
-    if request.method == "PATCH":
-        payload = request.get_json(silent=True)
-        if not isinstance(payload, dict) or set(payload) != {"state"}:
-            return {"errorCode": "12", "error": "Expected state"}, 400
-        state = payload["state"]
-        if not isinstance(state, str) or state not in ("Waiting", "Approved", "Refused"):
-            return {"errorCode": "12", "error": "Invalid state"}, 400
+#     state = "Approved"
+#     if request.method == "PATCH":
+#         payload = request.get_json(silent=True)
+#         if not isinstance(payload, dict) or set(payload) != {"state"}:
+#             return {"errorCode": "12", "error": "Expected state"}, 400
+#         state = payload["state"]
+#         if not isinstance(state, str) or state not in ("Waiting", "Approved", "Refused"):
+#             return {"errorCode": "12", "error": "Invalid state"}, 400
 
-    if request.method != "DELETE" and state == "Approved" and (
-        assignment is None or assignment.State != "Approved"
-    ):
-        count = db.session.scalar(
-            db.select(func.count()).select_from(RequestAssignment).where(
-                RequestAssignment.RequestID == request_id,
-                RequestAssignment.State == "Approved",
-            )
-        )
-        if count >= req.Capacity:
-            return {"errorCode": "30", "error": "Request capacity reached"}, 409
+#     if request.method != "DELETE" and state == "Approved" and (
+#         assignment is None or assignment.State != "Approved"
+#     ):
+#         count = db.session.scalar(
+#             db.select(func.count()).select_from(RequestAssignment).where(
+#                 RequestAssignment.RequestID == request_id,
+#                 RequestAssignment.State == "Approved",
+#             )
+#         )
+#         if count >= req.Capacity:
+#             return {"errorCode": "30", "error": "Request capacity reached"}, 409
 
-    old_value = {"Assignment": {"UserID": ta_id, "State": assignment.State}} if assignment else None
-    new_value = {"Assignment": None}
-    if request.method == "DELETE":
-        db.session.delete(assignment)
-    else:
-        if assignment is None:
-            assignment = RequestAssignment(RequestID=request_id, UserID=ta_id)
-            db.session.add(assignment)
-        assignment.State = state
-        assignment.DecidedAt = None if state == "Waiting" else datetime.utcnow()
-        new_value = {"Assignment": {"UserID": ta_id, "State": state}}
-        if state == "Approved" and req.RequestState == "pending":
-            old_value = {**(old_value or {}), "RequestState": req.RequestState}
-            req.RequestState = "in-progress"
-            new_value["RequestState"] = req.RequestState
+#     old_value = {"Assignment": {"UserID": ta_id, "State": assignment.State}} if assignment else None
+#     new_value = {"Assignment": None}
+#     if request.method == "DELETE":
+#         db.session.delete(assignment)
+#     else:
+#         if assignment is None:
+#             assignment = RequestAssignment(RequestID=request_id, UserID=ta_id)
+#             db.session.add(assignment)
+#         assignment.State = state
+#         assignment.DecidedAt = None if state == "Waiting" else datetime.utcnow()
+#         new_value = {"Assignment": {"UserID": ta_id, "State": state}}
+#         if state == "Approved" and req.RequestState == "pending":
+#             old_value = {**(old_value or {}), "RequestState": req.RequestState}
+#             req.RequestState = "in-progress"
+#             new_value["RequestState"] = req.RequestState
 
-    db.session.add(ActivityLog(
-        UserID=current_user.UserID, Action="update", EntityType="request",
-        EntityID=request_id, OldValue=old_value, NewValue=new_value,
-    ))
-    db.session.commit()
-    return {}, 201 if request.method == "POST" else 200
+#     db.session.add(ActivityLog(
+#         UserID=current_user.UserID, Action="update", EntityType="request",
+#         EntityID=request_id, fields=new_value,
+#     ))
+#     db.session.commit()
+#     return {}, 201 if request.method == "POST" else 200

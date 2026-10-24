@@ -158,27 +158,16 @@ class ActivityLog(db.Model):
     __allow_unmapped__ = True
 
     LogID: int = mapped_column(db.Integer, primary_key=True)
-    UserID: int = mapped_column(
-        db.Integer, db.ForeignKey("Users.UserID"), nullable=False
-    )
-    Action: str = mapped_column(
-        db.Enum("create", "update", "delete", name="log_action"),
-        nullable=False,
-    )
     EntityType: str = mapped_column(
-        db.Enum(
-            "request",
-            "equipment",
-            "user",
-            "file",
-            "comment",
-            name="log_entity",
-        ),
+        db.Enum("request", "equipment", name="entity_type"),
         nullable=False,
     )
     EntityID: int = mapped_column(db.Integer, nullable=False, index=True)
-    OldValue: Any | None = mapped_column(db.JSON)
-    NewValue: Any | None = mapped_column(db.JSON)
+    Action: str = mapped_column(
+        db.String(100),
+        nullable=False,
+    )
+    fields: Any | None = mapped_column(db.JSON)
     CreatedAt: datetime | None = mapped_column(
         db.DateTime, server_default=db.func.now()
     )

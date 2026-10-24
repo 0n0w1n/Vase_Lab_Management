@@ -22,12 +22,14 @@ def run():
     # for when activity isnt write yet it will write more like init of activity history
     for equipment_name, email, action, old_value, new_value, days_ago in ROWS:
         db.session.add(ActivityLog(
-            UserID=get_one(User, Email=email).UserID,
-            Action=action,
             EntityType="equipment",
             EntityID=get_one(Equipment, EquipmentName=equipment_name).EquipmentID,
-            OldValue=old_value,
-            NewValue=new_value,
+            Action=action,
+            fields={
+                "userID": get_one(User, Email=email).UserID,
+                "old_value": old_value,
+                "new_value": new_value
+            },
             CreatedAt=days_from_now(-days_ago),
         ))
     return len(ROWS)

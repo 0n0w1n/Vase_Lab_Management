@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import Blueprint
 from flask_jwt_extended import current_user, jwt_required
@@ -196,23 +196,26 @@ def decide_assignment(assignment_id: str, decision: str):
     else:
         assignment.State = "Refused"
 
-    assignment.DecidedAt = datetime.utcnow()
-
-    old_value = {}
-    new_value = {"Assignment": {"UserID": assignment.UserID, "State": assignment.State}}
-    # AD-2: the first approved TA starts the work
-    if assignment.State == "Approved" and request_obj.RequestState == "pending":
-        old_value["RequestState"] = request_obj.RequestState
-        request_obj.RequestState = "in-progress"
-        new_value["RequestState"] = request_obj.RequestState
+    assignment.DecidedAt = datetime.now(timezone.utc)
 
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
-        Action="update",
         EntityType="request",
+        Action="update-decide-assignment",
         EntityID=request_obj.RequestID,
-        OldValue=old_value or None,
-        NewValue=new_value,
+        fields={
+            "userID": assignment.UserID,
+            "decision": assignment.State,
+        }
     ))
+    if assignment.State == "Approved" and request_obj.RequestState == "pending":
+        request_obj.RequestState = "in-progress"
+        db.session.add(ActivityLog(
+            EntityType="request",
+            Action="update-status",
+            EntityID=request_obj.RequestID,
+            fields={
+                "status": request_obj.RequestState
+            }
+        ))
     db.session.commit()
     return {}
