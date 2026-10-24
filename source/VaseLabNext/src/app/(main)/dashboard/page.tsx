@@ -3,12 +3,14 @@ import { redirect } from "next/navigation";
 import { CalendarDays, ChevronRight } from "lucide-react";
 import DecisionButtons from "@/components/dashboard/DecisionButtons";
 import StatCard from "@/components/dashboard/StatCard";
+import TaWorkload from "@/components/dashboard/TaWorkload";
 import BackgroundGlow from "@/components/layout/BackgroundGlow";
 import PriorityDot from "@/components/request/PriorityDot";
 import StatusPill from "@/components/request/StatusPill";
 import { getCurrentUser } from "@/lib/auth";
 import { getDashboard } from "@/lib/dashboard";
 import { getDecisions } from "@/lib/decisions";
+import { getWorkload } from "@/lib/workload";
 import { formatDate, timeAgo, timePassed } from "@/lib/format";
 import type { DashboardRequest } from "@/types/dashboard";
 import { cn } from "cn";
@@ -28,6 +30,7 @@ export default async function DashboardPage() {
   // The decisions list feeds the preview; the dashboard API supplies the count.
   const waitingAsks = (await getDecisions()).filter((ask) => ask.state === "waiting");
   const pendingApproval = stats.pendingApproval;
+  const workload = await getWorkload();
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden px-8 py-14">
@@ -114,7 +117,7 @@ export default async function DashboardPage() {
                 <p className="py-8 text-center text-sm text-muted-foreground">No TA requests waiting.</p>
               )}
             </section>
-            <section className="h-48 rounded-3xl bg-white/60 ring-3 ring-black/10 backdrop-blur-xl" />
+            <TaWorkload workload={workload} />
           </div>
         </div>
       </div>
