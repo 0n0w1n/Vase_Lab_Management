@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 
 export default function SecretCode() {
-    let code = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "a", "b"];
+    let code = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "b", "a"];
     let current_code = [...code];
 
     function activate() {
