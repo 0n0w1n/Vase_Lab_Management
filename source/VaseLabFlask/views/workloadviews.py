@@ -6,7 +6,8 @@ from sqlalchemy import func
 
 from extensions import db
 from models import ActivityLog, Request, RequestAssignment, User
-from views.dashboardviews import ACTIVE_STATES, _iso, _is_manager
+from lib.requestUtils import ACTIVE_STATES, iso
+from lib.authUtils import is_manager
 
 workload_api = Blueprint("workload_api", __name__)
 
@@ -14,7 +15,7 @@ workload_api = Blueprint("workload_api", __name__)
 @workload_api.get("")
 @jwt_required()
 def get_workload():
-    if not _is_manager():
+    if not is_manager():
         return {"errorCode": "11", "error": "Unauthorized"}, 403
 
     tas = db.session.scalars(
@@ -49,7 +50,7 @@ def get_workload():
             "initials": "".join(part[0].upper() for part in ta.UserFullName.split())[:2],
             "openCount": len(active),
             "highPriority": sum(r.RequestPriority == "high" for _, r in active),
-            "oldestOpen": _iso(active[0][1].CreatedAt) if active else None,
+            "oldestOpen": iso(active[0][1].CreatedAt) if active else None,
             "closedThisMonth": sum(
                 a.State == "Approved" and r.RequestState == "close"
                 and r.CompletedAt is not None and month_start <= r.CompletedAt < next_month
@@ -59,8 +60,8 @@ def get_workload():
             "requests": [{
                 "id": str(r.RequestID), "title": r.RequestTitle,
                 "status": r.RequestState, "priority": r.RequestPriority,
-                "createdAt": _iso(r.CreatedAt),
-                "updatedAt": _iso(max(filter(None, (
+                "createdAt": iso(r.CreatedAt),
+                "updatedAt": iso(max(filter(None, (
                     r.CreatedAt, updates.get(r.RequestID), a.UpdatedAt, a.DecidedAt,
                 )))),
             } for a, r in active],
@@ -73,7 +74,7 @@ def get_workload():
 @workload_api.route("/<int:request_id>/<int:ta_id>", methods=["POST", "PATCH", "DELETE"])
 @jwt_required()
 def change_workload(request_id: int, ta_id: int):
-    if not _is_manager():
+    if not is_manager():
         return {"errorCode": "11", "error": "Unauthorized"}, 403
 
     req = db.session.execute(

@@ -1,5 +1,12 @@
 # please make sure it is actually needed in multiple places and not put here for the sake of it T_T
 
+ACTIVE_STATES = ("pending", "in-progress", "review")
+ASSIGNMENT_STATES = {
+    "Waiting": "waiting",
+    "Approved": "approved",
+    "Refused": "declined",
+}
+
 def verify_user_input(input_json, expected_keys):
 
     if input_json is None:
@@ -14,3 +21,7 @@ def verify_user_input(input_json, expected_keys):
             return {"errorCode": f"2{i}", "error": f"Key '{expected_key}' not found"}, 400
 
     return {"errorCode": "0", "error": "None"}, 200
+
+# TODO: Rework datetime parsing to Flask's default rather than managing our own function
+def iso(value):
+    return value.isoformat() + "Z" if value else None

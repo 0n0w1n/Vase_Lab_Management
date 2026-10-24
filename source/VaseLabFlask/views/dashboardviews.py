@@ -7,28 +7,15 @@ from sqlalchemy import func
 from extensions import db
 from models import ActivityLog, Request, RequestAssignment, User
 
+from lib.requestUtils import ACTIVE_STATES, ASSIGNMENT_STATES, iso
+from lib.authUtils import is_manager
+
 dashboard_api = Blueprint("dashboard_api", __name__)
-
-ACTIVE_STATES = ("pending", "in-progress", "review")
-ASSIGNMENT_STATES = {
-    "Waiting": "waiting",
-    "Approved": "approved",
-    "Refused": "declined",
-}
-
-
-def _iso(value):
-    return value.isoformat() + "Z" if value else None
-
-
-def _is_manager():
-    return current_user.UserRole == "lab_manager"
-
 
 @dashboard_api.get("")
 @jwt_required()
 def get_dashboard():
-    if not _is_manager():
+    if not is_manager():
         return {"errorCode": "11", "error": "Unauthorized"}, 403
 
     active_count = db.session.scalar(
@@ -93,7 +80,7 @@ def get_dashboard():
                 "priority": req.RequestPriority,
                 "isEquipment": req.EquipmentID is not None,
                 "owner": owners.get(req.RequestID),
-                "createdAt": _iso(req.CreatedAt),
+                "createdAt": iso(req.CreatedAt),
             }
             for req, requester in rows
         ],
@@ -103,7 +90,7 @@ def get_dashboard():
 @dashboard_api.get("/decisions")
 @jwt_required()
 def get_decisions():
-    if not _is_manager():
+    if not is_manager():
         return {"errorCode": "11", "error": "Unauthorized"}, 403
 
     rows = db.session.execute(
@@ -141,13 +128,13 @@ def get_decisions():
             "id": f"{assignment.RequestID}-{assignment.UserID}",
             "state": ASSIGNMENT_STATES[assignment.State],
             "message": assignment.Message or "",
-            "askedAt": _iso(assignment.CreatedAt),
-            "decidedAt": _iso(assignment.DecidedAt),
+            "askedAt": iso(assignment.CreatedAt),
+            "decidedAt": iso(assignment.DecidedAt),
             "request": {
                 "id": str(req.RequestID),
                 "title": req.RequestTitle,
                 "priority": req.RequestPriority,
-                "createdAt": _iso(req.CreatedAt),
+                "createdAt": iso(req.CreatedAt),
                 "capacity": req.Capacity,
                 "assignedCount": assigned_counts.get(req.RequestID, 0),
             },
@@ -169,7 +156,7 @@ def get_decisions():
 @dashboard_api.post("/decisions/<assignment_id>/<decision>")
 @jwt_required()
 def decide_assignment(assignment_id: str, decision: str):
-    if not _is_manager():
+    if not is_manager():
         return {"errorCode": "11", "error": "Unauthorized"}, 403
     if decision not in {"approve", "decline"}:
         return {"errorCode": "12", "error": "Invalid decision"}, 400

@@ -5,12 +5,13 @@ from flask_jwt_extended import jwt_required, current_user
 from models import *
 from datetime import date, datetime
 from lib.requestUtils import verify_user_input
-from views.dashboardviews import ASSIGNMENT_STATES
+from lib.authUtils import STAFF
+from lib.requestUtils import ASSIGNMENT_STATES
 
 request_api = Blueprint("request_api", __name__)
 
 current_user: User
-STAFF = {"admin", "lab_manager", "lab_ta"}
+
 
 @request_api.get("/list")
 @jwt_required()

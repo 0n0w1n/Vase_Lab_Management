@@ -3,8 +3,8 @@ from flask_jwt_extended import current_user, jwt_required
 
 from extensions import db
 from models import ActivityLog, Equipment, Request, User
-from views.dashboardviews import ACTIVE_STATES, _iso
-from views.requestviews import STAFF
+from lib.requestUtils import ACTIVE_STATES, iso
+from lib.authUtils import STAFF
 
 equipment_api = Blueprint("equipment_api", __name__)
 
@@ -128,7 +128,7 @@ def get_equipment_activity(equipment_id: int):
             "id": log.LogID,
             "action": _describe(log),
             "by": actor.UserFullName,
-            "at": _iso(log.CreatedAt),
+            "at": iso(log.CreatedAt),
         }
         for log, actor in rows
     ]
