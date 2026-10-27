@@ -1,5 +1,6 @@
 "use client"
 import { useState } from 'react';
+import {Surprise} from '@/components/test/video';
 
 type SquarePropsv1 = {
   value: number | string,
@@ -89,6 +90,7 @@ export function Board({ xIsNext, squares, onPlay }: BoardInput) {
 
   return (
     <>
+      <Surprise/>
       <div className="bg-brand">{status}</div>
       <div className="flex">
         {/* <Squarev1 value={1} color="#2fc092"/> */}
