@@ -41,11 +41,11 @@ export default function AppSidebar({ user }: Props) {
   const pathname = usePathname();
 
   return (
-    <div className="shrink-0">
+    <div className={cn("shrink-0", collapsed ? "" : "flex-1")}>
       <aside
         className={cn(
-          "sticky top-0 flex h-screen flex-col rounded-tr-[2.5rem] bg-sidebar text-sidebar-foreground transition-[width] duration-200",
-          collapsed ? "w-20 px-3" : "w-72 px-6"
+          "sticky top-0 h-screen flex-col rounded-tr-[2.5rem] bg-sidebar text-sidebar-foreground transition-[width] duration-200",
+          collapsed ? "w-20 px-3" : "max-w-72 px-6"
         )}
       >
         <Link

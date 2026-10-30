@@ -20,7 +20,7 @@ export default function AppShell({ user, children }: Props) {
   return (
     <div className="flex min-h-screen bg-canvas">
       <AppSidebar user={user} />
-      <main className="min-w-0 flex-1">{children}</main>
+      <main className="min-w-0 flex-4">{children}</main>
     </div>
   );
 }
