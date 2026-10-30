@@ -59,7 +59,7 @@ export default function AppSidebar({ user }: Props) {
           {!collapsed && <span>LAB</span>}
         </Link>
 
-        <div className="border-b border-white/15" />
+        <div className="border-b border-white/15 mx-10" />
 
         <nav className="flex flex-col gap-4 pt-7">
           {!collapsed && (
@@ -150,7 +150,7 @@ export default function AppSidebar({ user }: Props) {
           onClick={() => setCollapsed((value) => !value)}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-expanded={!collapsed}
-          className="absolute top-19 -right-4 z-10 grid size-8 place-items-center rounded-full bg-white text-slate-700 shadow-md ring-1 ring-black/5 transition-colors hover:bg-slate-50"
+          className="absolute top-19 right-2.5 z-10 grid size-8 place-items-center rounded-full bg-white text-slate-700 shadow-md ring-1 ring-black/5 transition-colors hover:bg-slate-50"
         >
           <ChevronLeft
             className={cn("size-4 transition-transform", collapsed && "rotate-180")}
