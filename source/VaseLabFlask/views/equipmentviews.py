@@ -1,10 +1,10 @@
 from flask import Blueprint
 from flask_jwt_extended import current_user, jwt_required
 
-from extensions import db
-from models import ActivityLog, Equipment, Request, User
-from lib.requestUtils import ACTIVE_STATES, iso
-from lib.authUtils import STAFF
+from VaseLabFlask.extensions import db
+from VaseLabFlask.models import ActivityLog, Equipment, Request, User
+from VaseLabFlask.lib.requestUtils import ACTIVE_STATES, iso
+from VaseLabFlask.lib.authUtils import STAFF
 
 equipment_api = Blueprint("equipment_api", __name__)
 

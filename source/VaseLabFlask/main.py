@@ -1,15 +1,15 @@
 import os
 from datetime import timedelta
 from flask import Flask
-from extensions import db, migrate, jwt
-import seeds
+from VaseLabFlask.extensions import db, migrate, jwt
+import VaseLabFlask.seeds as seeds
 
-from views.requestviews import request_api
-from views.authviews import auth_api
-from views.userviews import user_api
-from views.dashboardviews import dashboard_api
-from views.equipmentviews import equipment_api
-from views.workloadviews import workload_api
+from .views.requestviews import request_api
+from .views.authviews import auth_api
+from .views.userviews import user_api
+from .views.dashboardviews import dashboard_api
+from .views.equipmentviews import equipment_api
+from .views.workloadviews import workload_api
 
 def create_app(test_config=None):
     # create and configure the app

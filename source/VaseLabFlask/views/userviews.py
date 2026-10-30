@@ -1,12 +1,11 @@
-import re
 from flask import Blueprint, request
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from extensions import db
 from flask_jwt_extended import jwt_required, current_user
-from models import *
 from datetime import date, datetime
-from lib.requestUtils import verify_user_input
-from lib.authUtils import hash_password, verify_password
+from VaseLabFlask.extensions import db
+from VaseLabFlask.models import User
+from VaseLabFlask.lib.requestUtils import verify_user_input
+from VaseLabFlask.lib.authUtils import hash_password, verify_password
 
 user_api = Blueprint("user_api", __name__)
 
