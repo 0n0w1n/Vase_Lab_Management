@@ -1,4 +1,4 @@
-from extensions import db
+from VaseLabFlask.extensions import db
 from . import users, equipment, requests, assignments, equipment_activity
 
 SEEDERS = [users, equipment, requests, assignments, equipment_activity]

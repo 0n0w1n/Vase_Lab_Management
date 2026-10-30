@@ -6,12 +6,12 @@ IMPORTANT CLARIFICATIONS ON THE ERRORS IMPORTED :
 |- VerifyMismatchError : More precise , wrong password
 """
 from flask import Blueprint, request
-from extensions import db, jwt
 from flask_jwt_extended import create_access_token
-from models import *
 from argon2 import PasswordHasher
-from lib.requestUtils import verify_user_input
-from lib.authUtils import verify_password
+from VaseLabFlask.models import User
+from VaseLabFlask.extensions import db, jwt
+from VaseLabFlask.lib.requestUtils import verify_user_input
+from VaseLabFlask.lib.authUtils import verify_password
 
 ph = PasswordHasher()
 

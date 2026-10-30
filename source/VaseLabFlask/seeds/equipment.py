@@ -1,4 +1,4 @@
-from models import Equipment
+from VaseLabFlask.models import Equipment
 from .base import get_or_create, delete_table
 
 ROWS = [

@@ -1,5 +1,5 @@
-from extensions import db
-from models import ActivityLog, Equipment, User
+from VaseLabFlask.extensions import db
+from VaseLabFlask.models import ActivityLog, Equipment, User
 from .base import get_one, days_from_now
 
 ROWS = [

@@ -4,11 +4,11 @@ from flask import Blueprint
 from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import func
 
-from extensions import db
-from models import ActivityLog, Request, RequestAssignment, User
+from VaseLabFlask.extensions import db
+from VaseLabFlask.models import ActivityLog, Request, RequestAssignment, User
 
-from lib.requestUtils import ACTIVE_STATES, ASSIGNMENT_STATES, iso
-from lib.authUtils import is_manager
+from VaseLabFlask.lib.requestUtils import ACTIVE_STATES, ASSIGNMENT_STATES, iso
+from VaseLabFlask.lib.authUtils import is_manager
 
 dashboard_api = Blueprint("dashboard_api", __name__)
 

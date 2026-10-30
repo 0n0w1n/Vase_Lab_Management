@@ -1,6 +1,6 @@
-from models import User
+from VaseLabFlask.models import User
+from VaseLabFlask.lib.authUtils import hash_password
 from .base import get_or_create, delete_table
-from lib.authUtils import hash_password
 
 ROWS = [
     ("admin@lab.local",         "John Admin",    "admin",       "Kasetsart University", "admin123"),
