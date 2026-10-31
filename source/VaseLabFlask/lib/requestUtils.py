@@ -1,5 +1,6 @@
 # please make sure it is actually needed in multiple places and not put here for the sake of it T_T
 
+REQUEST_STATES = ("pending", "in-progress", "review", "close", "reject")
 ACTIVE_STATES = ("pending", "in-progress", "review")
 ASSIGNMENT_STATES = {
     "Waiting": "waiting",

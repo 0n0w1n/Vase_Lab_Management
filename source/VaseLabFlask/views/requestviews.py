@@ -13,13 +13,14 @@ from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import func
 
 from extensions import db
-from lib.authUtils import STAFF
-from lib.requestUtils import ASSIGNMENT_STATES, verify_user_input
+from lib.authUtils import STAFF, MANAGERS
+from lib.requestUtils import REQUEST_STATES, ASSIGNMENT_STATES, verify_user_input
 from models import ActivityLog, File, Request, RequestAssignment, User
 
 # A JSON body, optionally paired with an HTTP status code
 JsonDict = dict[str, Any]
 ApiResponse = Union[JsonDict, tuple[JsonDict, int]]
+current_user: User
 
 TITLE_MAX = 255
 DETAILS_MAX = 2000
@@ -28,6 +29,7 @@ PRIORITIES = {"low", "medium", "high"}
 CREATE_EXPECTED_KEYS = ["title", "details", "priority", "deadline"]
 CAPACITY_EXPECTED_KEYS = ["capacity"]
 ASK_EXPECTED_KEYS = ["message"]
+STATUS_EXPECTED_KEYS = {"status"}
 
 request_api = Blueprint("request_api", __name__)
 
@@ -324,3 +326,41 @@ def ask_to_work(request_id: int) -> ApiResponse:
     ))
     db.session.commit()
     return {}, 201
+
+@request_api.post("/status/<int:request_id>")
+@jwt_required()
+def set_status(request_id):
+    req = db.session.execute(db.select(Request).where(Request.RequestID == request_id)).scalar()
+    if req is None:
+        return {"errorCode": "13", "error": "Not found"}, 404
+
+    if current_user.UserRole not in STAFF:
+        return {"errorCode": "12", "error": "Unauthorized"}, 403
+
+    user_input = request.get_json(silent=True)
+    result = verify_user_input(user_input, STATUS_EXPECTED_KEYS)
+    if result[1] != 200:
+        return result
+    new_state = user_input["status"]
+
+    if new_state not in REQUEST_STATES:
+        return {"errorCode": "21", "error": "Invalid new status"}, 400
+    if new_state == req.RequestState:
+        return {"errorCode": "22", "error": "New status cannot be the same"}, 400
+
+    if current_user.UserRole == "lab_ta":
+        working_on = db.session.execute(db.select(RequestAssignment).where(
+            (RequestAssignment.RequestID == request_id)
+            & (RequestAssignment.UserID == current_user.UserID)
+        )).first()
+        if working_on is None \
+            or req.RequestState not in {"in-progress", "review"} \
+            or new_state not in {"in-progress", "review"}:
+            return {"errorCode": "12", "error": "Unauthorized"}, 403
+        req.RequestState = new_state
+        db.session.commit()
+        return {"message": "Successful"}, 200
+    if current_user.UserRole in MANAGERS:
+        req.RequestState = new_state
+        db.session.commit()
+        return {"message": "Successful"}, 200

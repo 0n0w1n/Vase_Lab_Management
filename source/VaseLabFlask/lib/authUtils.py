@@ -5,6 +5,7 @@ from flask_jwt_extended import current_user
 ph = PasswordHasher()
 
 STAFF = {"admin", "lab_manager", "lab_ta"}
+MANAGERS = {"admin", "lab_manager"}
 
 def hash_password(password: str) -> str:
     return ph.hash(password)
