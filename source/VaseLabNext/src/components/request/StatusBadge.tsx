@@ -4,6 +4,7 @@ import {
   Clock,
   Loader,
   XCircle,
+  ChevronsUpDown,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "cn";
@@ -43,9 +44,10 @@ const STATUS: Record<
 type Props = {
   status: RequestStatus;
   className?: string;
+  is_menu?: boolean
 };
 
-export default function StatusBadge({ status, className }: Props) {
+export default function StatusBadge({ status, className, is_menu=false }: Props) {
   const { label, icon: Icon, className: tone } = STATUS[status];
 
   return (
@@ -58,6 +60,7 @@ export default function StatusBadge({ status, className }: Props) {
     >
       <Icon className="size-4" />
       {label}
+      {is_menu && <ChevronsUpDown className="size-4" />}
     </span>
   );
 }

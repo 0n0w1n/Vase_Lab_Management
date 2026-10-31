@@ -1,6 +1,7 @@
 import type {
   LabRequest,
   NewRequestInput,
+  RequestStatus,
   RequestSummary,
 } from "@/types/request";
 import { forbidden } from "next/navigation";

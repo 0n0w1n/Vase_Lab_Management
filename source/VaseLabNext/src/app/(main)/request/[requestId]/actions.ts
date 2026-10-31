@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 import { authFetch } from "@/lib/auth";
+import { RequestStatus } from "@/types/request"
 
 export type ActionState = {
   message?: string;
@@ -72,4 +73,26 @@ export async function askToWork(_prev: ActionState, formData: FormData): Promise
   revalidatePath(`/request/${requestId}`, "layout");
   revalidatePath("/dashboard", "layout");
   return {};
+}
+
+export type StatusUpdateParams = {
+  status: RequestStatus,
+  requestId: string
+}
+
+export async function updateStatusAction(_prev: RequestStatus, next: StatusUpdateParams) {
+  try {
+    const res = await authFetch(`/request/status/${next.requestId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({"status": next.status}),
+    });
+    if (!res.ok) {return _prev;};
+    return next.status;
+
+  } catch (error) {
+    unstable_rethrow(error);
+    return _prev;
+  }
+
 }
