@@ -352,6 +352,7 @@ def set_status(request_id):
         working_on = db.session.execute(db.select(RequestAssignment).where(
             (RequestAssignment.RequestID == request_id)
             & (RequestAssignment.UserID == current_user.UserID)
+            & (RequestAssignment.State == "Approved")
         )).first()
         if working_on is None \
             or req.RequestState not in {"in-progress", "review"} \

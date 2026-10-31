@@ -53,7 +53,7 @@ export default async function RequestDetailLayout({ children, params }: Props) {
             </h2>
             <div className="flex flex-wrap items-center justify-end gap-3">
               {user?.role === "lab_ta" && <WorkOnStatus request={request} />}
-              {user?.role === "lab_manager" || user?.role === "admin" ? <EditStatusDropdown request={request} /> : <StatusBadge status={request.status} />}
+              <EditStatusDropdown request={request} role={user?.role}/>
             </div>
           </header>
 
