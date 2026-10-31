@@ -13,8 +13,8 @@ export default function SecretCode() {
     }
 
     function enterCode(keyevent: KeyboardEvent) {
-        console.log(code);
-        console.log(current_code);
+        // console.log(code);
+        // console.log(current_code);
         if (keyevent.key.toLowerCase() === current_code[0]) {
             current_code.shift();
             if (current_code.length <= 0) {
