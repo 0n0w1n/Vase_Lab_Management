@@ -13,7 +13,7 @@ from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import func
 
 from extensions import db
-from lib.authUtils import STAFF
+from lib.authUtils import STAFF, can_read_request
 from lib.requestUtils import ASSIGNMENT_STATES, verify_user_input
 from models import ActivityLog, File, Request, RequestAssignment, User
 
@@ -94,7 +94,7 @@ def get_request_details(request_id: int) -> ApiResponse:
     req: Request = row[0]
     user: User = row[1]
 
-    if current_user.UserRole not in STAFF and req.UserID != current_user.UserID:
+    if not can_read_request(current_user, req):
         return {"errorCode": "11", "error": "Unauthorized"}, 403
 
     files: Sequence[File] = db.session.execute(
