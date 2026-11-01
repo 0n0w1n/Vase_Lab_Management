@@ -330,7 +330,7 @@ def ask_to_work(request_id: int) -> ApiResponse:
 @request_api.post("/status/<int:request_id>")
 @jwt_required()
 def set_status(request_id):
-    req = db.session.execute(db.select(Request).where(Request.RequestID == request_id)).scalar()
+    req: Request = db.session.execute(db.select(Request).where(Request.RequestID == request_id)).scalar()
     if req is None:
         return {"errorCode": "13", "error": "Not found"}, 404
 
@@ -362,6 +362,18 @@ def set_status(request_id):
         db.session.commit()
         return {"message": "Successful"}, 200
     if current_user.UserRole in MANAGERS:
-        req.RequestState = new_state
-        db.session.commit()
-        return {"message": "Successful"}, 200
+        if req.RequestState not in {"in-progress", "review", "close", "reject"}:
+            return {"errorCode": "12", "error": "Unauthorized"}, 403
+
+    req.RequestState = new_state
+
+    db.session.add(ActivityLog(
+        UserID=current_user.UserID,
+        Action="update",
+        EntityType="request",
+        EntityID=request_id,
+        NewValue={"Status": req.RequestState},
+    ))
+
+    db.session.commit()
+    return {"message": "Successful"}, 200
