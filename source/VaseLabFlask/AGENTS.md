@@ -14,12 +14,10 @@ Documentation is handled externally. Once you're done, alert the backend lead so
 
 Don't import between views. They should be separate. Any functions used in multiple views should be in the lib folder.
 
-Extension to #3: Avoid displaying anything from the API directly. Add whatever fields and values you need, but put the wording and sentence structure in the frontend instead.
-
-Don't change the API too much. If possible, add a new route instead.
+Avoid displaying anything from the API directly. Add whatever fields and values you need, but put the wording and sentence structure in the frontend instead.
 
 ###
 
-Quick summary: Keep it simple.
+Quick summary: Keep it simple and minimal. Large changes and restructuring are allowed if it is reasonable and logical.
 
-These rules are updated whenever an incident occurs, as such, existing code may not be reliable enough to use as a reference. Use common sense.
+These rules are added late, as such, existing code may not be reliable enough to use as a reference. Use common sense.
