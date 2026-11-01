@@ -20,6 +20,12 @@ def create_app(test_config=None):
         SQLALCHEMY_TRACK_MODIFICATIONS=False, # Disable modification tracker
         JWT_SECRET_KEY=os.environ["JWT_SECRET_KEY"],
         JWT_ACCESS_TOKEN_EXPIRES=timedelta(hours=3), # Default is 15 min; no refresh tokens yet
+        UPLOAD_ROOT=os.environ.get( # Fetch environment variable UPLOAD_ROOT
+            "UPLOAD_ROOT",
+            os.path.join(app.instance_path, "uploads"),
+        ),
+        MAX_FILE_BYTES=10 * 1024 * 1024,
+        MAX_CONTENT_LENGTH=11 * 1024 * 1024,
     )
 
     if test_config is None:

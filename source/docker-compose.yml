@@ -13,6 +13,8 @@ services:
     # command: ["bash", "start_prod.sh"]
 
   flask-app:
+    environment:
+      UPLOAD_ROOT: /var/lib/vaselab/uploads
     build:
       context: ./VaseLabFlask
     user: 'python'
@@ -24,6 +26,7 @@ services:
       - db
     volumes:
       - ./VaseLabFlask/migrations:/usr/src/app/migrations
+      - uploads_data:/var/lib/vaselab/uploads # Hugo : The uploads_data name is the new persistent volume, the following path specifies where my Flask application accesses the stored files
     post_start:
       - command: /venv/bin/python3 -m flask db upgrade
     # command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0", "main:create_app()"]
@@ -46,3 +49,4 @@ networks:
 
 volumes:
   db_data:
+  uploads_data:
