@@ -64,8 +64,3 @@ export async function createEquipment(input: NewEquipmentInput): Promise<{ id: n
   if (!res.ok) throw new Error(`Create equipment failed: ${res.status}`);
   return body;
 }
-
-// 1 -> "EQP-01", 12 -> "EQP-12"
-export function formatEquipmentId(id: number) {
-  return `EQP-${String(id).padStart(2, "0")}`;
-}

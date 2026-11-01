@@ -15,14 +15,14 @@ const INITIAL_STATE: NewEquipmentState = {
   errors: {},
 };
 
-const STATE_OPTIONS: { value: EquipmentState; label: string }[] = [
+export const STATE_OPTIONS: { value: EquipmentState; label: string }[] = [
   { value: "available", label: "Available" },
   { value: "in_use", label: "In use" },
   { value: "maintenance", label: "Maintenance" },
   { value: "retired", label: "Retired" },
 ];
 
-const inputBox =
+export const inputBox =
   "w-full rounded-md bg-white/80 px-3 text-sm text-foreground ring-1 ring-black/10 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand aria-invalid:ring-red-400";
 
 function errorProps(id: NewEquipmentField, error?: string) {
@@ -38,7 +38,7 @@ type FieldProps = {
   children: React.ReactNode;
 };
 
-function Field({ id, label, error, children }: FieldProps) {
+export function Field({ id, label, error, children }: FieldProps) {
   return (
     <div className="flex flex-col">
       <label htmlFor={id} className="pb-1.5 text-sm font-semibold text-[#44607F]">

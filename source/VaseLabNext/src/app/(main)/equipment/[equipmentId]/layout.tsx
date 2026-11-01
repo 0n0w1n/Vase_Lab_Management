@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import EquipmentTabs from "@/components/equipment/EquipmentTabs";
-import { formatEquipmentId, getEquipmentById } from "@/lib/equipment";
+import { getEquipmentById } from "@/lib/equipment";
+import { formatEquipmentId } from "@/lib/format";
 import type { EquipmentState } from "@/types/equipment";
 import { cn } from "cn";
 
