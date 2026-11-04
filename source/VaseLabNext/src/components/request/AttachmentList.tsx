@@ -1,12 +1,15 @@
 import { Download, FileText, Paperclip } from "lucide-react";
+import AttachmentUpload from "@/components/request/AttachmentUpload";
 import { formatDate, formatFileSize } from "@/lib/format";
 import type { Attachment } from "@/types/request";
 
 type Props = {
+  requestId: string;
   attachments: Attachment[];
+  canUpload: boolean;
 };
 
-export default function AttachmentList({ attachments }: Props) {
+export default function AttachmentList({ requestId, attachments, canUpload }: Props) {
   return (
     <section className="rounded-xl bg-background p-5 ring-1 ring-surface-border">
       <header className="flex items-center justify-between pb-3">
@@ -53,6 +56,8 @@ export default function AttachmentList({ attachments }: Props) {
           })}
         </ul>
       )}
+
+      {canUpload && <AttachmentUpload requestId={requestId} />}
     </section>
   );
 }
