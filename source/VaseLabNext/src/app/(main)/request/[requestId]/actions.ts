@@ -21,6 +21,15 @@ const ASK_MESSAGES: Record<string, string> = {
   "33": "This request is already full.",
 };
 
+const UPLOAD_MESSAGES: Record<string, string> = {
+  "12": "You can't add files to this request.",
+  "23": "This request is no longer open.",
+  "30": "That file name isn't allowed.",
+  "31": "Only PDF, JPG, PNG, ZIP and RAR files are allowed.",
+  "32": "Files must be 10 MB or smaller.",
+  "34": "That file is empty.",
+};
+
 const GENERIC = "Something went wrong. Please try again.";
 
 export async function updateCapacity(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -71,5 +80,31 @@ export async function askToWork(_prev: ActionState, formData: FormData): Promise
 
   revalidatePath(`/request/${requestId}`, "layout");
   revalidatePath("/dashboard", "layout");
+  return {};
+}
+
+export async function uploadAttachment(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  const requestId = String(formData.get("requestId") ?? "");
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.name === "") return { message: "Choose a file to upload." };
+
+  const upload = new FormData();
+  upload.append("file", file);
+
+  try {
+    const res = await authFetch(`/file/upload/${encodeURIComponent(requestId)}`, {
+      method: "POST",
+      body: upload,
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      return { message: UPLOAD_MESSAGES[String(body?.errorCode)] ?? GENERIC };
+    }
+  } catch (error) {
+    unstable_rethrow(error);
+    return { message: GENERIC };
+  }
+
+  revalidatePath(`/request/${requestId}`, "layout");
   return {};
 }
