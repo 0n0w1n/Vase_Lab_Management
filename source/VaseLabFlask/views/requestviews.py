@@ -13,7 +13,7 @@ from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import func
 
 from extensions import db
-from lib.authUtils import STAFF, can_read_request
+from lib.authUtils import STAFF, can_read_request, can_read_request_files
 from lib.requestUtils import ASSIGNMENT_STATES, verify_user_input
 from models import ActivityLog, File, Request, RequestAssignment, User
 
@@ -119,6 +119,9 @@ def get_request_details(request_id: int) -> ApiResponse:
     )
 
     file_list: list[JsonDict] = []
+    # Unapproved TAs may see the request but not its attachments
+    if not can_read_request_files(current_user, req, my_state):
+        files = []
     for file in files:
         created_at = file.CreatedAt.isoformat() + "Z" if file.CreatedAt else None
         file_list.append({

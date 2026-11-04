@@ -5,7 +5,7 @@ from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy.exc import DBAPIError, SQLAlchemyError
 
 from extensions import db
-from lib.authUtils import can_read_request
+from lib.authUtils import can_read_request_files
 from lib.fileUtils import (
     UploadValidationError,
     remove_stored_file,
@@ -13,7 +13,7 @@ from lib.fileUtils import (
     validate_and_save_upload,
 )
 from lib.requestUtils import iso
-from models import ActivityLog, File, Request, User
+from models import ActivityLog, File, Request, RequestAssignment, User
 
 
 file_api = Blueprint("file_api", __name__)
@@ -25,11 +25,19 @@ UPLOAD_ERROR_STATUSES = {
     "32": 413,  # File exceeds the configured byte limit.
     "34": 400,  # Empty file.
 }
+CLOSED_STATES = {"close", "reject"}
 
 
 def _can_add_attachment(user: User, req: Request) -> bool:
     """Owners and managers may add files; other staff retain read access."""
     return req.UserID == user.UserID or user.UserRole in {"admin", "lab_manager"}
+
+
+def _can_read_files(req: Request) -> bool:
+    """Look up the signed-in user's assignment, then apply the file read rule."""
+    assignment = db.session.get(RequestAssignment, (req.RequestID, current_user.UserID))
+    state = assignment.State if assignment else None
+    return can_read_request_files(current_user, req, state)
 
 
 @file_api.after_request
@@ -53,7 +61,7 @@ def normalize_auth_error(response: Response) -> Response:
 @jwt_required()
 def list_files(request_id: int):
     req = db.session.get(Request, request_id)
-    if req is None or not can_read_request(current_user, req):
+    if req is None or not _can_read_files(req):
         return {"errorCode": "13", "error": "Not found"}, 404
 
     files = db.session.scalars(
@@ -69,7 +77,10 @@ def list_files(request_id: int):
             "bytes": item.FileSize,
             "uploadedAt": iso(item.CreatedAt),
         } for item in files],
-        "canUpload": _can_add_attachment(current_user, req),
+        "canUpload": (
+            _can_add_attachment(current_user, req)
+            and req.RequestState not in CLOSED_STATES
+        ),
     }
 
 
@@ -77,10 +88,12 @@ def list_files(request_id: int):
 @jwt_required()
 def upload_file(request_id: int):
     req = db.session.get(Request, request_id)
-    if req is None or not can_read_request(current_user, req):
+    if req is None or not _can_read_files(req):
         return {"errorCode": "13", "error": "Not found"}, 404
     if not _can_add_attachment(current_user, req):
         return {"errorCode": "12", "error": "Unauthorized"}, 403
+    if req.RequestState in CLOSED_STATES:
+        return {"errorCode": "23", "error": "Request is no longer open"}, 400
 
     if (
         request.mimetype != "multipart/form-data"
@@ -173,7 +186,7 @@ def download_file(file_id: int):
         return {"errorCode": "13", "error": "Not found"}, 404
 
     req = db.session.get(Request, record.RequestID)
-    if req is None or not can_read_request(current_user, req):
+    if req is None or not _can_read_files(req):
         return {"errorCode": "13", "error": "Not found"}, 404
     if not record.FilePath:
         return {"errorCode": "13", "error": "Not found"}, 404
