@@ -32,6 +32,24 @@ const UPLOAD_MESSAGES: Record<string, string> = {
 
 const GENERIC = "Something went wrong. Please try again.";
 
+export async function downloadAttachment(fileId: number): Promise<
+  { data: ArrayBuffer; type: string } | { message: string }
+> {
+  if (!Number.isSafeInteger(fileId) || fileId <= 0) return { message: "File not found." };
+
+  try {
+    const res = await authFetch(`/file/download/${fileId}`, { cache: "no-store" });
+    if (!res.ok) return { message: res.status === 404 ? "File not found." : GENERIC };
+    return {
+      data: await res.arrayBuffer(),
+      type: res.headers.get("Content-Type") ?? "application/octet-stream",
+    };
+  } catch (error) {
+    unstable_rethrow(error);
+    return { message: GENERIC };
+  }
+}
+
 export async function updateCapacity(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const requestId = String(formData.get("requestId") ?? "");
   const capacity = Number(formData.get("capacity"));

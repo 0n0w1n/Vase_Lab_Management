@@ -1,4 +1,8 @@
+"use client";
+
+import { useState, useTransition } from "react";
 import { Download, FileText, Paperclip } from "lucide-react";
+import { downloadAttachment } from "@/app/(main)/request/[requestId]/actions";
 import AttachmentUpload from "@/components/request/AttachmentUpload";
 import { formatDate, formatFileSize } from "@/lib/format";
 import type { Attachment } from "@/types/request";
@@ -10,6 +14,29 @@ type Props = {
 };
 
 export default function AttachmentList({ requestId, attachments, canUpload }: Props) {
+  const [pending, startTransition] = useTransition();
+  const [message, setMessage] = useState("");
+
+  function download(file: Attachment) {
+    setMessage("");
+    startTransition(async () => {
+      const result = await downloadAttachment(file.id);
+      if ("message" in result) {
+        setMessage(result.message);
+        return;
+      }
+      const url = URL.createObjectURL(new Blob([result.data], { type: result.type }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      // Leave time for the browser to start reading the download.
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    });
+  }
+
   return (
     <section className="rounded-xl bg-background p-5 ring-1 ring-surface-border">
       <header className="flex items-center justify-between pb-3">
@@ -43,20 +70,22 @@ export default function AttachmentList({ requestId, attachments, canUpload }: Pr
                     {details.join(" · ")}
                   </p>
                 </div>
-                <a
-                  href={`/api/attachments/${file.id}`}
-                  download={file.name}
+                <button
+                  type="button"
+                  onClick={() => download(file)}
+                  disabled={pending}
                   aria-label={`Download ${file.name}`}
                   className="grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <Download className="size-4" />
-                </a>
+                </button>
               </li>
             );
           })}
         </ul>
       )}
 
+      {message && <p role="alert" className="text-xs text-red-600">{message}</p>}
       {canUpload && <AttachmentUpload requestId={requestId} />}
     </section>
   );
