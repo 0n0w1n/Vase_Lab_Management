@@ -3,7 +3,8 @@ import { notFound } from "next/navigation"; // Hugo : When we don't find corresp
 import { Briefcase, Building2, CalendarDays, Clock, Mail } from "lucide-react";
 import BackgroundGlow from "@/components/layout/BackgroundGlow";
 import InitialsAvatar from "@/components/request/InitialsAvatar";
-import { getUser } from "@/lib/auth"; // Hugo : function created in auth.ts , 
+import { getCurrentUser, getUser } from "@/lib/auth";
+import SeedUserForm from "@/components/profile/SeedUserForm";
 import { formatDate } from "@/lib/format"; // Hugo : used on line 46 
 
 // Spacing 1 unit in tailwinds = 0.25 rems = 4 px
@@ -40,6 +41,7 @@ export default async function ProfilePage({ params }: Props) {
   const { profileId } = await params;
   const user = await getUser(profileId);
   if (!user) notFound();
+  const viewer = await getCurrentUser();
 
   const initials = user.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
   const role = user.role.replaceAll("_", " ").toUpperCase();
@@ -112,6 +114,7 @@ export default async function ProfilePage({ params }: Props) {
             </ul>
           </section>
         </div>
+        {viewer?.role === "admin" && viewer.id === user.id && <SeedUserForm />}
       </div>
     </div>
   );
