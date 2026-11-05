@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import Request, RequestAssignment, User
+from VaseLabFlask.models import Request, RequestAssignment, User
 from .base import get_one, get_or_create, delete_table, days_from_now
 
 # (request title, TA email, state, message)
