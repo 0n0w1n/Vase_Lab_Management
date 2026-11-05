@@ -36,7 +36,7 @@ class AuthActions(object):
         }
         print(data)
         response = self._client.post("/auth/login", json=data)
-        return response.get_json()
+        return response.get_json().get("access_token")
 
 @pytest.fixture
 def auth(client: FlaskClient):
