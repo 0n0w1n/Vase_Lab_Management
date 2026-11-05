@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from models import Request, User, Equipment
+from VaseLabFlask.models import Request, User, Equipment
 from .base import get_or_create, get_one, dt, delete_table, days_from_now
 
 # RequestState: pending | in-progress | review | close | reject
