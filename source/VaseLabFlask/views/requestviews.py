@@ -12,10 +12,10 @@ from flask import Blueprint, request
 from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import func
 
-from extensions import db
-from lib.authUtils import STAFF
-from lib.requestUtils import ASSIGNMENT_STATES, verify_user_input
-from models import ActivityLog, File, Request, RequestAssignment, User
+from VaseLabFlask.extensions import db
+from VaseLabFlask.lib.authUtils import STAFF
+from VaseLabFlask.lib.requestUtils import ASSIGNMENT_STATES, verify_user_input
+from VaseLabFlask.models import ActivityLog, File, Request, RequestAssignment, User
 
 # A JSON body, optionally paired with an HTTP status code
 JsonDict = dict[str, Any]

@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any
 
 from sqlalchemy.orm import mapped_column
-from extensions import db
+from VaseLabFlask.extensions import db
 
 
 class User(db.Model):
