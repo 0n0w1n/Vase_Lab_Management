@@ -1,5 +1,7 @@
 services:
   node-app:
+    build: 
+      target: dev
     command: ["npm", "run", "dev"]
 
     develop:
@@ -32,7 +34,7 @@ services:
       watch:
         - action: sync
           path: ./VaseLabFlask
-          target: /usr/src/app
+          target: /usr/src/VaseLabFlask
           initial_sync: true
 
   mysql-db:

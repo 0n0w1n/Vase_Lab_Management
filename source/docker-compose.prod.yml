@@ -1,1 +1,26 @@
-# placeholder
+services:
+  node-app:
+    build: 
+      target: prod
+    command: ["npm", "run", "start"]
+
+
+  flask-app:
+    ports:
+      - '8000:8000'
+    command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "${N_WORKERS}", "-b", "0.0.0.0", "--chdir", "/usr/src", "VaseLabFlask.main:create_app()"]
+
+    environment:
+      - DATABASE_URL=mysql+mysqlconnector://root:${DB_PASS}@mysql-db:3306/${DB_NAME}
+      - SECRET_KEY=${DB_SECRET_KEY}
+      - JWT_SECRET_KEY=${DB_JWT_SECRET_KEY}
+
+  mysql-db:
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=${DB_PASS} --execute \"SHOW DATABASES;\""
+      interval: 2s
+      timeout: 5s
+      retries: 10
