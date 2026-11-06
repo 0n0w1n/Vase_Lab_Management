@@ -9,24 +9,24 @@ import {
   type NewRequestField,
   type NewRequestState,
 } from "@/app/(main)/request/new/actions";
-import type { RequestPriority } from "@/types/request";``
+import type { RequestPriority } from "@/types/request";
 
 const INITIAL_STATE: NewRequestState = {
   values: { title: "", details: "", priority: "", deadline: "" },
   errors: {},
 };
 
-const PRIORITY_OPTIONS: { value: RequestPriority; label: string }[] = [
+export const PRIORITY_OPTIONS: { value: RequestPriority; label: string }[] = [
   { value: "low", label: "Low" },
   { value: "medium", label: "Medium" },
   { value: "high", label: "High" },
 ];
 
-const inputBox =
+export const inputBox =
   "w-full rounded-md bg-white/80 px-3 text-sm text-foreground ring-1 ring-black/10 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand aria-invalid:ring-red-400";
 
 /** aria wiring so screen readers announce the error under a field. */
-function errorProps(id: NewRequestField, error?: string) {
+export function errorProps(id: NewRequestField, error?: string) {
   return error
     ? { "aria-invalid": true, "aria-describedby": `${id}-error` }
     : {};
@@ -39,7 +39,7 @@ type FieldProps = {
   children: React.ReactNode;
 };
 
-function Field({ id, label, error, children }: FieldProps) {
+export function Field({ id, label, error, children }: FieldProps) {
   return (
     <div className="flex flex-col">
       <label htmlFor={id} className="pb-1.5 text-sm font-semibold text-[#44607F]">

@@ -25,7 +25,7 @@ export const STATE_OPTIONS: { value: EquipmentState; label: string }[] = [
 export const inputBox =
   "w-full rounded-md bg-white/80 px-3 text-sm text-foreground ring-1 ring-black/10 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand aria-invalid:ring-red-400";
 
-function errorProps(id: NewEquipmentField, error?: string) {
+export function errorProps(id: NewEquipmentField, error?: string) {
   return error
     ? { "aria-invalid": true, "aria-describedby": `${id}-error` }
     : {};

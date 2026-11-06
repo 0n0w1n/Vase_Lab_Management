@@ -44,6 +44,8 @@ export type RequestSummary = {
   id: string;
   title: string;
   requestedBy: string;
+  /** TODO(backend): add to /request/list and /request/details so owners can edit their own */
+  requesterId?: string;
   deadline: string | null;
   priority: RequestPriority;
   status: RequestStatus;
@@ -69,3 +71,16 @@ export type NewRequestInput = {
   priority: RequestPriority;
   deadline: string;
 };
+
+export type NewRequestField = keyof NewRequestInput;
+
+export type NewRequestState = {
+  /** Echoed back so the form keeps what the user typed after a failed submit. */
+  values: Record<NewRequestField, string>;
+  errors: Partial<Record<NewRequestField, string>>;
+  /** Failure that isn't tied to one field, e.g. the backend being down. */
+  message?: string;
+};
+
+/** Edit form state: same as create, plus `ok` once the save went through. */
+export type EditRequestState = NewRequestState & { ok?: boolean };
