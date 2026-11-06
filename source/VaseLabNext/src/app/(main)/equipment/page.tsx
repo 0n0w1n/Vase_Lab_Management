@@ -6,7 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getEquipment } from "@/lib/equipment";
 import { type Equipment, type EquipmentState } from "@/types/equipment";
 import BackgroundGlow from "@/components/layout/BackgroundGlow";
-import { ActionsOnHover } from "@/components/equipment/ActionPopups";
+import { EquipmentActions } from "@/components/equipment/ActionPopups";
 
 import { cn } from "cn";
 
@@ -133,7 +133,7 @@ function EquipmentRow({ item, isLabManager, isAdmin}: { item: Equipment,  isLabM
         <ReturnCell date={item.state === "in_use" ? item.expectedReturn : null} />
       </Link>
       {(isLabManager || isAdmin) &&
-      <ActionsOnHover item={item} />}
+      <EquipmentActions item={item} variant="hover" />}
     </li>
   );
 }
