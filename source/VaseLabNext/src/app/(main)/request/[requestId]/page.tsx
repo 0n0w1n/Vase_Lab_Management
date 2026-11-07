@@ -62,7 +62,11 @@ export default async function RequestDetailPage({ params }: Props) {
         </DetailField>
       </div>
 
-      <AttachmentList attachments={request.files} />
+      <AttachmentList
+        requestId={request.id}
+        attachments={request.files}
+        canUpload={request.canUpload}
+      />
     </div>
   );
 }

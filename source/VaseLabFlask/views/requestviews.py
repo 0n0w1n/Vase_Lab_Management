@@ -13,7 +13,7 @@ from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import func
 
 from VaseLabFlask.extensions import db
-from VaseLabFlask.lib.authUtils import STAFF
+from VaseLabFlask.lib.authUtils import STAFF, can_read_request, can_read_request_files, can_upload_now
 from VaseLabFlask.lib.requestUtils import ASSIGNMENT_STATES, verify_user_input
 from VaseLabFlask.models import ActivityLog, File, Request, RequestAssignment, User
 
@@ -94,7 +94,7 @@ def get_request_details(request_id: int) -> ApiResponse:
     req: Request = row[0]
     user: User = row[1]
 
-    if current_user.UserRole not in STAFF and req.UserID != current_user.UserID:
+    if not can_read_request(current_user, req):
         return {"errorCode": "11", "error": "Unauthorized"}, 403
 
     files: Sequence[File] = db.session.execute(
@@ -119,14 +119,16 @@ def get_request_details(request_id: int) -> ApiResponse:
     )
 
     file_list: list[JsonDict] = []
-    for file in files:
-        created_at = file.CreatedAt.isoformat() + "Z" if file.CreatedAt else None
-        file_list.append({
-            "id": file.FileID,
-            "name": file.FileName,
-            "bytes": file.FileSize or "Unknown",
-            "uploadedAt": created_at,
-        })
+    # Unapproved TAs may see the request but not its attachments
+    if can_read_request_files(current_user, req, my_state):
+        for file in files:
+            created_at = file.CreatedAt.isoformat() + "Z" if file.CreatedAt else None
+            file_list.append({
+                "id": file.FileID,
+                "name": file.FileName,
+                "bytes": file.FileSize or "Unknown",
+                "uploadedAt": created_at,
+            })
 
     return {
         "id": str(req.RequestID),
@@ -142,6 +144,7 @@ def get_request_details(request_id: int) -> ApiResponse:
         "assignees": assignees,
         "myAsk": ASSIGNMENT_STATES.get(my_state),
         "files": file_list,
+        "canUpload": can_upload_now(current_user, req),
     }
 
 

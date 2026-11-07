@@ -1,5 +1,7 @@
 services:
   node-app:
+    environment:
+      APP_ORIGIN: http://localhost:3000 # Hugo : The frontend link ,to check where does the upload come from , in prod replace with the real link
     command: ["npm", "run", "dev"]
 
     develop:
