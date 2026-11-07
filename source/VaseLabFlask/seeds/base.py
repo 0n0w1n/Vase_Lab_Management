@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from extensions import db
+from VaseLabFlask.extensions import db
 from sqlalchemy import delete
 
 def delete_table(table):
