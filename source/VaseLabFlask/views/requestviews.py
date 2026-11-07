@@ -13,13 +13,14 @@ from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import func
 
 from extensions import db
-from lib.authUtils import STAFF
-from lib.requestUtils import ASSIGNMENT_STATES, verify_user_input
+from lib.authUtils import STAFF, MANAGERS
+from lib.requestUtils import REQUEST_STATES, ASSIGNMENT_STATES, verify_user_input
 from models import ActivityLog, File, Request, RequestAssignment, User
 
 # A JSON body, optionally paired with an HTTP status code
 JsonDict = dict[str, Any]
 ApiResponse = Union[JsonDict, tuple[JsonDict, int]]
+current_user: User
 
 TITLE_MAX = 255
 DETAILS_MAX = 2000
@@ -28,6 +29,7 @@ PRIORITIES = {"low", "medium", "high"}
 CREATE_EXPECTED_KEYS = ["title", "details", "priority", "deadline"]
 CAPACITY_EXPECTED_KEYS = ["capacity"]
 ASK_EXPECTED_KEYS = ["message"]
+EDIT_EXPECTED_KEYS = {"status"}
 
 request_api = Blueprint("request_api", __name__)
 
@@ -215,54 +217,6 @@ def create_request() -> ApiResponse:
     db.session.commit()
     return {"id": req_id}, 201
 
-
-@request_api.post("/capacity/<int:request_id>")
-@jwt_required()
-def set_request_capacity(request_id: int) -> ApiResponse:
-    """Set how many TAs can be approved for a request, or return an error code.
-
-    The call is invalid when the user is not a lab manager, the request
-    can't be found, or the capacity is below the number of approved TAs.
-    """
-    if current_user.UserRole != "lab_manager":
-        return {"errorCode": "12", "error": "Unauthorized"}, 403
-
-    # Locked so an approval can't land between the count below and the save
-    req: Optional[Request] = db.session.execute(
-        db.select(Request).where(Request.RequestID == request_id).with_for_update()
-    ).scalar()
-    if req is None:
-        return {"errorCode": "13", "error": "Not found"}, 404
-
-    raw_input = request.get_json(silent=True)
-
-    result = verify_user_input(raw_input, CAPACITY_EXPECTED_KEYS)
-    if result[1] != 200:
-        return result
-    user_input = cast(JsonDict, raw_input)
-
-    capacity = user_input["capacity"]
-    # bool is a subclass of int, so exclude it to keep the original behaviour
-    if not isinstance(capacity, int) or isinstance(capacity, bool) or capacity < 1:
-        return {"errorCode": "30", "error": "Capacity must be a whole number of at least 1"}, 400
-
-    if capacity < _count_approved(request_id):
-        return {"errorCode": "31", "error": "Capacity is below the number of approved TAs"}, 400
-
-    if capacity != req.Capacity:
-        db.session.add(ActivityLog(
-            UserID=current_user.UserID,
-            Action="update",
-            EntityType="request",
-            EntityID=request_id,
-            OldValue={"Capacity": req.Capacity},
-            NewValue={"Capacity": capacity},
-        ))
-        req.Capacity = capacity
-    db.session.commit()
-    return {"capacity": capacity}
-
-
 def _check_can_ask(req: Request, message: Any) -> Optional[ApiResponse]:
     """Check whether the signed-in TA may ask to work on a request.
 
@@ -324,3 +278,95 @@ def ask_to_work(request_id: int) -> ApiResponse:
     ))
     db.session.commit()
     return {}, 201
+
+@request_api.post("/edit/<int:request_id>")
+@jwt_required()
+def edit_request(request_id):
+
+    user_input: ApiResponse = request.get_json(silent=True)
+    result = verify_user_input(user_input, set())
+    if result[1] != 200:
+        return result
+
+    req: Request = db.session.execute(db.select(Request).where(Request.RequestID == request_id)).scalar()
+    if req is None:
+        return {"errorCode": "12", "error": "Not found"}, 404
+    working_on: RequestAssignment = db.session.execute(db.select(RequestAssignment).where(
+        (RequestAssignment.RequestID == request_id)
+        & (RequestAssignment.UserID == current_user.UserID)
+        & (RequestAssignment.State == "Approved")
+    )).first()
+
+    if current_user.UserRole not in MANAGERS and working_on is None and current_user.UserID != request.UserID:
+        return {"errorCode": "13", "error": "Unauthorized"}, 403
+
+    updating = {
+        "title": None,
+        "details": None,
+        "priority": None,
+        "status": None,
+        "capacity": None,
+        "deadline": None,
+    }
+
+    updating["title"] = user_input.get("title")
+    updating["details"] = user_input.get("details")
+
+    # fields managers and lab tas can change
+    if current_user.UserRole in MANAGERS or current_user.UserRole == "lab_ta":
+        updating["priority"] = user_input.get("priority")
+        if updating["priority"]:
+            if updating["priority"] not in PRIORITIES:
+                return {"errorCode": "21", "error": "Invalid priority"}, 400
+        updating["status"] = user_input.get("status")
+        if updating["status"]:
+            if updating["status"] not in REQUEST_STATES:
+                return {"errorCode": "22", "error": "Invalid status"}, 400
+
+    # checks for if lab tas can change status
+    if current_user.UserRole in "lab_ta":
+        if updating["status"]:
+            if (updating["status"] not in {"in-progress", "review"} or req.RequestState not in {"in-progress", "review"}):
+                return {"errorCode": "23", "error": "Unauthorized status change"}, 403
+
+    # fields only managers can change
+    if current_user.UserRole in MANAGERS:
+        updating["capacity"] = user_input.get("capacity")
+        if updating["capacity"]:
+            try:
+                updating["capacity"] = int(updating["capacity"])
+            except ValueError:
+                return {"errorCode": "24", "error": "Capacity must be an integer"}, 400
+            if updating["capacity"] < 1 or updating["capacity"] < _count_approved(request_id):
+                return {"errorCode": "25", "error": "Invalid capacity"}
+        updating["deadline"] = user_input.get("deadline")
+        if updating["deadline"]:
+            try:
+                updating["deadline"] = datetime.strptime(updating["deadline"], "%Y-%m-%d")
+            except ValueError, TypeError:
+                return {"errorCode": "26", "error": "Invalid deadline date format"}, 400
+            if updating["deadline"].date() < date.today():
+                return {"errorCode": "27", "error": "Invalid deadline"}, 400
+
+    # DRY: Do Repeat Yourself
+    if updating["title"]: req.RequestTitle = updating["title"]
+    if updating["details"]: req.RequestDetails = updating["details"]
+    if updating["priority"]: req.RequestPriority = updating["priority"]
+    if updating["status"]: req.RequestState = updating["status"]
+    if updating["capacity"]: req.Capacity = updating["capacity"]
+    if updating["deadline"]:
+        req.RequestDeadline = updating["deadline"]
+        # doing this so its json serializable for Activity Log
+        updating["deadline"] = updating["deadline"].isoformat()+"Z"
+
+    db.session.add(ActivityLog(
+        UserID=current_user.UserID,
+        Action="update",
+        EntityType="request",
+        EntityID=request_id,
+        NewValue=updating,
+    ))
+
+    db.session.commit()
+
+    return updating, 200
