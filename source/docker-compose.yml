@@ -25,10 +25,8 @@ services:
       - backend
       - db
     volumes:
-      - ./VaseLabFlask/migrations:/usr/src/app/migrations
-      - uploads_data:/var/lib/vaselab/uploads # Hugo : The uploads_data name is the new persistent volume, the following path specifies where my Flask application accesses the stored files
-    post_start:
-      - command: /venv/bin/python3 -m flask db upgrade
+      - ./VaseLabFlask/migrations:/usr/src/VaseLabFlask/migrations  
+      - uploads_data:/var/lib/vaselab/uploads
     # command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0", "main:create_app()"]
 
 
@@ -36,8 +34,6 @@ services:
     image: mysql:26
     volumes:
       - db_data:/var/lib/mysql
-    ports:
-      - '3307:3306'
     networks:
       - db
 
