@@ -51,3 +51,15 @@ export function Modal({ open, onClose, title, description, children }: ModalProp
 export function ModalCancel() {
   return <Dialog.Close className={cancelButton}>Cancel</Dialog.Close>;
 }
+
+/** Cancel + Save row at the bottom of a modal form. */
+export function ModalFormButtons({ pending }: { pending: boolean }) {
+  return (
+    <div className="flex justify-end gap-3 pt-1">
+      <ModalCancel />
+      <button type="submit" disabled={pending} className={saveButton}>
+        {pending ? "Saving…" : "Save Changes"}
+      </button>
+    </div>
+  );
+}

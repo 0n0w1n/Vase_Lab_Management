@@ -2,10 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
-import { authFetch } from "@/lib/auth";
-import { deleteRequest, editRequest, parseRequestForm, RequestValidationError } from "@/lib/requests";
+import { authFetch, getCurrentUser, isManager } from "@/lib/auth";
+import {
+  deleteRequest,
+  editRequest,
+  parseManagerFields,
+  parseRequestForm,
+  RequestValidationError,
+} from "@/lib/requests";
 import type { ActionResult } from "@/types/action";
-import type { EditRequestState } from "@/types/request";
+import type { EditRequestInput, EditRequestState } from "@/types/request";
 
 // Flask's error text is for the docs only, so the wording shown lives here.
 const DELETE_MESSAGES: Record<string, string> = {
@@ -20,8 +26,16 @@ export async function updateRequest(
   _prev: EditRequestState,
   formData: FormData
 ): Promise<EditRequestState> {
-  const { values, errors, input } = parseRequestForm(formData, keepDeadline);
-  if (!input) return { values, errors };
+  const base = parseRequestForm(formData, keepDeadline);
+  // Checked here, not trusted from the form: a member could add the fields by hand.
+  const manager = isManager(await getCurrentUser())
+    ? parseManagerFields(formData)
+    : { values: { status: "", capacity: "" }, errors: {}, input: {} };
+
+  const values = { ...base.values, ...manager.values };
+  const errors = { ...base.errors, ...manager.errors };
+  if (!base.input || !manager.input) return { values, errors };
+  const input: EditRequestInput = { ...base.input, ...manager.input };
 
   try {
     await editRequest(id, input);
@@ -55,13 +69,18 @@ export async function removeRequest(id: string): Promise<ActionResult> {
   return { ok: true };
 }
 
-/** The list rows don't carry the details text, so the edit modal loads it on open. */
-export async function loadRequestDetails(id: string): Promise<string | null> {
+/** The list rows don't carry details or capacity, so the edit modal loads them on open. */
+export async function loadRequestDetails(
+  id: string
+): Promise<{ details: string; capacity: number } | null> {
   try {
     const res = await authFetch(`/request/details/${encodeURIComponent(id)}`, { cache: "no-store" });
     if (!res.ok) return null;
     const body = await res.json();
-    return typeof body?.details === "string" ? body.details : "";
+    return {
+      details: typeof body?.details === "string" ? body.details : "",
+      capacity: typeof body?.capacity === "number" ? body.capacity : 1,
+    };
   } catch (error) {
     unstable_rethrow(error);
     return null;

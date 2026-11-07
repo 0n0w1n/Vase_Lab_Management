@@ -82,5 +82,18 @@ export type NewRequestState = {
   message?: string;
 };
 
-/** Edit form state: same as create, plus `ok` once the save went through. */
-export type EditRequestState = NewRequestState & { ok?: boolean };
+/** Edit sends the create fields, plus status and capacity when a manager edits. */
+export type EditRequestInput = NewRequestInput & {
+  status?: RequestStatus;
+  capacity?: number;
+};
+
+export type EditRequestField = keyof EditRequestInput;
+
+/** Edit form state: like NewRequestState with the extra fields, plus `ok` once saved. */
+export type EditRequestState = {
+  values: Record<EditRequestField, string>;
+  errors: Partial<Record<EditRequestField, string>>;
+  message?: string;
+  ok?: boolean;
+};

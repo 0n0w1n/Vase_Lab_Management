@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "cn";
+import { Field, errorProps, inputBox } from "@/components/ui/FormFields";
 import {
   submitNewRequest,
-  type NewRequestField,
   type NewRequestState,
 } from "@/app/(main)/request/new/actions";
 import type { RequestPriority } from "@/types/request";
@@ -21,39 +21,6 @@ export const PRIORITY_OPTIONS: { value: RequestPriority; label: string }[] = [
   { value: "medium", label: "Medium" },
   { value: "high", label: "High" },
 ];
-
-export const inputBox =
-  "w-full rounded-md bg-white/80 px-3 text-sm text-foreground ring-1 ring-black/10 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand aria-invalid:ring-red-400";
-
-/** aria wiring so screen readers announce the error under a field. */
-export function errorProps(id: NewRequestField, error?: string) {
-  return error
-    ? { "aria-invalid": true, "aria-describedby": `${id}-error` }
-    : {};
-}
-
-type FieldProps = {
-  id: NewRequestField;
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-};
-
-export function Field({ id, label, error, children }: FieldProps) {
-  return (
-    <div className="flex flex-col">
-      <label htmlFor={id} className="pb-1.5 text-sm font-semibold text-[#44607F]">
-        {label}
-      </label>
-      {children}
-      {error && (
-        <p id={`${id}-error`} className="pt-1 text-xs text-red-600">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
 
 export default function NewRequestForm() {
   const [state, formAction, pending] = useActionState(

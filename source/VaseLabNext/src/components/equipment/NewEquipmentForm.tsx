@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { cn } from "cn";
+import { Field, errorProps, inputBox } from "@/components/ui/FormFields";
 import { SendForm } from "@/app/(main)/equipment/new/action";
 import type {
   EquipmentState,
@@ -21,38 +22,6 @@ export const STATE_OPTIONS: { value: EquipmentState; label: string }[] = [
   { value: "maintenance", label: "Maintenance" },
   { value: "retired", label: "Retired" },
 ];
-
-export const inputBox =
-  "w-full rounded-md bg-white/80 px-3 text-sm text-foreground ring-1 ring-black/10 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-brand aria-invalid:ring-red-400";
-
-export function errorProps(id: NewEquipmentField, error?: string) {
-  return error
-    ? { "aria-invalid": true, "aria-describedby": `${id}-error` }
-    : {};
-}
-
-type FieldProps = {
-  id: NewEquipmentField;
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-};
-
-export function Field({ id, label, error, children }: FieldProps) {
-  return (
-    <div className="flex flex-col">
-      <label htmlFor={id} className="pb-1.5 text-sm font-semibold text-[#44607F]">
-        {label}
-      </label>
-      {children}
-      {error && (
-        <p id={`${id}-error`} className="pt-1 text-xs text-red-600">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
 
 export default function NewEquipmentForm() {
   const [state, formAction, pending] = useActionState(SendForm, INITIAL_STATE);

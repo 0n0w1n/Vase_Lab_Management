@@ -1,19 +1,29 @@
 import {
   REQUEST_PRIORITIES,
+  REQUEST_STATUSES,
+  type EditRequestInput,
+  type EditRequestState,
   type LabRequest,
   type NewRequestInput,
   type NewRequestState,
   type RequestPriority,
+  type RequestStatus,
   type RequestSummary,
 } from "@/types/request";
 import { forbidden } from "next/navigation";
-import { authFetch, type User } from "@/lib/auth";
+import { authFetch, isManager, type User } from "@/lib/auth";
 
 /** Owner, lab manager or admin. Flask checks this again on every edit / delete. */
 export function canEditRequest(user: User | null, request: RequestSummary): boolean {
   if (!user) return false;
-  if (user.role === "lab_manager" || user.role === "admin") return true;
-  return request.requesterId !== undefined && request.requesterId === String(user.id);
+  if (isManager(user)) return true;
+  if (request.requesterId !== undefined) return request.requesterId === String(user.id);
+  // TODO(backend): remove once Flask sends requesterId...
+  return request.requestedBy === user.name;
+
+  // TODO(backend): remove once Flask sends requesterId. Matching by name is a
+  // stopgap: two people with the same name would both see the buttons.
+  // return request.requestedBy === user.name;
 }
 
 // no-store so the list isn't prerendered at build time when Flask is down
@@ -34,7 +44,7 @@ export async function getRequest(id: string): Promise<LabRequest | undefined> {
   return res.json();
 }
 
-const ERROR_FIELDS: Record<string, keyof NewRequestInput> = {
+const ERROR_FIELDS: Record<string, keyof EditRequestInput> = {
   "20": "title",
   "21": "details",
   "22": "priority",
@@ -44,13 +54,17 @@ const ERROR_FIELDS: Record<string, keyof NewRequestInput> = {
   "32": "priority",
   "33": "deadline",
   "34": "deadline",
+  // TODO(backend): edit-only codes for the manager fields
+  "35": "status",
+  "36": "capacity",
+  "37": "capacity",
 };
 
 export class RequestValidationError extends Error {
   constructor(
     public errorCode: string,
     message: string,
-    public field?: keyof NewRequestInput
+    public field?: keyof EditRequestInput
   ) {
     super(message);
   }
@@ -122,6 +136,31 @@ export function parseRequestForm(
   return { values, errors, input: { ...values, priority: values.priority as RequestPriority } };
 }
 
+function isStatus(value: string): value is RequestStatus {
+  return (REQUEST_STATUSES as readonly string[]).includes(value);
+}
+
+/** Reads the manager-only fields of the edit form: status and capacity. */
+export function parseManagerFields(formData: FormData): {
+  values: Pick<EditRequestState["values"], "status" | "capacity">;
+  errors: EditRequestState["errors"];
+  input?: Pick<EditRequestInput, "status" | "capacity">;
+} {
+  const values = {
+    status: String(formData.get("status") ?? ""),
+    capacity: String(formData.get("capacity") ?? "").trim(),
+  };
+  const capacity = Number(values.capacity);
+
+  const errors: EditRequestState["errors"] = {};
+  if (!isStatus(values.status)) errors.status = "Please select a status.";
+  if (!Number.isInteger(capacity) || capacity < 1)
+    errors.capacity = "Enter a whole number of at least 1.";
+
+  if (Object.keys(errors).length > 0) return { values, errors };
+  return { values, errors, input: { status: values.status as RequestStatus, capacity } };
+}
+
 /** Throws RequestValidationError when Flask rejects a field. */
 async function throwOnError(res: Response, what: string) {
   const body = await res.json().catch(() => null);
@@ -133,7 +172,7 @@ async function throwOnError(res: Response, what: string) {
 }
 
 // TODO(backend): POST /request/edit/<id>, owner + lab manager + admin
-export async function editRequest(id: string, input: NewRequestInput): Promise<void> {
+export async function editRequest(id: string, input: EditRequestInput): Promise<void> {
   const res = await authFetch(`/request/edit/${encodeURIComponent(id)}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
