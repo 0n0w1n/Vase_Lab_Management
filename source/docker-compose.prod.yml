@@ -1,26 +1,50 @@
+name: vaselab-prod
+
 services:
   node-app:
-    build: 
+    build:
       target: prod
     command: ["npm", "run", "start"]
 
+    depends_on:
+      flask-app:
+        condition: service_healthy
+
+    restart: unless-stopped
 
   flask-app:
-    ports:
-      - '8000:8000'
-    command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "${N_WORKERS}", "-b", "0.0.0.0", "--chdir", "/usr/src", "VaseLabFlask.main:create_app()"]
+    # Migrate, then make sure an admin exists, and only then start serving.
+    # exec makes Gunicorn the main process, so `docker compose stop` shuts it down cleanly.
+    command: ["sh", "-c", "flask db upgrade && flask create-admin && exec gunicorn -w ${N_WORKERS:-4} -b 0.0.0.0 --chdir /usr/src 'VaseLabFlask.main:create_app()'"]
 
     environment:
-      - DATABASE_URL=mysql+mysqlconnector://root:${DB_PASS}@mysql-db:3306/${DB_NAME}
-      - SECRET_KEY=${DB_SECRET_KEY}
-      - JWT_SECRET_KEY=${DB_JWT_SECRET_KEY}
+      - DATABASE_URL=mysql+mysqlconnector://${DB_USER:?DB_USER must be set}:${DB_PASS:?DB_PASS must be set}@mysql-db:3306/${DB_NAME:?DB_NAME must be set}
+      - SECRET_KEY=${DB_SECRET_KEY:?DB_SECRET_KEY must be set}
+      - JWT_SECRET_KEY=${DB_JWT_SECRET_KEY:?DB_JWT_SECRET_KEY must be set}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:?ADMIN_EMAIL must be set}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?ADMIN_PASSWORD must be set}
+
+    healthcheck:
+      # Port 8000 only opens once migrations and create-admin are done
+      test: ["CMD", "python3", "-c", "import socket; socket.create_connection(('localhost', 8000), 2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+    
+    restart: unless-stopped
 
   mysql-db:
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:?DB_ROOT_PASS must be set}
       MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+
     healthcheck:
-      test: "/usr/bin/mysql --user=root --password=${DB_PASS} --execute \"SHOW DATABASES;\""
+      test: "/usr/bin/mysql --user=${DB_USER} --password=${DB_PASS} --execute \"SHOW DATABASES;\""
       interval: 2s
       timeout: 5s
       retries: 10
+
+    restart: unless-stopped

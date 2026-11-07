@@ -28,6 +28,7 @@ services:
       - JWT_SECRET_KEY=dev
 
     post_start:
+      - command: /venv/bin/python3 -m flask db upgrade
       - command: /venv/bin/python3 -m flask seed
 
     develop:
@@ -38,6 +39,8 @@ services:
           initial_sync: true
 
   mysql-db:
+    ports:
+      - '3307:3306'
     environment:
       MYSQL_ROOT_PASSWORD: abc
       MYSQL_DATABASE: VaseLabDev
