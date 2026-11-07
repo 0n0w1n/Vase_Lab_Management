@@ -13,6 +13,8 @@ services:
     # command: ["bash", "start_prod.sh"]
 
   flask-app:
+    environment:
+      UPLOAD_ROOT: /var/lib/vaselab/uploads
     build:
       context: ./VaseLabFlask
     user: 'python'
@@ -23,7 +25,8 @@ services:
       - backend
       - db
     volumes:
-      - ./VaseLabFlask/migrations:/usr/src/VaseLabFlask/migrations    
+      - ./VaseLabFlask/migrations:/usr/src/VaseLabFlask/migrations  
+      - uploads_data:/var/lib/vaselab/uploads
     # command: ["/venv/bin/python3", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0", "main:create_app()"]
 
 
@@ -42,3 +45,4 @@ networks:
 
 volumes:
   db_data:
+  uploads_data:

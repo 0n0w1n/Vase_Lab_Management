@@ -60,6 +60,8 @@ export type LabRequest = RequestSummary & {
   assignees: string[];
   /** the signed-in TA's own ask, null when they haven't asked */
   myAsk: AskState | null;
+  /** whether the signed-in user can add files right now */
+  canUpload: boolean;
 };
 
 /** What the New Request form submits the server fills in everything else */

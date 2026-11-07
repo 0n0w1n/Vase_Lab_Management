@@ -2,6 +2,8 @@ services:
   node-app:
     build: 
       target: dev
+    environment:
+      APP_ORIGIN: http://localhost:3000
     command: ["npm", "run", "dev"]
 
     develop:

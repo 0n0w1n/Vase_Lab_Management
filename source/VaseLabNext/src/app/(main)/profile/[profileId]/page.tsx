@@ -3,7 +3,8 @@ import { notFound } from "next/navigation"; // Hugo : When we don't find corresp
 import { Briefcase, Building2, CalendarDays, Clock, Mail } from "lucide-react";
 import BackgroundGlow from "@/components/layout/BackgroundGlow";
 import InitialsAvatar from "@/components/request/InitialsAvatar";
-import { getUser } from "@/lib/auth"; // Hugo : function created in auth.ts , 
+import { getCurrentUser, getUser } from "@/lib/auth";
+import SeedUserForm from "@/components/profile/SeedUserForm";
 import { formatDate } from "@/lib/format"; // Hugo : used on line 46 
 
 // Spacing 1 unit in tailwinds = 0.25 rems = 4 px
@@ -34,12 +35,13 @@ type Props = {
 };
 
 // White inner card, shared by the header card and the contact card.
-const card = "rounded-2xl bg-white p-5 ring-1 ring-black/5";
+const card = "min-w-0 rounded-2xl bg-white p-4 sm:p-5 ring-1 ring-black/5";
 
 export default async function ProfilePage({ params }: Props) {
   const { profileId } = await params;
   const user = await getUser(profileId);
   if (!user) notFound();
+  const viewer = await getCurrentUser();
 
   const initials = user.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
   const role = user.role.replaceAll("_", " ").toUpperCase();
@@ -47,11 +49,11 @@ export default async function ProfilePage({ params }: Props) {
   const isOwner = user.isOwner
 
   return (
-    <div className="relative isolate min-h-screen overflow-hidden py-14">
+    <div className="relative isolate min-h-screen overflow-hidden py-8 sm:py-10 lg:py-14">
       <BackgroundGlow />
 
-      <div className="mx-auto max-w-5xl px-8">
-        <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
+      <div className="mx-auto max-w-5xl px-3 sm:px-6 lg:px-8">
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-y-1 text-xs text-muted-foreground">
           <Link href="/request" className="transition-colors hover:text-foreground">
             Manage Requests
           </Link>
@@ -59,40 +61,40 @@ export default async function ProfilePage({ params }: Props) {
           <span aria-current="page">Profile #{profileId}</span>
         </nav>
 
-        <h1 className="pt-1 pb-3 text-4xl font-extrabold text-brand">Profile</h1>
+        <h1 className="pt-2 pb-4 text-3xl sm:text-4xl font-extrabold text-brand">Profile</h1>
 
         {/* flex-col + gap-4 stacks the two cards with 16px between them */}
-        <div className="flex flex-col gap-4 rounded-3xl bg-white/60 p-4 md:p-6 ring-3 ring-black/10 backdrop-blur-xl">
-          {/* Header card: stacks on mobile, side by side from md up */}
-          <section className={`${card} flex flex-col gap-4 md:flex-row md:items-center md:justify-between`}>
-            <div className="flex items-center gap-4">
-              <InitialsAvatar initials={initials} className="size-16 text-lg" />
+        <div className="@container flex min-w-0 flex-col gap-4 rounded-3xl bg-white/60 p-2 sm:p-4 lg:p-6 ring-3 ring-black/10 backdrop-blur-xl">
+          {/* Respond to the available card width, including space taken by the sidebar. */}
+          <section className={`${card} flex flex-col gap-5 @2xl:flex-row @2xl:items-center @2xl:justify-between`}>
+            <div className="flex min-w-0 flex-1 flex-col items-start gap-3 @sm:flex-row @sm:gap-4">
+              <InitialsAvatar initials={initials} className="size-14 text-lg @sm:size-16" />
 
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-2xl font-bold">{user.name}</h2>
-                  <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand ring-1 ring-brand">
+              <div className="min-w-0 w-full">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="min-w-0 text-xl font-bold [overflow-wrap:anywhere] sm:text-2xl">{user.name}</h2>
+                  <span className="max-w-full rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand ring-1 ring-brand">
                     {role}
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
-                <div className="flex gap-4 pt-1 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Building2 className="size-3.5" /> {user.organization ?? "Not provided"}
+                <p className="mt-2 text-sm text-muted-foreground [overflow-wrap:anywhere]">{user.email}</p>
+                <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs text-muted-foreground">
+                  <span className="flex min-w-0 items-start gap-1.5">
+                    <Building2 className="mt-0.5 size-3.5 shrink-0" /> <span className="min-w-0 [overflow-wrap:anywhere]">{user.organization ?? "Not provided"}</span>
                   </span>
-                  <span className="flex items-center gap-1">
-                    <CalendarDays className="size-3.5" /> Joined {joined}
+                  <span className="flex min-w-0 items-start gap-1.5">
+                    <CalendarDays className="mt-0.5 size-3.5 shrink-0" /> <span>Joined {joined}</span>
                   </span>
                 </div>
               </div>
             </div>
 
             { isOwner && (
-              <div className="flex flex-col gap-2">
-                <Link href={`/profile/${user.id}/edit`} className="rounded-lg bg-brand px-4 py-1.5 text-center text-sm font-semibold text-brand-foreground hover:bg-brand/85">
+              <div className="grid w-full gap-2 @sm:grid-cols-2 @2xl:w-auto @2xl:shrink-0 @2xl:grid-cols-1">
+                <Link href={`/profile/${user.id}/edit`} className="flex min-h-11 items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-semibold text-brand-foreground hover:bg-brand/85">
                   Edit Profile
                 </Link>
-                <Link href={`/profile/${user.id}/edit#password`} className="rounded-lg bg-white px-4 py-1.5 text-center text-sm font-semibold ring-1 ring-black/10 hover:bg-black/5">
+                <Link href={`/profile/${user.id}/edit#password`} className="flex min-h-11 items-center justify-center rounded-lg bg-white px-4 py-2.5 text-center text-sm font-semibold ring-1 ring-black/10 hover:bg-black/5">
                   Account Settings
                 </Link>
               </div>
@@ -112,6 +114,7 @@ export default async function ProfilePage({ params }: Props) {
             </ul>
           </section>
         </div>
+        {viewer?.role === "admin" && viewer.id === user.id && <SeedUserForm />}
       </div>
     </div>
   );
@@ -120,9 +123,9 @@ export default async function ProfilePage({ params }: Props) {
 /** One line in the contact card: a brand-coloured icon followed by text. */
 function ContactRow({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
-    <li className="flex items-center gap-3">
-      <span className="text-brand">{icon}</span>
-      {text}
+    <li className="flex min-w-0 items-start gap-3">
+      <span className="mt-0.5 shrink-0 text-brand">{icon}</span>
+      <span className="min-w-0 [overflow-wrap:anywhere]">{text}</span>
     </li>
   );
 }
