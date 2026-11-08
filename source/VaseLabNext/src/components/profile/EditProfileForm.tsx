@@ -7,18 +7,18 @@ import {
   updateProfile, updatePassword, type ProfileState, type PasswordState,
 } from "@/app/(main)/profile/[profileId]/edit/actions";
 
-const inputClass = "h-11 w-full rounded-lg bg-white px-3 text-sm ring-1 ring-black/20 focus:outline-none focus:ring-2 focus:ring-brand aria-invalid:ring-red-500";
-const buttonClass = "rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground hover:bg-brand/85 disabled:opacity-60";
-const cardClass = "rounded-2xl bg-white/90 p-6 ring-1 ring-black/10";
+const inputClass = "h-12 min-w-0 w-full rounded-lg bg-white px-3 text-base sm:text-sm ring-1 ring-black/20 focus:outline-none focus:ring-2 focus:ring-brand aria-invalid:ring-red-500";
+const buttonClass = "min-h-11 w-full rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-brand-foreground hover:bg-brand/85 disabled:opacity-60 sm:w-auto";
+const cardClass = "min-w-0 rounded-2xl bg-white/90 p-4 sm:p-6 ring-1 ring-black/10";
 
 function Field({ id, label, error, children }: {
   id: string; label: string; error?: string; children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label htmlFor={id} className="mb-2 block text-sm font-semibold">{label}</label>
       {children}
-      {error && <p id={`${id}-error`} className="mt-1 text-sm text-red-600" role="alert">{error}</p>}
+      {error && <p id={`${id}-error`} className="mt-1 text-sm text-red-600 [overflow-wrap:anywhere]" role="alert">{error}</p>}
     </div>
   );
 }
@@ -37,7 +37,7 @@ export default function EditProfileForm({ user }: { user: User }) {
       <section className={cardClass}>
         <h2 className="mb-5 text-xl font-bold">Profile details</h2>
         <form action={profileAction} className="space-y-5">
-          <fieldset disabled={saving} className="space-y-5 disabled:opacity-60">
+          <fieldset disabled={saving} className="min-w-0 space-y-5 disabled:opacity-60">
             {([
               { id: "name", label: "Full name", max: 255, autoComplete: "name" },
               { id: "organization", label: "Organization (optional)", max: 150, autoComplete: "organization" },
@@ -52,8 +52,8 @@ export default function EditProfileForm({ user }: { user: User }) {
             ))}
           </fieldset>
           {profile.message && <p role="alert" className="text-sm text-red-600">{profile.message}</p>}
-          <div className="flex items-center justify-end gap-4">
-            <Link href={`/profile/${user.id}`} className="text-sm font-semibold">Cancel</Link>
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
+            <Link href={`/profile/${user.id}`} className="flex min-h-11 items-center justify-center rounded-lg px-4 text-sm font-semibold ring-1 ring-black/10 sm:ring-0">Cancel</Link>
             <button disabled={saving} className={buttonClass}>{saving ? "Saving…" : "Save profile"}</button>
           </div>
         </form>
@@ -64,7 +64,7 @@ export default function EditProfileForm({ user }: { user: User }) {
         <p className="mb-5 text-sm text-muted-foreground">Use 12 to 128 characters for your new password.</p>
         <form action={passwordAction} className="space-y-5">
           <input type="text" name="username" autoComplete="username" value={user.email} readOnly hidden />
-          <fieldset disabled={changing} className="space-y-5 disabled:opacity-60">
+          <fieldset disabled={changing} className="min-w-0 space-y-5 disabled:opacity-60">
             {([
               { id: "currentPassword", label: "Current password", autoComplete: "current-password", max: 1024 },
               { id: "newPassword", label: "New password", autoComplete: "new-password", max: 128 },

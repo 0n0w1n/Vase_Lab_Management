@@ -44,26 +44,26 @@ export default function AppSidebar({ user }: Props) {
     <div className="shrink-0">
       <aside
         className={cn(
-          "sticky top-0 flex h-screen flex-col rounded-tr-[2.5rem] bg-sidebar text-sidebar-foreground transition-[width] duration-200",
-          collapsed ? "w-20 px-3" : "w-72 px-6"
+          "sticky top-0 flex h-dvh flex-col rounded-tr-[2.5rem] bg-sidebar text-sidebar-foreground transition-[width] duration-200",
+          collapsed ? "w-16 px-2 md:w-20 md:px-3" : "w-16 px-2 md:w-72 md:px-6"
         )}
       >
         <Link
           href="/"
           className={cn(
-            "flex items-center gap-1 pt-9 pb-6 text-2xl font-bold tracking-[0.18em]",
-            collapsed && "justify-center text-lg tracking-normal"
+            "flex items-center justify-center gap-1 pt-6 pb-6 text-sm font-bold md:justify-start md:pt-9 md:text-2xl md:tracking-[0.18em]",
+            collapsed && "md:justify-center md:text-lg md:tracking-normal"
           )}
         >
           <span className="text-brand">VASE</span>
-          {!collapsed && <span>LAB</span>}
+          {!collapsed && <span className="hidden md:inline">LAB</span>}
         </Link>
 
         <div className="border-b border-white/15" />
 
         <nav className="flex flex-col gap-4 pt-7">
           {!collapsed && (
-            <p className="text-sm font-semibold text-sidebar-foreground">Menu</p>
+            <p className="hidden text-sm font-semibold text-sidebar-foreground md:block">Menu</p>
           )}
           {NAV_ITEMS.filter(
             (item) => !item.roles || item.roles.includes(user.role)
@@ -74,15 +74,16 @@ export default function AppSidebar({ user }: Props) {
               <Link
                 key={item.href}
                 href={item.href}
-                title={collapsed ? item.label : undefined}
+                title={item.label}
+                aria-label={item.label}
                 className={cn(
-                  "flex items-center gap-3 rounded-md bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm transition-colors hover:bg-brand-soft",
+                  "flex min-h-11 items-center justify-center gap-3 rounded-md bg-white px-0 py-3 md:justify-start md:px-4 text-sm font-semibold text-slate-800 shadow-sm transition-colors hover:bg-brand-soft",
                   active && "text-brand ring-2 ring-brand",
-                  collapsed && "justify-center px-0"
+                  collapsed && "md:justify-center md:px-0"
                 )}
               >
                 <Icon className={cn("size-5", active && "text-brand")} />
-                {!collapsed && <span>{item.label}</span>}
+                {!collapsed && <span className="hidden md:inline">{item.label}</span>}
               </Link>
             );
           })}
@@ -92,21 +93,22 @@ export default function AppSidebar({ user }: Props) {
 
         <Link
           href="/Announcements"
-          title={collapsed ? "Announcements" : undefined}
+          title="Announcements"
+          aria-label="Announcements"
           className={cn(
-            "flex items-center gap-3 py-4 text-sm font-semibold text-warn transition-opacity hover:opacity-80",
-            collapsed && "justify-center"
+            "flex items-center justify-center gap-3 py-4 md:justify-start text-sm font-semibold text-warn transition-opacity hover:opacity-80",
+            collapsed && "md:justify-center"
           )}
         >
           <Megaphone className="size-5" />
-          {!collapsed && <span>Announcements</span>}
+          {!collapsed && <span className="hidden md:inline">Announcements</span>}
         </Link>
 
         <div className="border-b border-white/15" />
 
         <div className="py-6">
           {!collapsed && (
-            <p className="pb-4 text-sm font-semibold text-sidebar-foreground">
+            <p className="hidden pb-4 text-sm font-semibold text-sidebar-foreground md:block">
               Profile
             </p>
           )}
@@ -115,13 +117,13 @@ export default function AppSidebar({ user }: Props) {
             aria-label={`View ${user.name}'s profile`}
             title={user.name}
             className={cn(
-              "flex items-center gap-3 pb-5",
-              collapsed && "justify-center"
+              "flex items-center justify-center gap-3 pb-5 md:justify-start",
+              collapsed && "md:justify-center"
             )}
           >
-            <Image src="/TripleTAvatar.svg" alt="Profile" width={67} height={67} className="rounded-full" />
+            <Image src="/TripleTAvatar.svg" alt="Profile" width={67} height={67} className="size-10 shrink-0 rounded-full md:size-14" />
             {!collapsed && (
-              <div className="min-w-0">
+              <div className="hidden min-w-0 md:block">
                 <p className="truncate text-sm font-semibold">{user.name}</p>
                 <p className="truncate text-sm text-sidebar-muted">
                   {user.email}
@@ -132,13 +134,14 @@ export default function AppSidebar({ user }: Props) {
           <form action={logout}>
             <button
               type="submit"
-              title={collapsed ? "Log out" : undefined}
+              title="Log out"
+              aria-label="Log out"
               className={cn(
-                "flex w-full items-center justify-center gap-2 rounded-md bg-white px-4 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-100"
+                "flex min-h-11 w-full items-center justify-center gap-2 rounded-md bg-white px-2 md:px-4 py-2.5 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-100"
               )}
             >
               <LogOut className="size-4 text-sky-600" />
-              {!collapsed && <span>Log out</span>}
+              {!collapsed && <span className="hidden md:inline">Log out</span>}
             </button>
           </form>
         </div>
@@ -150,7 +153,7 @@ export default function AppSidebar({ user }: Props) {
           onClick={() => setCollapsed((value) => !value)}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-expanded={!collapsed}
-          className="absolute top-19 -right-4 z-10 grid size-8 place-items-center rounded-full bg-white text-slate-700 shadow-md ring-1 ring-black/5 transition-colors hover:bg-slate-50"
+          className="absolute top-19 -right-4 z-10 hidden size-8 md:grid place-items-center rounded-full bg-white text-slate-700 shadow-md ring-1 ring-black/5 transition-colors hover:bg-slate-50"
         >
           <ChevronLeft
             className={cn("size-4 transition-transform", collapsed && "rotate-180")}

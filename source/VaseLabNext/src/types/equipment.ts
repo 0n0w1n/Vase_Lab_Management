@@ -28,3 +28,17 @@ export type EquipmentActivity = {
   at: string; // ISO date-time
 };
 
+export type NewEquipmentInput = {
+  name: string,
+  model: string,
+  state: EquipmentState,
+  description: string
+}
+
+export type NewEquipmentField = keyof NewEquipmentInput;
+
+export type NewEquipmentState = {
+  values: Record<NewEquipmentField, string>,
+  errors: Partial<Record<NewEquipmentField, string>>,
+  message?: string
+}

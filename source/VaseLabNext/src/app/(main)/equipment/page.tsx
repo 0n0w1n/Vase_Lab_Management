@@ -32,7 +32,10 @@ export default async function EquipmentPage() {
       <div className="mx-auto max-w-5xl">
         <PageHeader isLabManager={isLabManager} />
 
+      {/* inside card */}
         <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
+
+          {/* Top msg */}
           <p className="pb-3 text-sm text-muted-foreground">
             To borrow equipment,{" "}
             <Link href="/request/new" className="font-semibold text-brand underline">
@@ -41,14 +44,20 @@ export default async function EquipmentPage() {
             and choose the equipment in the request form.
           </p>
 
+          {/* other content */}
           <div className="overflow-x-auto">
             <div className="min-w-[44rem]">
+
               <TableHeaderRow />
+              
+              {/* items */}
               <ul className="flex flex-col gap-1 pt-2">
                 {items.map((item) => (
                   <EquipmentRow key={item.id} item={item} />
                 ))}
               </ul>
+
+              {/* item when 0 */}
               {items.length === 0 && (
                 <p className="py-10 text-center text-sm text-muted-foreground">
                   No equipment yet.
@@ -69,6 +78,9 @@ function PageHeader({ isLabManager }: { isLabManager: boolean }) {
       <h1 className="text-4xl font-extrabold text-brand">Lab Equipment</h1>
 
       {/* Only lab managers see this button. */}
+      {/* <button className={cn(actionButton, "text-brand")}>
+        Idk chat
+      </button> */}
       {isLabManager && (
         <Link href="/equipment/new" className={cn(actionButton, "text-brand")}>
           <Plus className="size-3.5" />
