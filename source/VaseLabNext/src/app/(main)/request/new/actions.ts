@@ -2,27 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect, unstable_rethrow } from "next/navigation";
-import { createRequest, RequestValidationError } from "@/lib/requests";
-import type { NewRequestInput, RequestPriority } from "@/types/request";
+import { createRequest, parseRequestForm, RequestValidationError } from "@/lib/requests";
+import type { NewRequestState } from "@/types/request";
 
-const PRIORITIES: RequestPriority[] = ["low", "medium", "high"];
-
-const TITLE_MAX = 255;
-const DETAILS_MAX = 2000;
-
-export type NewRequestField = keyof NewRequestInput;
-
-export type NewRequestState = {
-  /** Echoed back so the form keeps what the user typed after a failed submit. */
-  values: Record<NewRequestField, string>;
-  errors: Partial<Record<NewRequestField, string>>;
-  /** Failure that isn't tied to one field, e.g. the backend being down. */
-  message?: string;
-};
-
-function isPriority(value: string): value is RequestPriority {
-  return (PRIORITIES as string[]).includes(value);
-}
+export type { NewRequestField, NewRequestState } from "@/types/request";
 
 export async function submitNewRequest(
   _prev: NewRequestState,
@@ -30,39 +13,11 @@ export async function submitNewRequest(
 ): Promise<NewRequestState> {
   // No user check needed here: createRequest sends the token cookie and Flask
   // rejects the call without a valid one, even on a direct POST to this action.
-
-  const values = {
-    title: String(formData.get("title") ?? "").trim(),
-    details: String(formData.get("details") ?? "").trim(),
-    priority: String(formData.get("priority") ?? ""),
-    deadline: String(formData.get("deadline") ?? ""),
-  };
-
-  const errors: NewRequestState["errors"] = {};
-
-  if (!values.title) errors.title = "Please enter a header.";
-  else if (values.title.length > TITLE_MAX)
-    errors.title = `Header must be ${TITLE_MAX} characters or fewer.`;
-
-  if (values.details.length > DETAILS_MAX)
-    errors.details = `Details must be ${DETAILS_MAX} characters or fewer.`;
-
-  if (!isPriority(values.priority)) errors.priority = "Please select a priority.";
-
-  // Compared against today's UTC date, so it can be a few hours lenient around
-  // midnight — good enough as a sanity check; the backend owns the real rule.
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(values.deadline))
-    errors.deadline = "Please select a deadline.";
-  else if (values.deadline < new Date().toISOString().slice(0, 10))
-    errors.deadline = "Deadline can't be in the past.";
-
-  if (Object.keys(errors).length > 0) return { values, errors };
+  const { values, errors, input } = parseRequestForm(formData);
+  if (!input) return { values, errors };
 
   try {
-    await createRequest({
-      ...values,
-      priority: values.priority as RequestPriority,
-    });
+    await createRequest(input);
   } catch (error) {
     // Let the expired-session redirect to /login through.
     unstable_rethrow(error);

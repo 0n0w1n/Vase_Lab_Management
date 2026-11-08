@@ -4,7 +4,9 @@ import PriorityDot from "@/components/request/PriorityDot";
 import RequestFilters from "@/components/request/RequestFilters";
 import StatusPill from "@/components/request/StatusPill";
 import { formatDate } from "@/lib/format";
-import { getRequests } from "@/lib/requests";
+import RequestActions from "@/components/request/RequestActions";
+import { getCurrentUser, type User } from "@/lib/auth";
+import { canEditRequest, getRequests } from "@/lib/requests";
 import { REQUEST_PRIORITIES, REQUEST_STATUSES } from "@/types/request";
 import { cn } from "cn";
 import VideoPlayer from "@/components/test/video";
@@ -34,7 +36,8 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
   const status = REQUEST_STATUSES.find((value) => value === params.status);
   const priority = REQUEST_PRIORITIES.find((value) => value === params.priority);
 
-  const requests = (await getRequests()).filter(
+  const [allRequests, user] = await Promise.all([getRequests(), getCurrentUser()]);
+  const requests = allRequests.filter(
     (request) =>
       (!status || request.status === status) &&
       (!priority || request.priority === priority)
@@ -56,7 +59,7 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
               <TableHeaderRow />
               <ul className="flex flex-col gap-1 pt-2">
                 {requests.map((request) => (
-                  <RequestRow key={request.id} request={request} />
+                  <RequestRow key={request.id} request={request} user={user} />
                 ))}
               </ul>
               {requests.length === 0 && (
@@ -117,9 +120,9 @@ function TableHeaderRow() {
   );
 }
 
-function RequestRow({ request }: { request: Request }) {
+function RequestRow({ request, user }: { request: Request; user: User | null }) {
   return (
-    <li>
+    <li className="group relative">
       <Link
         href={`/request/${request.id}`}
         className={cn(
@@ -135,6 +138,7 @@ function RequestRow({ request }: { request: Request }) {
         <PriorityDot priority={request.priority} />
         <DeadlineCell deadline={request.deadline} />
       </Link>
+      {canEditRequest(user, request) && <RequestActions request={request} variant="hover" role={user!.role} />}
     </li>
   );
 }

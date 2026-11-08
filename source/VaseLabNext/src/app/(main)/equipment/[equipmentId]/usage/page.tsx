@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatDate } from "@/lib/format";
-import { formatEquipmentId, getEquipmentById, getEquipmentUsage } from "@/lib/equipment";
+import { formatDate, formatEquipmentId } from "@/lib/format";
+import { getEquipmentById, getEquipmentUsage } from "@/lib/equipment";
 import type { EquipmentUsage } from "@/types/equipment";
 
 type Props = {

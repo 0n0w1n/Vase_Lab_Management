@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import RequestActions from "@/components/request/RequestActions";
 import RequestTabs from "@/components/request/RequestTabs";
 import StatusBadge from "@/components/request/StatusBadge";
 import WorkOnButton from "@/components/request/WorkOnButton";
 import { getCurrentUser } from "@/lib/auth";
-import { getRequest } from "@/lib/requests";
+import { canEditRequest, getRequest } from "@/lib/requests";
 import type { LabRequest } from "@/types/request";
 import { cn } from "cn";
 
@@ -25,6 +26,7 @@ export default async function RequestDetailLayout({ children, params }: Props) {
   if (!request) notFound();
 
   const user = await getCurrentUser();
+  const canEdit = canEditRequest(user, request);
 
   return (
     <div className="relative isolate min-h-screen overflow-hidden py-12">
@@ -53,6 +55,7 @@ export default async function RequestDetailLayout({ children, params }: Props) {
             <div className="flex flex-wrap items-center justify-end gap-3">
               {user?.role === "lab_ta" && <WorkOnStatus request={request} />}
               <StatusBadge status={request.status} />
+              {canEdit && <RequestActions request={request} variant="buttons" role={user!.role} />}
             </div>
           </header>
 

@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import type { RequestStatus } from "@/types/request";
 
-const STATUS: Record<RequestStatus, { label: string; className: string }> = {
+export const STATUS: Record<RequestStatus, { label: string; className: string }> = {
   pending: { label: "Pending", className: "bg-blue-100 text-blue-600" },
   "in-progress": { label: "In Progress", className: "bg-orange-100 text-warn" },
   review: { label: "Review", className: "bg-zinc-200 text-zinc-700" },

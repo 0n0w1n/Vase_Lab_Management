@@ -14,6 +14,11 @@ export type User = {
   isOwner: Boolean;
 };
 
+/** Lab managers and admins may edit or delete anything. */
+export function isManager(user: User | null): boolean {
+  return user?.role === "lab_manager" || user?.role === "admin";
+}
+
 /** httpOnly cookie holding the Flask JWT, so client JS can never read it. */
 export const TOKEN_COOKIE = "token";
 
