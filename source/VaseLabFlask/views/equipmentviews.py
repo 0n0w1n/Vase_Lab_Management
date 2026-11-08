@@ -1,10 +1,10 @@
 from flask import Blueprint, request
 from flask_jwt_extended import current_user, jwt_required
 
-from extensions import db
-from models import ActivityLog, Equipment, Request, User
-from lib.requestUtils import ACTIVE_STATES, iso, verify_user_input
-from lib.authUtils import STAFF, MANAGERS
+from VaseLabFlask.extensions import db
+from VaseLabFlask.models import ActivityLog, Equipment, Request, User
+from VaseLabFlask.lib.requestUtils import ACTIVE_STATES, iso, verify_user_input
+from VaseLabFlask.lib.authUtils import STAFF, FILE_MANAGERS
 
 equipment_api = Blueprint("equipment_api", __name__)
 
@@ -188,7 +188,7 @@ def create_equipment():
 @equipment_api.post("/edit/<int:equipment_id>")
 @jwt_required()
 def edit_equipment(equipment_id: int):
-    if current_user.UserRole not in MANAGERS:
+    if current_user.UserRole not in FILE_MANAGERS:
         return {"errorCode": "12", "error": "Unauthorized"}, 403
 
     equipment = db.session.get(Equipment, equipment_id)
@@ -279,42 +279,4 @@ def delete_equipment(equipment_id: int):
 
     return {}
 
-"""
-The delete endpoint is written and compiles. I haven't called it yet, because your dev stack isn't running; the steps to test it are below. No migration or seed changes were needed.
 
-What it does: POST /equipment/delete/<id> in equipmentviews.py
-
-Only the admin and lab managers can delete.
-Equipment that has ever been used in a request is refused, so its usage history stays intact. Your colleague's edit feature can set it to retired instead.
-Otherwise it deletes the row and writes an activity log entry recording the full item.
-Testing it
-Start the stack with docker compose up --watch, log in to get a token, then try these cases. Every seeded item is used by a request, so to see a successful delete you create a fresh item first.
-
-Case	How	Expected
-Unused item	As the manager: POST /equipment/create, then POST /equipment/delete/<new id>	200 {}, and the item is gone from /equipment/list
-Used item	As the manager: POST /equipment/delete/1	409, errorCode: "30"
-Doesn't exist	As the manager: POST /equipment/delete/9999	404, errorCode: "10"
-Wrong role	As ta@lab.local: delete anything	403, errorCode: "12"
-From PowerShell, for example:
-
-
-$token = (Invoke-RestMethod -Method Post -Uri http://localhost:8000/auth/login -ContentType "application/json" -Body '{"email":"manager@lab.local","password":"manager123"}').access_token
-Invoke-RestMethod -Method Post -Uri http://localhost:8000/equipment/delete/1 -Headers @{Authorization="Bearer $token"}
-For your colleague hooking up the button
-Written for: your colleague building the equipment edit and the delete button.
-
-Delete equipment: POST /equipment/delete/<id>, no body, with the user's token (authFetch). Returns {} on success.
-
-Button visibility: show it only to the admin and lab managers. TAs can create equipment but can't delete it.
-On 30 (409): the item has request history and can't be deleted. Suggest retiring it with your edit form instead.
-On 10: not found. On 12: not allowed.
-Error text from Flask is for documentation only, so put your own wording in the frontend.
-After success: go back to the equipment list. The detail and activity pages for that ID return 404 once it's deleted.
-For the backend lead
-Flask's AGENTS.md asks you to tell them about new endpoints so they can add them to the spec:
-
-New: POST /equipment/delete/<id>, admin or lab manager only. Hard-deletes equipment that has never been used in a request, and logs it as an equipment delete with the item in OldValue. Errors: 10 not found (404), 12 unauthorized (403), 30 has request history (409).
-
-When you deal with the branch later: this change only appends to the end of the file, so it will move to a fresh branch from main, or merge with main, without conflicts.
-
-"""

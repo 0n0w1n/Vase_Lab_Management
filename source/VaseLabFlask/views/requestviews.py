@@ -12,10 +12,10 @@ from flask import Blueprint, request
 from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import func
 
-from extensions import db
-from lib.authUtils import STAFF, MANAGERS
-from lib.requestUtils import REQUEST_STATES, ASSIGNMENT_STATES, verify_user_input
-from models import ActivityLog, File, Request, RequestAssignment, User
+from VaseLabFlask.extensions import db
+from VaseLabFlask.lib.authUtils import STAFF, FILE_MANAGERS, can_read_request, can_read_request_files, can_upload_now
+from VaseLabFlask.lib.requestUtils import ASSIGNMENT_STATES, verify_user_input
+from VaseLabFlask.models import ActivityLog, File, Request, RequestAssignment, User
 
 # A JSON body, optionally paired with an HTTP status code
 JsonDict = dict[str, Any]
@@ -96,7 +96,7 @@ def get_request_details(request_id: int) -> ApiResponse:
     req: Request = row[0]
     user: User = row[1]
 
-    if current_user.UserRole not in STAFF and req.UserID != current_user.UserID:
+    if not can_read_request(current_user, req):
         return {"errorCode": "11", "error": "Unauthorized"}, 403
 
     files: Sequence[File] = db.session.execute(
@@ -121,14 +121,16 @@ def get_request_details(request_id: int) -> ApiResponse:
     )
 
     file_list: list[JsonDict] = []
-    for file in files:
-        created_at = file.CreatedAt.isoformat() + "Z" if file.CreatedAt else None
-        file_list.append({
-            "id": file.FileID,
-            "name": file.FileName,
-            "bytes": file.FileSize or "Unknown",
-            "uploadedAt": created_at,
-        })
+    # Unapproved TAs may see the request but not its attachments
+    if can_read_request_files(current_user, req, my_state):
+        for file in files:
+            created_at = file.CreatedAt.isoformat() + "Z" if file.CreatedAt else None
+            file_list.append({
+                "id": file.FileID,
+                "name": file.FileName,
+                "bytes": file.FileSize or "Unknown",
+                "uploadedAt": created_at,
+            })
 
     return {
         "id": str(req.RequestID),
@@ -144,6 +146,7 @@ def get_request_details(request_id: int) -> ApiResponse:
         "assignees": assignees,
         "myAsk": ASSIGNMENT_STATES.get(my_state),
         "files": file_list,
+        "canUpload": can_upload_now(current_user, req),
     }
 
 
@@ -299,7 +302,7 @@ def edit_request(request_id):
     )).first()
     assigned_amount = _count_approved(request_id)
 
-    if current_user.UserRole not in MANAGERS and working_on is None and current_user.UserID != req.UserID:
+    if current_user.UserRole not in FILE_MANAGERS and working_on is None and current_user.UserID != req.UserID:
         return {"errorCode": "13", "error": "Unauthorized"}, 403
 
     updating = {
@@ -315,7 +318,7 @@ def edit_request(request_id):
     updating["details"] = user_input.get("details")
 
     # fields managers and lab tas can change
-    if current_user.UserRole in MANAGERS or current_user.UserRole == "lab_ta":
+    if current_user.UserRole in FILE_MANAGERS or current_user.UserRole == "lab_ta":
         updating["status"] = user_input.get("status")
         if updating["status"]:
             if updating["status"] not in REQUEST_STATES:
@@ -329,7 +332,7 @@ def edit_request(request_id):
                 allowed_status.append("review")
 
     # fields only managers can change
-    if current_user.UserRole in MANAGERS:
+    if current_user.UserRole in FILE_MANAGERS:
         if updating["status"]:
             allowed_status.extend(["close", "reject"])
             if assigned_amount > 0:
