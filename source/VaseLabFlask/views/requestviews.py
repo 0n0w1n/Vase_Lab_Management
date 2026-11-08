@@ -287,6 +287,7 @@ def edit_request(request_id):
     result = verify_user_input(user_input, set())
     if result[1] != 200:
         return result
+    print(user_input, flush=True)
 
     req: Request = db.session.execute(db.select(Request).where(Request.RequestID == request_id)).scalar()
     if req is None:
@@ -296,6 +297,7 @@ def edit_request(request_id):
         & (RequestAssignment.UserID == current_user.UserID)
         & (RequestAssignment.State == "Approved")
     )).first()
+    assigned_amount = _count_approved(request_id)
 
     if current_user.UserRole not in MANAGERS and working_on is None and current_user.UserID != request.UserID:
         return {"errorCode": "13", "error": "Unauthorized"}, 403
@@ -314,30 +316,37 @@ def edit_request(request_id):
 
     # fields managers and lab tas can change
     if current_user.UserRole in MANAGERS or current_user.UserRole == "lab_ta":
-        updating["priority"] = user_input.get("priority")
-        if updating["priority"]:
-            if updating["priority"] not in PRIORITIES:
-                return {"errorCode": "21", "error": "Invalid priority"}, 400
         updating["status"] = user_input.get("status")
         if updating["status"]:
             if updating["status"] not in REQUEST_STATES:
                 return {"errorCode": "22", "error": "Invalid status"}, 400
+            allowed_status = [] # pending/in-progress is the same status, dependin on how many are assigned
 
     # checks for if lab tas can change status
     if current_user.UserRole in "lab_ta":
         if updating["status"]:
-            if (updating["status"] not in {"in-progress", "review"} or req.RequestState not in {"in-progress", "review"}):
-                return {"errorCode": "23", "error": "Unauthorized status change"}, 403
+            if req.RequestState == "in-progress":
+                allowed_status.append("review")
 
     # fields only managers can change
     if current_user.UserRole in MANAGERS:
+        if updating["status"]:
+            allowed_status.extend(["close", "reject"])
+            if assigned_amount > 0:
+                allowed_status.append("in-progress")
+            else:
+                allowed_status.append("pending")
+        updating["priority"] = user_input.get("priority")
+        if updating["priority"]:
+            if updating["priority"] not in PRIORITIES:
+                return {"errorCode": "21", "error": "Invalid priority"}, 400
         updating["capacity"] = user_input.get("capacity")
         if updating["capacity"]:
             try:
                 updating["capacity"] = int(updating["capacity"])
             except ValueError:
                 return {"errorCode": "24", "error": "Capacity must be an integer"}, 400
-            if updating["capacity"] < 1 or updating["capacity"] < _count_approved(request_id):
+            if updating["capacity"] < 1 or updating["capacity"] < assigned_amount:
                 return {"errorCode": "25", "error": "Invalid capacity"}
         updating["deadline"] = user_input.get("deadline")
         if updating["deadline"]:
@@ -347,10 +356,13 @@ def edit_request(request_id):
                 return {"errorCode": "26", "error": "Invalid deadline date format"}, 400
 
     # DRY: Do Repeat Yourself
+    if updating["status"]:
+        if updating["status"] not in allowed_status:
+            return {"errorCode": "23", "error": "Unauthorized status change"}, 403
+        req.RequestState = updating["status"]
     if updating["title"]: req.RequestTitle = updating["title"]
     if updating["details"]: req.RequestDetails = updating["details"]
     if updating["priority"]: req.RequestPriority = updating["priority"]
-    if updating["status"]: req.RequestState = updating["status"]
     if updating["capacity"]: req.Capacity = updating["capacity"]
     if updating["deadline"]:
         req.RequestDeadline = updating["deadline"]
