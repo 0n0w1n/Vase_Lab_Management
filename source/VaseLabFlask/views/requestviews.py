@@ -14,7 +14,7 @@ from sqlalchemy import func
 
 from VaseLabFlask.extensions import db
 from VaseLabFlask.lib.authUtils import STAFF, FILE_MANAGERS, can_read_request, can_read_request_files, can_upload_now
-from VaseLabFlask.lib.requestUtils import ASSIGNMENT_STATES, verify_user_input
+from VaseLabFlask.lib.requestUtils import ASSIGNMENT_STATES, verify_user_input, REQUEST_STATES
 from VaseLabFlask.models import ActivityLog, File, Request, RequestAssignment, User
 
 # A JSON body, optionally paired with an HTTP status code
