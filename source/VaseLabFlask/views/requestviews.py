@@ -345,8 +345,6 @@ def edit_request(request_id):
                 updating["deadline"] = datetime.strptime(updating["deadline"], "%Y-%m-%d")
             except ValueError, TypeError:
                 return {"errorCode": "26", "error": "Invalid deadline date format"}, 400
-            if updating["deadline"].date() < date.today():
-                return {"errorCode": "27", "error": "Invalid deadline"}, 400
 
     # DRY: Do Repeat Yourself
     if updating["title"]: req.RequestTitle = updating["title"]
