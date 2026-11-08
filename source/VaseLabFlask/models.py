@@ -159,7 +159,13 @@ class ActivityLog(db.Model):
 
     LogID: int = mapped_column(db.Integer, primary_key=True)
     EntityType: str = mapped_column(
-        db.Enum("request", "equipment", name="entity_type"),
+        db.Enum(
+            "request",
+            "equipment",
+            "user",
+            "file",
+            "comment",
+            name="entity_type"),
         nullable=False,
     )
     EntityID: int = mapped_column(db.Integer, nullable=False, index=True)

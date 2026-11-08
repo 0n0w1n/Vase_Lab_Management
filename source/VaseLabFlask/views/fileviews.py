@@ -123,11 +123,11 @@ def upload_file(request_id: int):
         db.session.flush()
         file_id = record.FileID
         db.session.add(ActivityLog(
-            UserID=current_user.UserID,
             Action="create",
             EntityType="file",
             EntityID=file_id,
-            NewValue={
+            fields={
+                "userID": current_user.UserID,
                 "RequestID": request_id,
                 "FileName": stored.original_name,
                 "FileSize": stored.size_bytes,
