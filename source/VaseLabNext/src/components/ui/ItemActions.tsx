@@ -64,3 +64,41 @@ export function ItemActions({ variant, dialogs }: Props) {
     </>
   );
 }
+
+export function ItemActionsNoDelete({ variant, dialogs }: Props) {
+  const [open, setOpen] = useState<ActionKind | null>(null);
+  const close = () => setOpen(null);
+
+  return (
+    <>
+      {variant === "buttons" ? (
+        <div className="flex gap-2">
+          <button type="button" onClick={() => setOpen("edit")} className={cn(headerButton, "bg-indigo-600")}>
+            Edit
+          </button>
+        </div>
+      ) : (
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex w-12 items-center justify-center rounded-r-lg opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 has-[[data-popup-open]]:pointer-events-auto has-[[data-popup-open]]:opacity-100">
+          <Menu.Root>
+            <Menu.Trigger aria-label="Actions">
+              <EllipsisVertical className="size-5" />
+            </Menu.Trigger>
+
+            <Menu.Portal>
+              <Menu.Positioner side="right" align="end" sideOffset={15} collisionAvoidance={{ side: "flip" }} className="z-50 outline-none">
+                <Menu.Popup className="min-w-28 rounded-lg bg-white p-1 shadow-lg ring-1 ring-black/10 outline-none">
+                  <Menu.Item onClick={() => setOpen("edit")} className={menuItem}>
+                    Edit
+                  </Menu.Item>
+                </Menu.Popup>
+              </Menu.Positioner>
+            </Menu.Portal>
+          </Menu.Root>
+        </div>
+      )}
+
+      {/* Outside Menu.Root so the modals stay open after the menu closes */}
+      {dialogs(open, close)}
+    </>
+  );
+}

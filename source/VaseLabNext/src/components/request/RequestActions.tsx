@@ -6,7 +6,7 @@ import { PRIORITY_OPTIONS } from "@/components/request/NewRequestForm";
 import { STATUS } from "@/components/request/StatusPill";
 import { ConfirmDeleteModal } from "@/components/ui/ConfirmDeleteModal";
 import { SelectInput, TextArea, TextInput } from "@/components/ui/FormFields";
-import { ItemActions } from "@/components/ui/ItemActions";
+import { ItemActionsNoDelete } from "@/components/ui/ItemActions";
 import { Modal, ModalFormButtons } from "@/components/ui/Modal";
 import { useModalForm } from "@/components/ui/useModalForm";
 import type { UserRole } from "@/lib/auth";
@@ -53,14 +53,14 @@ type Props = {
 /** Edit + Delete for one request. Only render it for the owner, assigned TAs, lab managers and admins. */
 export default function RequestActions({ request, variant, role }: Props) {
   return (
-    <ItemActions
+    <ItemActionsNoDelete
       variant={variant}
       dialogs={(open, close) => (
         <>
           <Modal open={open === "edit"} onClose={close} title={`Edit Request #${request.id}`} description={`Requested by ${request.requestedBy}`}>
             <EditRequestLoader request={request} role={role} onDone={close} />
           </Modal>
-          <ConfirmDeleteModal
+          {/* <ConfirmDeleteModal
             open={open === "delete"}
             onClose={close}
             title={`Delete Request #${request.id}?`}
@@ -68,7 +68,7 @@ export default function RequestActions({ request, variant, role }: Props) {
             onConfirm={() => removeRequest(request.id)}
             successText={`Request #${request.id} deleted`}
             redirectTo={variant === "buttons" ? "/request" : undefined}
-          />
+          /> */}
         </>
       )}
     />
