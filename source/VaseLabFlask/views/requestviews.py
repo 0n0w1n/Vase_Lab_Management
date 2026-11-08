@@ -292,7 +292,6 @@ def edit_request(request_id):
     result = verify_user_input(user_input, set())
     if result[1] != 200:
         return result
-    print(user_input, flush=True)
 
     req: Request = db.session.execute(db.select(Request).where(Request.RequestID == request_id)).scalar()
     if req is None:
