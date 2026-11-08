@@ -4,7 +4,7 @@ import RequestActions from "@/components/request/RequestActions";
 import RequestTabs from "@/components/request/RequestTabs";
 import StatusBadge from "@/components/request/StatusBadge";
 import WorkOnButton from "@/components/request/WorkOnButton";
-import { getCurrentUser, isManager } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { canEditRequest, getRequest } from "@/lib/requests";
 import type { LabRequest } from "@/types/request";
 import { cn } from "cn";
@@ -55,7 +55,7 @@ export default async function RequestDetailLayout({ children, params }: Props) {
             <div className="flex flex-wrap items-center justify-end gap-3">
               {user?.role === "lab_ta" && <WorkOnStatus request={request} />}
               <StatusBadge status={request.status} />
-              {canEdit && <RequestActions request={request} variant="buttons" canManage={isManager(user)} />}
+              {canEdit && <RequestActions request={request} variant="buttons" role={user!.role} />}
             </div>
           </header>
 

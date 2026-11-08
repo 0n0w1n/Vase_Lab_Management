@@ -14,17 +14,14 @@ import { forbidden } from "next/navigation";
 import { authFetch, isManager, type User } from "@/lib/auth";
 
 /** Owner, lab manager or admin. Flask checks this again on every edit / delete. */
-export function canEditRequest(user: User | null, request: RequestSummary): boolean {
+export function canEditRequest(user: User | null, request: RequestSummary & { assignees?: string[] }) {
   if (!user) return false;
   if (isManager(user)) return true;
+  if (request.assignees?.includes(user.name)) return true;   // approved TA
   if (request.requesterId !== undefined) return request.requesterId === String(user.id);
-  // TODO(backend): remove once Flask sends requesterId...
   return request.requestedBy === user.name;
-
-  // TODO(backend): remove once Flask sends requesterId. Matching by name is a
-  // stopgap: two people with the same name would both see the buttons.
-  // return request.requestedBy === user.name;
 }
+
 
 // no-store so the list isn't prerendered at build time when Flask is down
 

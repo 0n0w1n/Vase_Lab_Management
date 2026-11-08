@@ -299,7 +299,7 @@ def edit_request(request_id):
     )).first()
     assigned_amount = _count_approved(request_id)
 
-    if current_user.UserRole not in MANAGERS and working_on is None and current_user.UserID != request.UserID:
+    if current_user.UserRole not in MANAGERS and working_on is None and current_user.UserID != req.UserID:
         return {"errorCode": "13", "error": "Unauthorized"}, 403
 
     updating = {
@@ -356,7 +356,8 @@ def edit_request(request_id):
                 return {"errorCode": "26", "error": "Invalid deadline date format"}, 400
 
     # DRY: Do Repeat Yourself
-    if updating["status"]:
+    # leaving the status as it is is always fine
+    if updating["status"] and updating["status"] != req.RequestState:
         if updating["status"] not in allowed_status:
             return {"errorCode": "23", "error": "Unauthorized status change"}, 403
         req.RequestState = updating["status"]

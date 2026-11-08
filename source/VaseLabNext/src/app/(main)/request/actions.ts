@@ -11,7 +11,7 @@ import {
   RequestValidationError,
 } from "@/lib/requests";
 import type { ActionResult } from "@/types/action";
-import type { EditRequestInput, EditRequestState } from "@/types/request";
+import type { EditRequestInput, EditRequestState, RequestStatus } from "@/types/request";
 
 // Flask's error text is for the docs only, so the wording shown lives here.
 const DELETE_MESSAGES: Record<string, string> = {
@@ -28,7 +28,8 @@ export async function updateRequest(
 ): Promise<EditRequestState> {
   const base = parseRequestForm(formData, keepDeadline);
   // Checked here, not trusted from the form: a member could add the fields by hand.
-  const manager = isManager(await getCurrentUser())
+  const user = await getCurrentUser();
+  const manager = isManager(user)
     ? parseManagerFields(formData)
     : { values: { status: "", capacity: "" }, errors: {}, input: {} };
 
@@ -36,6 +37,10 @@ export async function updateRequest(
   const errors = { ...base.errors, ...manager.errors };
   if (!base.input || !manager.input) return { values, errors };
   const input: EditRequestInput = { ...base.input, ...manager.input };
+  // A TA may move in-progress to review. Flask checks the move.
+  if (user?.role === "lab_ta" && formData.has("status")) {
+    input.status = String(formData.get("status")) as RequestStatus;
+  }
 
   try {
     await editRequest(id, input);
@@ -69,10 +74,10 @@ export async function removeRequest(id: string): Promise<ActionResult> {
   return { ok: true };
 }
 
-/** The list rows don't carry details or capacity, so the edit modal loads them on open. */
+/** The list rows don't carry details, capacity or assignedCount, so the edit modal loads them on open. */
 export async function loadRequestDetails(
   id: string
-): Promise<{ details: string; capacity: number } | null> {
+): Promise<{ details: string; capacity: number; assignedCount: number } | null> {
   try {
     const res = await authFetch(`/request/details/${encodeURIComponent(id)}`, { cache: "no-store" });
     if (!res.ok) return null;
@@ -80,6 +85,7 @@ export async function loadRequestDetails(
     return {
       details: typeof body?.details === "string" ? body.details : "",
       capacity: typeof body?.capacity === "number" ? body.capacity : 1,
+      assignedCount: typeof body?.assignedCount === "number" ? body.assignedCount : 0,
     };
   } catch (error) {
     unstable_rethrow(error);

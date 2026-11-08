@@ -5,7 +5,7 @@ import RequestFilters from "@/components/request/RequestFilters";
 import StatusPill from "@/components/request/StatusPill";
 import { formatDate } from "@/lib/format";
 import RequestActions from "@/components/request/RequestActions";
-import { getCurrentUser, isManager, type User } from "@/lib/auth";
+import { getCurrentUser, type User } from "@/lib/auth";
 import { canEditRequest, getRequests } from "@/lib/requests";
 import { REQUEST_PRIORITIES, REQUEST_STATUSES } from "@/types/request";
 import { cn } from "cn";
@@ -138,7 +138,7 @@ function RequestRow({ request, user }: { request: Request; user: User | null }) 
         <PriorityDot priority={request.priority} />
         <DeadlineCell deadline={request.deadline} />
       </Link>
-      {canEditRequest(user, request) && <RequestActions request={request} variant="hover" canManage={isManager(user)} />}
+      {canEditRequest(user, request) && <RequestActions request={request} variant="hover" role={user!.role} />}
     </li>
   );
 }
