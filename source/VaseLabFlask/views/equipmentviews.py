@@ -170,11 +170,11 @@ def create_equipment():
     db.session.flush()
 
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
         Action="create",
         EntityType="equipment",
         EntityID=equipment.EquipmentID,
-        NewValue={
+        fields={
+            "userID": current_user.UserID,
             "EquipmentName": equipment.EquipmentName,
             "EquipmentModel": equipment.EquipmentModel,
             "EquipmentState": equipment.EquipmentState,
@@ -232,12 +232,14 @@ def edit_equipment(equipment_id: int):
         setattr(equipment, k, v)
 
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
         Action="update",
         EntityType="equipment",
         EntityID=equipment_id,
-        OldValue=old,
-        NewValue=changed,
+        fields={
+            "userID": current_user.UserID,
+            "old": old,
+            "new": changed,
+        },
     ))
     db.session.commit()
     return {}, 200
@@ -263,11 +265,11 @@ def delete_equipment(equipment_id: int):
 
     # Snapshot first, so the log still records what was removed
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
         Action="delete",
         EntityType="equipment",
         EntityID=equipment.EquipmentID,
-        OldValue={
+        fields={
+            "userID": current_user.UserID,
             "EquipmentName": equipment.EquipmentName,
             "EquipmentModel": equipment.EquipmentModel,
             "EquipmentState": equipment.EquipmentState,
