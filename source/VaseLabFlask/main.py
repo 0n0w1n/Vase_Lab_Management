@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from pathlib import Path
 from flask import Flask, request
 from werkzeug.exceptions import HTTPException
 
@@ -12,7 +13,7 @@ from .views.userviews import user_api
 from .views.dashboardviews import dashboard_api
 from .views.equipmentviews import equipment_api
 from .views.workloadviews import workload_api
-from views.fileviews import file_api
+from .views.fileviews import file_api
 
 def create_app(test_config=None):
     # create and configure the app

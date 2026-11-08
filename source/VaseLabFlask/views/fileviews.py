@@ -4,16 +4,16 @@ from flask import Blueprint, Response, current_app, request, send_file
 from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy.exc import DBAPIError, SQLAlchemyError
 
-from extensions import db
-from lib.authUtils import can_add_request_files, can_read_request_files, can_upload_now
-from lib.fileUtils import (
+from VaseLabFlask.extensions import db
+from VaseLabFlask.lib.authUtils import can_add_request_files, can_read_request_files, can_upload_now
+from VaseLabFlask.lib.fileUtils import (
     UploadValidationError,
     remove_stored_file,
     resolve_file_path,
     validate_and_save_upload,
 )
-from lib.requestUtils import iso
-from models import ActivityLog, File, Request, RequestAssignment
+from VaseLabFlask.lib.requestUtils import iso
+from VaseLabFlask.models import ActivityLog, File, Request, RequestAssignment
 
 
 file_api = Blueprint("file_api", __name__)
