@@ -13,13 +13,14 @@
 
 🚧 **In Development**
 
-**Done in Iteration 4**
-- Operational dashboard for the lab manager
-- TAs can ask to work on a request, and the lab manager approves or declines
-- Lab manager can set how many TAs can work on each request
-- TA workload page
-- Equipment register: list and detail pages
-- Message and activity log API
+**Done in Iteration 5**
+- File attachments: upload and download files on requests, with access limited to people on the request
+- Admin can register new users
+- Add, edit, and delete equipment
+- Edit and delete requests, with rules based on role and request status
+- Only the lab manager and admin can see and change request status and TA capacity
+- Production Docker setup (`docker-compose.prod.yml` and `.env.prod.example`)
+- Profile page and sidebar work better on small screens
 
 ## Project Structure
 
@@ -31,6 +32,7 @@
 └── source/
     ├── docker-compose.yml     # Orchestrates node-app, flask-app, and mysql-db
     ├── docker-compose.dev.yml # Development compose setup
+    ├── docker-compose.prod.yml # Production compose setup
     ├── VaseLabFlask/          # Flask backend API
     └── VaseLabNext/           # Next.js frontend
 ```
@@ -42,5 +44,6 @@
 - Iteration 2 report: [docs/Iteration2_Report.pdf](docs/Iteration2_Report.pdf)
 - Iteration 3 report: [docs/Iteration3_Report.pdf](docs/Iteration3_Report.pdf)
 - Iteration 4 report: [docs/Iteration4_Report.pdf](docs/Iteration4_Report.pdf)
+- Iteration 5 report: [docs/Iteration5_Report.pdf](docs/Iteration5_Report.pdf)
 - Gantt chart: [docs/GantChart/](docs/GantChart/)
 - Architecture / sequence / use case diagrams: [docs/Diagram/](docs/Diagram/)
