@@ -107,7 +107,6 @@ async function throwOnError(res: Response, what: string) {
   if (!res.ok) throw new Error(`${what} failed: ${res.status}`);
 }
 
-// TODO(backend): POST /equipment/edit/<id>, admin + lab manager only
 export async function editEquipment(id: number, input: NewEquipmentInput): Promise<void> {
   const res = await authFetch(`/equipment/edit/${id}`, {
     method: "POST",

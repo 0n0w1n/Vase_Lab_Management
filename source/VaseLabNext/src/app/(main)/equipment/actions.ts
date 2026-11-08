@@ -18,6 +18,16 @@ const DELETE_MESSAGES: Record<string, string> = {
   "30": "It's still used by an open request.",
 };
 
+const EDIT_MESSAGES: Record<string, string> = {
+  "12": "You don't have permission to edit equipment.",
+  "13": "This equipment no longer exists.",
+  "20": "Please enter a name (140 characters or fewer).",
+  "21": "Model must be 140 characters or fewer.",
+  "22": "Please select a state.",
+  "23": "Please enter a valid description.",
+};
+
+
 /** Bound to the item's id: updateEquipment.bind(null, id) */
 export async function updateEquipment(
   id: number,
@@ -34,8 +44,8 @@ export async function updateEquipment(
     unstable_rethrow(error);
     if (error instanceof EquipmentValidationError) {
       return error.field
-        ? { values, errors: { [error.field]: error.message } }
-        : { values, errors: {}, message: error.message };
+        ? { values, errors: { [error.field]: EDIT_MESSAGES[error.errorCode] } }
+        : { values, errors: {}, message: EDIT_MESSAGES[error.errorCode] ?? "Couldn't save the changes. Please try again." };
     }
     return { values, errors: {}, message: "Couldn't save the changes. Please try again." };
   }
