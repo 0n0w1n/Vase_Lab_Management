@@ -42,3 +42,6 @@ export type NewEquipmentState = {
   errors: Partial<Record<NewEquipmentField, string>>,
   message?: string
 }
+
+/** Edit form state: same as create, plus `ok` once the save went through. */
+export type EditEquipmentState = NewEquipmentState & { ok?: boolean };

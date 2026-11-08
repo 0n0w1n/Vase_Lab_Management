@@ -1,11 +1,13 @@
 // app/equipment/page.tsx
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatEquipmentId } from "@/lib/format";
 import { getCurrentUser } from "@/lib/auth";
-import { formatEquipmentId, getEquipment } from "@/lib/equipment";
+import { getEquipment } from "@/lib/equipment";
 import { type Equipment, type EquipmentState } from "@/types/equipment";
 import BackgroundGlow from "@/components/layout/BackgroundGlow";
+import { EquipmentActions } from "@/components/equipment/ActionPopups";
+
 import { cn } from "cn";
 
 export const metadata = {
@@ -24,7 +26,7 @@ const rowColumns =
 export default async function EquipmentPage() {
   const [items, user] = await Promise.all([getEquipment(), getCurrentUser()]);
   const isLabManager = user?.role === "lab_manager";
-
+  const isAdmin = user?.role === "admin";
   return (
     <div className="relative isolate min-h-screen overflow-hidden py-14">
       <BackgroundGlow />
@@ -49,11 +51,14 @@ export default async function EquipmentPage() {
             <div className="min-w-[44rem]">
 
               <TableHeaderRow />
-              
+
               {/* items */}
               <ul className="flex flex-col gap-1 pt-2">
                 {items.map((item) => (
-                  <EquipmentRow key={item.id} item={item} />
+                  <EquipmentRow key={item.id}
+                  item={item}
+                  isLabManager={isLabManager}
+                  isAdmin={isAdmin}  />
                 ))}
               </ul>
 
@@ -108,9 +113,9 @@ function TableHeaderRow() {
   );
 }
 
-function EquipmentRow({ item }: { item: Equipment }) {
+function EquipmentRow({ item, isLabManager, isAdmin}: { item: Equipment,  isLabManager: boolean, isAdmin: boolean  }) {
   return (
-    <li>
+    <li className="group relative">
       <Link
         href={`/equipment/${item.id}`}
         className={cn(
@@ -127,6 +132,8 @@ function EquipmentRow({ item }: { item: Equipment }) {
         {/* Only show the date while the item is out on loan. */}
         <ReturnCell date={item.state === "in_use" ? item.expectedReturn : null} />
       </Link>
+      {(isLabManager || isAdmin) &&
+      <EquipmentActions item={item} variant="hover" />}
     </li>
   );
 }

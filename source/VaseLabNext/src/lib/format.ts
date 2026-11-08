@@ -49,3 +49,8 @@ export function formatFileSize(bytes: number): string {
   if (mb >= 1) return `${mb.toFixed(1)} MB`;
   return `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
+
+// 1 -> "EQP-01", 12 -> "EQP-12"
+export function formatEquipmentId(id: number) {
+  return `EQP-${String(id).padStart(2, "0")}`;
+}

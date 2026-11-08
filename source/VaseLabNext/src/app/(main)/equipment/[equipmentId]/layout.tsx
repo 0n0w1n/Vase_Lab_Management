@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import EquipmentTabs from "@/components/equipment/EquipmentTabs";
-import { formatEquipmentId, getEquipmentById } from "@/lib/equipment";
+import { EquipmentActions } from "@/components/equipment/ActionPopups";
+import { getCurrentUser } from "@/lib/auth";
+import { getEquipmentById } from "@/lib/equipment";
+import { formatEquipmentId } from "@/lib/format";
 import type { EquipmentState } from "@/types/equipment";
 import { cn } from "cn";
 
@@ -21,8 +24,13 @@ export default async function EquipmentDetailLayout({ children, params }: Props)
   const { equipmentId } = await params;
   if (!/^\d+$/.test(equipmentId)) notFound();
 
-  const equipment = await getEquipmentById(Number(equipmentId));
+  const [equipment, user] = await Promise.all([
+    getEquipmentById(Number(equipmentId)),
+    getCurrentUser(),
+  ]);
   if (!equipment) notFound();
+
+  const canManage = user?.role === "lab_manager" || user?.role === "admin";
 
   const id = formatEquipmentId(equipment.id);
   const state = stateStyles[equipment.state];
@@ -46,9 +54,12 @@ export default async function EquipmentDetailLayout({ children, params }: Props)
             <h2 className="font-heading text-2xl font-bold text-[#44607F]">
               {equipment.name}
             </h2>
-            <span className={cn("w-fit rounded-full px-3 py-1.5 text-xs font-semibold", state.className)}>
-              {state.label}
-            </span>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className={cn("w-fit rounded-full px-3 py-1.5 text-xs font-semibold", state.className)}>
+                {state.label}
+              </span>
+              {canManage && <EquipmentActions item={equipment} variant="buttons" />}
+            </div>
           </header>
 
           <EquipmentTabs equipmentId={String(equipment.id)} />
