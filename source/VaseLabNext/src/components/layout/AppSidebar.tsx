@@ -16,6 +16,7 @@ import { cn } from "cn";
 import type { User, UserRole } from "@/lib/auth";
 import { logout } from "@/app/(auth)/login/actions";
 
+import InitialsAvatar from "@/components/request/InitialsAvatar";
 import Image from "next/image";
 
 type NavItem = {
@@ -39,6 +40,8 @@ type Props = {
 export default function AppSidebar({ user }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
+
+  const initials = user.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 
   return (
     <div className="shrink-0">
@@ -121,7 +124,8 @@ export default function AppSidebar({ user }: Props) {
               collapsed && "md:justify-center"
             )}
           >
-            <Image src="/TripleTAvatar.svg" alt="Profile" width={67} height={67} className="size-10 shrink-0 rounded-full md:size-14" />
+            <InitialsAvatar initials={initials} className="size-10 text-lg @sm:size-14" />
+            {/* <Image src="/TripleTAvatar.svg" alt="Profile" width={67} height={67} className="size-10 shrink-0 rounded-full md:size-14" /> */}
             {!collapsed && (
               <div className="hidden min-w-0 md:block">
                 <p className="truncate text-sm font-semibold">{user.name}</p>
