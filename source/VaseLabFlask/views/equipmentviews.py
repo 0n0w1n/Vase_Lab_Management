@@ -53,9 +53,9 @@ def _describe(log: ActivityLog):
         return "Equipment added"
     if log.Action == "delete":
         return "Equipment removed"
-    old = log.OldValue or {}
+    old = log.fields["old_value"] or {}
     changes = []
-    for field, new in (log.NewValue or {}).items():
+    for field, new in (log.fields["new_value"] or {}).items():
         label = FIELD_LABELS.get(field, field)
         if field == "EquipmentState" and field in old:
             changes.append(f"{label} changed from {old[field].replace('_', ' ')} to {new.replace('_', ' ')}")
@@ -115,7 +115,7 @@ def get_equipment_activity(equipment_id: int):
 
     rows = db.session.execute(
         db.select(ActivityLog, User)
-        .join(User, ActivityLog.UserID == User.UserID)
+        .join(User, ActivityLog.fields["userID"] == User.UserID)
         .where(
             ActivityLog.EntityType == "equipment",
             ActivityLog.EntityID == equipment_id,
@@ -170,11 +170,11 @@ def create_equipment():
     db.session.flush()
 
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
         Action="create",
         EntityType="equipment",
         EntityID=equipment.EquipmentID,
-        NewValue={
+        fields={
+            "userID": current_user.UserID,
             "EquipmentName": equipment.EquipmentName,
             "EquipmentModel": equipment.EquipmentModel,
             "EquipmentState": equipment.EquipmentState,
@@ -232,12 +232,14 @@ def edit_equipment(equipment_id: int):
         setattr(equipment, k, v)
 
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
         Action="update",
         EntityType="equipment",
         EntityID=equipment_id,
-        OldValue=old,
-        NewValue=changed,
+        fields={
+            "userID": current_user.UserID,
+            "old": old,
+            "new": changed,
+        },
     ))
     db.session.commit()
     return {}, 200
@@ -263,11 +265,11 @@ def delete_equipment(equipment_id: int):
 
     # Snapshot first, so the log still records what was removed
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
         Action="delete",
         EntityType="equipment",
         EntityID=equipment.EquipmentID,
-        OldValue={
+        fields={
+            "userID": current_user.UserID,
             "EquipmentName": equipment.EquipmentName,
             "EquipmentModel": equipment.EquipmentModel,
             "EquipmentState": equipment.EquipmentState,

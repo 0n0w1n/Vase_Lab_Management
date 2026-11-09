@@ -204,11 +204,11 @@ def create_request() -> ApiResponse:
     req_id: int = req.RequestID
 
     log = ActivityLog(
-        UserID=user_id,
         Action="create",
         EntityType="request",
         EntityID=req_id,
-        NewValue={
+        fields={
+            "userID": user_id,
             "RequestTitle": req.RequestTitle,
             "RequestState": req.RequestState,
             "RequestPriority": req.RequestPriority,
@@ -273,11 +273,13 @@ def ask_to_work(request_id: int) -> ApiResponse:
         Message=message.strip() or None,
     ))
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
-        Action="update",
         EntityType="request",
         EntityID=request_id,
-        NewValue={"Assignment": {"UserID": current_user.UserID, "State": "Waiting"}},
+        Action="update-ask-assignment",
+        fields={
+            "userID": current_user.UserID,
+            "State": "Waiting",
+        },
     ))
     db.session.commit()
     return {}, 201
@@ -290,7 +292,6 @@ def edit_request(request_id):
     result = verify_user_input(user_input, set())
     if result[1] != 200:
         return result
-    print(user_input, flush=True)
 
     req: Request = db.session.execute(db.select(Request).where(Request.RequestID == request_id)).scalar()
     if req is None:
@@ -374,11 +375,13 @@ def edit_request(request_id):
         updating["deadline"] = updating["deadline"].isoformat()+"Z"
 
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
         Action="update",
         EntityType="request",
         EntityID=request_id,
-        NewValue=updating,
+        fields={
+            "updated": updating,
+            "userID": current_user.UserID
+        },
     ))
 
     db.session.commit()
