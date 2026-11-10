@@ -92,14 +92,14 @@ export default function AppSidebar({ user }: Props) {
           })}
         </nav>
 
-        <div className="flex-1" />
+        {/* <div className="flex-1" /> */}
 
         <Link
           href="/Announcements"
           title="Announcements"
           aria-label="Announcements"
           className={cn(
-            "flex items-center justify-center gap-3 py-4 md:justify-start text-sm font-semibold text-warn transition-opacity hover:opacity-80",
+            "flex items-center justify-center gap-4 py-7 md:justify-start text-sm font-semibold text-warn transition-opacity hover:opacity-80",
             collapsed && "md:justify-center"
           )}
         >
