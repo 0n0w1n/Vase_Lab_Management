@@ -28,47 +28,43 @@ export default async function EquipmentPage() {
   const isLabManager = user?.role === "lab_manager";
   const isAdmin = user?.role === "admin";
   return (
-    <div className="relative isolate min-h-screen overflow-hidden py-14">
-      <BackgroundGlow />
+    <div className="mx-auto max-w-5xl py-14">
+      <PageHeader isLabManager={isLabManager} />
 
-      <div className="mx-auto max-w-5xl">
-        <PageHeader isLabManager={isLabManager} />
+    {/* inside card */}
+      <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
 
-      {/* inside card */}
-        <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
+        {/* Top msg */}
+        <p className="pb-3 text-sm text-muted-foreground">
+          To borrow equipment,{" "}
+          <Link href="/request/new" className="font-semibold text-brand underline">
+            create a request
+          </Link>{" "}
+          and choose the equipment in the request form.
+        </p>
 
-          {/* Top msg */}
-          <p className="pb-3 text-sm text-muted-foreground">
-            To borrow equipment,{" "}
-            <Link href="/request/new" className="font-semibold text-brand underline">
-              create a request
-            </Link>{" "}
-            and choose the equipment in the request form.
-          </p>
+        {/* other content */}
+        <div className="overflow-x-auto px-1">
+          <div className="min-w-[44rem]">
 
-          {/* other content */}
-          <div className="overflow-x-auto">
-            <div className="min-w-[44rem]">
+            <TableHeaderRow />
 
-              <TableHeaderRow />
+            {/* items */}
+            <ul className="flex flex-col gap-1 pt-2">
+              {items.map((item) => (
+                <EquipmentRow key={item.id}
+                item={item}
+                isLabManager={isLabManager}
+                isAdmin={isAdmin}  />
+              ))}
+            </ul>
 
-              {/* items */}
-              <ul className="flex flex-col gap-1 pt-2">
-                {items.map((item) => (
-                  <EquipmentRow key={item.id}
-                  item={item}
-                  isLabManager={isLabManager}
-                  isAdmin={isAdmin}  />
-                ))}
-              </ul>
-
-              {/* item when 0 */}
-              {items.length === 0 && (
-                <p className="py-10 text-center text-sm text-muted-foreground">
-                  No equipment yet.
-                </p>
-              )}
-            </div>
+            {/* item when 0 */}
+            {items.length === 0 && (
+              <p className="py-10 text-center text-sm text-muted-foreground">
+                No equipment yet.
+              </p>
+            )}
           </div>
         </div>
       </div>

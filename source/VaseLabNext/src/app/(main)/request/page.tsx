@@ -44,17 +44,14 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
   );
 
   return (
-    <div className="relative isolate min-h-screen overflow-hidden py-14">
-      <BackgroundGlow />
-
-
-      <div className="mx-auto max-w-5xl">
+    // Glow and side padding come from request/layout.tsx.
+    <div className="mx-auto max-w-5xl py-14">
         <PageHeader />
 
         <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
           <RequestFilters status={status} priority={priority} />
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto px-1">
             <div className="min-w-[44rem]">
               <TableHeaderRow />
               <ul className="flex flex-col gap-1 pt-2">
@@ -72,19 +69,6 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-/** Decorative blurred blobs behind the page content. Purely cosmetic. */
-function BackgroundGlow() {
-  return (
-    <div className="pointer-events-none absolute inset-0">
-      <div className="absolute top-20 left-[38%] size-80 rounded-full bg-[#5B92F5]/50 blur-sm" />
-      <div className="absolute -bottom-28 -left-24 size-96 rounded-full bg-[#93E8C1]/50 blur-sm" />
-      <div className="absolute -bottom-20 left-[52%] size-64 rounded-full bg-[#93E8C1]/50 blur-xl" />
-      <div className="absolute right-16 bottom-16 size-72 rounded-full bg-[#5B92F5]/50 blur-xl" />
     </div>
   );
 }

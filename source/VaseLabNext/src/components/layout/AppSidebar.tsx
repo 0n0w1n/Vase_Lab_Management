@@ -47,7 +47,7 @@ export default function AppSidebar({ user }: Props) {
     <div className="shrink-0">
       <aside
         className={cn(
-          "sticky top-0 flex h-dvh flex-col rounded-tr-[2.5rem] bg-sidebar text-sidebar-foreground transition-[width] duration-200",
+          "sticky top-0 z-20 flex h-dvh flex-col rounded-tr-[2.5rem] bg-sidebar text-sidebar-foreground transition-[width] duration-200",
           collapsed ? "w-16 px-2 md:w-20 md:px-3" : "w-16 px-2 md:w-72 md:px-6"
         )}
       >

@@ -36,37 +36,33 @@ export default async function EquipmentDetailLayout({ children, params }: Props)
   const state = stateStyles[equipment.state];
 
   return (
-    <div className="relative isolate min-h-screen overflow-hidden py-12">
-      <BackgroundGlow />
+    <div className="mx-auto max-w-5xl">
+      <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
+        <Link href="/equipment" className="transition-colors hover:text-foreground">
+          Lab Equipment
+        </Link>
+        <span className="px-1.5">/</span>
+        <span aria-current="page">{id}</span>
+      </nav>
+      <h1 className="pt-1 text-4xl font-extrabold text-brand">{id}</h1>
 
-      <div className="mx-auto max-w-5xl px-6">
-        <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
-          <Link href="/equipment" className="transition-colors hover:text-foreground">
-            Lab Equipment
-          </Link>
-          <span className="px-1.5">/</span>
-          <span aria-current="page">{id}</span>
-        </nav>
-        <h1 className="pt-1 text-4xl font-extrabold text-brand">{id}</h1>
+      <section className="mt-10 rounded-3xl bg-white/45 p-8 shadow-lg ring-1 shadow-black/5 ring-white/80 backdrop-blur-xl">
+        <header className="flex flex-wrap items-center justify-between gap-3 pb-5">
+          <h2 className="font-heading text-2xl font-bold text-[#44607F]">
+            {equipment.name}
+          </h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <span className={cn("w-fit rounded-full px-3 py-1.5 text-xs font-semibold", state.className)}>
+              {state.label}
+            </span>
+            {canManage && <EquipmentActions item={equipment} variant="buttons" />}
+          </div>
+        </header>
 
-        <section className="mt-10 rounded-3xl bg-white/45 p-8 shadow-lg ring-1 shadow-black/5 ring-white/80 backdrop-blur-xl">
-          <header className="flex flex-wrap items-center justify-between gap-3 pb-5">
-            <h2 className="font-heading text-2xl font-bold text-[#44607F]">
-              {equipment.name}
-            </h2>
-            <div className="flex flex-wrap items-center gap-3">
-              <span className={cn("w-fit rounded-full px-3 py-1.5 text-xs font-semibold", state.className)}>
-                {state.label}
-              </span>
-              {canManage && <EquipmentActions item={equipment} variant="buttons" />}
-            </div>
-          </header>
+        <EquipmentTabs equipmentId={String(equipment.id)} />
 
-          <EquipmentTabs equipmentId={String(equipment.id)} />
-
-          <div className="pt-6">{children}</div>
-        </section>
-      </div>
+        <div className="pt-6">{children}</div>
+      </section>
     </div>
   );
 }
