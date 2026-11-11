@@ -126,3 +126,65 @@ export async function uploadAttachment(_prev: ActionState, formData: FormData): 
   revalidatePath(`/request/${requestId}`, "layout");
   return {};
 }
+
+const ASSIGN_MESSAGES: Record<string, string> = {
+  "12": "Only the lab manager can change who works on this.",
+  "30": "That person isn't a TA.",
+  "31": "This request is no longer open.",
+  "32": "They're already on this request.",
+  "33": "This request is full. Raise its capacity first.",
+};
+
+const UNASSIGN_MESSAGES: Record<string, string> = {
+  "12": "Only the lab manager can change who works on this.",
+  "31": "This request is no longer open.",
+  "32": "They're no longer on this request.",
+};
+
+const LEAVE_MESSAGES: Record<string, string> = {
+  "31": "This request is no longer open.",
+  "32": "You're not on this request.",
+  "33": "You've already asked to leave.",
+};
+
+/** POST a team change, then refresh the request and dashboard pages that show it. */
+async function postTeamChange(
+  path: string,
+  requestId: string,
+  body: object | undefined,
+  messages: Record<string, string>
+): Promise<ActionState> {
+  try {
+    const res = await authFetch(`${path}/${encodeURIComponent(requestId)}`, {
+      method: "POST",
+      ...(body && { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }),
+    });
+    if (!res.ok) {
+      const error = await res.json().catch(() => null);
+      return { message: messages[String(error?.errorCode)] ?? GENERIC };
+    }
+  } catch (error) {
+    // Let the expired-session redirect to /login through.
+    unstable_rethrow(error);
+    return { message: GENERIC };
+  }
+
+  revalidatePath(`/request/${requestId}`, "layout");
+  revalidatePath("/dashboard", "layout");
+  return {};
+}
+
+/** Lab manager: put a TA on the request straight away. */
+export async function assignTa(requestId: string, taId: string): Promise<ActionState> {
+  return postTeamChange("/request/assign", requestId, { taId: Number(taId) }, ASSIGN_MESSAGES);
+}
+
+/** Lab manager: take a TA off the request straight away. */
+export async function unassignTa(requestId: string, taId: string): Promise<ActionState> {
+  return postTeamChange("/request/unassign", requestId, { taId: Number(taId) }, UNASSIGN_MESSAGES);
+}
+
+/** Approved TA: ask the lab manager to take them off the request. */
+export async function askToLeave(requestId: string): Promise<ActionState> {
+  return postTeamChange("/request/leave", requestId, undefined, LEAVE_MESSAGES);
+}

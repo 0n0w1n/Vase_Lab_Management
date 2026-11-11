@@ -5,7 +5,7 @@ from the database and submit changes to it.
 """
 
 from collections.abc import Sequence
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Any, Optional, Union, cast
 
 from flask import Blueprint, request
@@ -13,8 +13,10 @@ from flask_jwt_extended import current_user, jwt_required
 from sqlalchemy import func
 
 from VaseLabFlask.extensions import db
-from VaseLabFlask.lib.authUtils import STAFF, FILE_MANAGERS, can_read_request, can_read_request_files, can_upload_now
-from VaseLabFlask.lib.requestUtils import ASSIGNMENT_STATES, verify_user_input, REQUEST_STATES
+from VaseLabFlask.lib.authUtils import STAFF, FILE_MANAGERS, can_read_request, can_read_request_files, can_upload_now, is_manager
+from VaseLabFlask.lib.requestUtils import (
+    ACTIVE_STATES, ASSIGNMENT_STATES, REQUEST_STATES, reopen_if_no_tas, verify_user_input,
+)
 from VaseLabFlask.models import ActivityLog, File, Request, RequestAssignment, User
 
 # A JSON body, optionally paired with an HTTP status code
@@ -29,6 +31,7 @@ PRIORITIES = {"low", "medium", "high"}
 CREATE_EXPECTED_KEYS = ["title", "details", "priority", "deadline"]
 CAPACITY_EXPECTED_KEYS = ["capacity"]
 ASK_EXPECTED_KEYS = ["message"]
+TA_EXPECTED_KEYS = ["taId"]
 EDIT_EXPECTED_KEYS = {"status"}
 
 request_api = Blueprint("request_api", __name__)
@@ -114,11 +117,12 @@ def get_request_details(request_id: int) -> ApiResponse:
         if assignment.State == "Approved"
     ]
     # The signed-in TA's own ask, so the page can show Work on / Waiting / Approved / Declined
-    my_state: Optional[str] = next(
-        (assignment.State for assignment, _ in assignments
+    mine: Optional[RequestAssignment] = next(
+        (assignment for assignment, _ in assignments
          if assignment.UserID == current_user.UserID),
         None,
     )
+    my_state: Optional[str] = mine.State if mine else None
 
     file_list: list[JsonDict] = []
     # Unapproved TAs may see the request but not its attachments
@@ -145,6 +149,17 @@ def get_request_details(request_id: int) -> ApiResponse:
         "assignedCount": len(assignees),
         "assignees": assignees,
         "myAsk": ASSIGNMENT_STATES.get(my_state),
+        "myLeaveRequested": mine is not None and mine.LeaveRequestedAt is not None,
+        # Everyone on or asking for this request, for the manager's Manage TAs pop-up
+        "team": [
+            {
+                "id": str(ta.UserID),
+                "name": ta.UserFullName,
+                "state": ASSIGNMENT_STATES[assignment.State],
+                "leaving": assignment.LeaveRequestedAt is not None,
+            }
+            for assignment, ta in assignments
+        ],
         "files": file_list,
         "canUpload": can_upload_now(current_user, req),
     }
@@ -387,3 +402,142 @@ def edit_request(request_id):
     db.session.commit()
 
     return updating, 200
+
+
+def _manage_team_target(request_id: int) -> Union[tuple[Request, User], ApiResponse]:
+    """Load the locked request and the TA named in the body, for assign/unassign.
+
+    Returns (request, ta), or an error response when the caller isn't the lab
+    manager, the request doesn't exist or is closed, or taId isn't a TA.
+    """
+    if not is_manager():
+        return {"errorCode": "12", "error": "Unauthorized"}, 403
+
+    # Locked so two quick clicks can't both pass the capacity check
+    req = db.session.execute(
+        db.select(Request).where(Request.RequestID == request_id).with_for_update()
+    ).scalar_one_or_none()
+    if req is None:
+        return {"errorCode": "13", "error": "Not found"}, 404
+
+    raw_input = request.get_json(silent=True)
+    result = verify_user_input(raw_input, TA_EXPECTED_KEYS)
+    if result[1] != 200:
+        return result
+    ta_id = cast(JsonDict, raw_input)["taId"]
+
+    ta = db.session.get(User, ta_id) if type(ta_id) is int else None
+    if ta is None or ta.UserRole != "lab_ta":
+        return {"errorCode": "30", "error": "Invalid TA"}, 400
+    if req.RequestState not in ACTIVE_STATES:
+        return {"errorCode": "31", "error": "Request is no longer open"}, 409
+    return req, ta
+
+
+@request_api.post("/assign/<int:request_id>")
+@jwt_required()
+def assign_ta(request_id: int) -> ApiResponse:
+    """Put a TA on a request straight away (lab manager only).
+
+    A TA who had asked, or was declined, becomes approved. Invalid when the
+    TA is already approved or the request is full; see _manage_team_target.
+    """
+    target = _manage_team_target(request_id)
+    if not isinstance(target, tuple) or not isinstance(target[0], Request):
+        return target
+    req, ta = target
+
+    assignment = db.session.get(RequestAssignment, (request_id, ta.UserID))
+    if assignment is not None and assignment.State == "Approved":
+        return {"errorCode": "32", "error": "Already assigned"}, 409
+    if _count_approved(request_id) >= req.Capacity:
+        return {"errorCode": "33", "error": "Request is full"}, 409
+
+    if assignment is None:
+        assignment = RequestAssignment(RequestID=request_id, UserID=ta.UserID)
+        db.session.add(assignment)
+    assignment.State = "Approved"
+    assignment.DecidedAt = datetime.now(timezone.utc)
+    db.session.add(ActivityLog(
+        EntityType="request",
+        Action="update-assign-ta",
+        EntityID=request_id,
+        fields={"userID": ta.UserID},
+    ))
+    # AD-2: the first approved TA starts the work
+    if req.RequestState == "pending":
+        req.RequestState = "in-progress"
+        db.session.add(ActivityLog(
+            EntityType="request",
+            Action="update-status",
+            EntityID=request_id,
+            fields={"status": req.RequestState},
+        ))
+    db.session.commit()
+    return {}, 201
+
+
+@request_api.post("/unassign/<int:request_id>")
+@jwt_required()
+def unassign_ta(request_id: int) -> ApiResponse:
+    """Take an approved TA off a request straight away (lab manager only).
+
+    Also settles any leave request they made. The request goes back to
+    pending if they were the last approved TA. See _manage_team_target.
+    """
+    target = _manage_team_target(request_id)
+    if not isinstance(target, tuple) or not isinstance(target[0], Request):
+        return target
+    req, ta = target
+
+    assignment = db.session.get(RequestAssignment, (request_id, ta.UserID))
+    if assignment is None or assignment.State != "Approved":
+        return {"errorCode": "32", "error": "Not assigned"}, 409
+
+    # Deleting rather than refusing lets the TA ask to work on it again later
+    db.session.delete(assignment)
+    db.session.add(ActivityLog(
+        EntityType="request",
+        Action="update-unassign-ta",
+        EntityID=request_id,
+        fields={"userID": ta.UserID},
+    ))
+    db.session.flush()
+    reopen_if_no_tas(req)
+    db.session.commit()
+    return {}
+
+
+@request_api.post("/leave/<int:request_id>")
+@jwt_required()
+def ask_to_leave(request_id: int) -> ApiResponse:
+    """Let an approved TA ask the lab manager to take them off a request.
+
+    They stay assigned until the manager approves the leave on the
+    Decisions page. Invalid when the caller isn't an approved TA on an
+    open request, or has already asked.
+    """
+    if current_user.UserRole != "lab_ta":
+        return {"errorCode": "12", "error": "Unauthorized"}, 403
+
+    req = db.session.get(Request, request_id)
+    if req is None:
+        return {"errorCode": "13", "error": "Not found"}, 404
+    if req.RequestState not in ACTIVE_STATES:
+        return {"errorCode": "31", "error": "Request is no longer open"}, 409
+
+    assignment = db.session.get(RequestAssignment, (request_id, current_user.UserID))
+    if assignment is None or assignment.State != "Approved":
+        return {"errorCode": "32", "error": "Not assigned"}, 409
+    if assignment.LeaveRequestedAt is not None:
+        return {"errorCode": "33", "error": "Already asked to leave"}, 409
+
+    assignment.LeaveRequestedAt = datetime.now(timezone.utc)
+    db.session.add(ActivityLog(
+        EntityType="request",
+        Action="update-ask-leave",
+        EntityID=request_id,
+        fields={"userID": current_user.UserID},
+    ))
+    db.session.commit()
+    return {}, 201

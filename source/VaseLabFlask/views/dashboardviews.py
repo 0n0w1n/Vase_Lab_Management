@@ -7,7 +7,7 @@ from sqlalchemy import func
 from VaseLabFlask.extensions import db
 from VaseLabFlask.models import ActivityLog, Request, RequestAssignment, User
 
-from VaseLabFlask.lib.requestUtils import ACTIVE_STATES, ASSIGNMENT_STATES, iso
+from VaseLabFlask.lib.requestUtils import ACTIVE_STATES, ASSIGNMENT_STATES, iso, reopen_if_no_tas
 from VaseLabFlask.lib.authUtils import is_manager
 
 dashboard_api = Blueprint("dashboard_api", __name__)
@@ -28,10 +28,14 @@ def get_dashboard():
             Request.RequestState == "in-progress"
         )
     )
+    # Asks to join plus asks to leave: both wait on the lab manager
     waiting_count = db.session.scalar(
         db.select(func.count())
         .select_from(RequestAssignment)
-        .where(RequestAssignment.State == "Waiting")
+        .where(
+            (RequestAssignment.State == "Waiting")
+            | RequestAssignment.LeaveRequestedAt.is_not(None)
+        )
     )
 
     now = datetime.utcnow()
@@ -122,10 +126,13 @@ def get_decisions():
     ).all()
     open_counts = dict(approved_by_ta)
 
-    return [
-        {
+    result = []
+    for assignment, req, ta in rows:
+        item = {
             # RequestAssignment has a composite key; this pair is its stable API id.
+            # A leave ask shares it: decide_assignment tells them apart by the row's state.
             "id": f"{assignment.RequestID}-{assignment.UserID}",
+            "kind": "join",
             "state": ASSIGNMENT_STATES[assignment.State],
             "message": assignment.Message or "",
             "askedAt": iso(assignment.CreatedAt),
@@ -149,8 +156,19 @@ def get_decisions():
                 "openCount": open_counts.get(ta.UserID, 0),
             },
         }
-        for assignment, req, ta in rows
-    ]
+        result.append(item)
+        # An approved TA asking to leave is a second, still-waiting decision
+        if assignment.LeaveRequestedAt is not None:
+            result.append({
+                **item,
+                "kind": "leave",
+                "state": "waiting",
+                "message": "",
+                "askedAt": iso(assignment.LeaveRequestedAt),
+                "decidedAt": None,
+            })
+    # Newest first, so leave asks mix in with join asks by when they were made
+    return sorted(result, key=lambda ask: ask["askedAt"] or "", reverse=True)
 
 
 @dashboard_api.post("/decisions/<assignment_id>/<decision>")
@@ -178,6 +196,27 @@ def decide_assignment(assignment_id: str, decision: str):
     )
     if assignment is None:
         return {"errorCode": "10", "error": "Not found"}, 404
+
+    # An approved TA who asked to leave: approve takes them off, decline keeps them
+    if assignment.State == "Approved" and assignment.LeaveRequestedAt is not None:
+        db.session.add(ActivityLog(
+            EntityType="request",
+            Action="update-decide-leave",
+            EntityID=request_obj.RequestID,
+            fields={
+                "userID": assignment.UserID,
+                "decision": "Approved" if decision == "approve" else "Refused",
+            }
+        ))
+        if decision == "approve":
+            db.session.delete(assignment)
+            db.session.flush()
+            reopen_if_no_tas(request_obj)
+        else:
+            assignment.LeaveRequestedAt = None
+        db.session.commit()
+        return {}
+
     if assignment.State != "Waiting":
         return {"errorCode": "31", "error": "This ask was already decided"}, 409
 
