@@ -23,7 +23,7 @@ export default function AppShell({ user, children }: Props) {
   return (
     <div className="flex min-h-screen bg-canvas">
       <AppSidebar user={user} />
-      <main className="relative isolate min-w-0 flex-1 overflow-hidden px-10 py-14">
+      <main className="relative isolate min-w-0 flex-1 overflow-hidden px-4 py-8 sm:px-6 lg:px-10 lg:py-14">
         <BackgroundGlow />
         {children}
       </main>
