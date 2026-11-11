@@ -10,6 +10,7 @@ import { canEditRequest, getRequests } from "@/lib/requests";
 import { REQUEST_PRIORITIES, REQUEST_STATUSES } from "@/types/request";
 import { cn } from "cn";
 import VideoPlayer from "@/components/test/video";
+import PageHeader from "@/components/layout/PageHeader";
 
 export const metadata = {
   title: "Manage Requests",
@@ -44,9 +45,18 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
   );
 
   return (
-    // Glow and side padding come from request/layout.tsx.
-    <div className="mx-auto max-w-5xl py-14">
-        <PageHeader />
+    // Glow and padding come from AppShell.
+    <div className="mx-auto max-w-5xl">
+        <PageHeader
+          title="Manage Request"
+          actions={
+            // A single link styled as a button — not a button wrapping a link.
+            <Link href="/request/new" className={cn(actionButton, "text-brand")}>
+              <Plus className="size-3.5" />
+              New Request
+            </Link>
+          }
+        />
 
         <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
           <RequestFilters status={status} priority={priority} />
@@ -70,20 +80,6 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
           </div>
         </div>
     </div>
-  );
-}
-
-function PageHeader() {
-  return (
-    <header className="flex items-end justify-between pb-3">
-      <h1 className="text-4xl font-extrabold text-brand">Manage Request</h1>
-
-      {/* A single link styled as a button — not a button wrapping a link. */}
-      <Link href="/request/new" className={cn(actionButton, "text-brand")}>
-        <Plus className="size-3.5" />
-        New Request
-      </Link>
-    </header>
   );
 }
 

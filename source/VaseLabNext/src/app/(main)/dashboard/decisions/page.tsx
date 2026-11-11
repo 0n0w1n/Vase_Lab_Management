@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CalendarDays } from "lucide-react";
 import DecisionButtons from "@/components/dashboard/DecisionButtons";
-import BackgroundGlow from "@/components/layout/BackgroundGlow";
+import PageHeader from "@/components/layout/PageHeader";
 import InitialsAvatar from "@/components/request/InitialsAvatar";
 import PriorityDot from "@/components/request/PriorityDot";
 import { getCurrentUser } from "@/lib/auth";
@@ -46,68 +46,58 @@ export default async function DecisionsPage({ searchParams }: Props) {
   ];
 
   return (
-    <div className="relative isolate min-h-screen overflow-hidden px-8 py-14">
-      <BackgroundGlow />
-
-      <div className="relative mx-auto max-w-6xl">
-        <header className="flex flex-wrap items-end justify-between gap-4 pb-6">
-          <div>
-            <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
-              <Link href="/dashboard" className="transition-colors hover:text-foreground">
-                Operational Dashboard
-              </Link>
-              <span className="px-1.5">/</span>
-              <span aria-current="page">Awaiting Decisions</span>
-            </nav>
-            <h1 className="pt-1 text-4xl font-extrabold text-brand">Awaiting Decisions</h1>
-          </div>
+    <div className="mx-auto max-w-6xl">
+      <PageHeader
+        title="Awaiting Decisions"
+        breadcrumbs={[{ label: "Operational Dashboard", href: "/dashboard" }, { label: "Awaiting Decisions" }]}
+        actions={
           <p className="flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold ring-1 ring-black/10">
             <CalendarDays className="size-4" />
             Today, {formatDate(new Date().toISOString())}
           </p>
-        </header>
+        }
+      />
 
-        <section className="min-h-96 rounded-3xl bg-white/60 p-4 ring-3 ring-black/10 backdrop-blur-xl">
-          <div className="flex flex-wrap items-center justify-between gap-4 pb-4">
-            <h2 className="text-xl font-bold">TA Requests</h2>
-            <nav className="flex gap-1 rounded-lg bg-black/5 p-1">
-              {tabs.map((tab) => (
-                <Link
-                  key={tab.href}
-                  href={tab.href}
-                  aria-current={tab.active ? "page" : undefined}
-                  className={cn(
-                    "rounded-md px-3 py-1.5 text-xs font-semibold transition-colors",
-                    tab.active ? "bg-sidebar text-white" : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {tab.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
+      <section className="min-h-96 rounded-3xl bg-white/60 p-4 ring-3 ring-black/10 backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-4">
+          <h2 className="text-xl font-bold">TA Requests</h2>
+          <nav className="flex gap-1 rounded-lg bg-black/5 p-1">
+            {tabs.map((tab) => (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                aria-current={tab.active ? "page" : undefined}
+                className={cn(
+                  "rounded-md px-3 py-1.5 text-xs font-semibold transition-colors",
+                  tab.active ? "bg-sidebar text-white" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {tab.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
 
-          <div className="overflow-x-auto">
-            <div className="min-w-[48rem]">
-              <div className={cn(rowColumns, "rounded-lg bg-black/10 py-2.5 text-[0.6rem] font-bold tracking-wide")}>
-                <span>REQUEST</span>
-                <span>ASKED BY</span>
-                <span className="text-right">DECISION</span>
-              </div>
-              <ul className="flex flex-col gap-1 pt-2">
-                {Array.from(byRequest.values()).map((requestAsks) => (
-                  <RequestRow key={requestAsks[0].request.id} asks={requestAsks} />
-                ))}
-              </ul>
-              {shown.length === 0 && (
-                <p className="py-10 text-center text-sm text-muted-foreground">
-                  {showDecided ? "No decisions yet." : "No TA requests waiting for a decision."}
-                </p>
-              )}
+        <div className="overflow-x-auto">
+          <div className="min-w-[48rem]">
+            <div className={cn(rowColumns, "rounded-lg bg-black/10 py-2.5 text-[0.6rem] font-bold tracking-wide")}>
+              <span>REQUEST</span>
+              <span>ASKED BY</span>
+              <span className="text-right">DECISION</span>
             </div>
+            <ul className="flex flex-col gap-1 pt-2">
+              {Array.from(byRequest.values()).map((requestAsks) => (
+                <RequestRow key={requestAsks[0].request.id} asks={requestAsks} />
+              ))}
+            </ul>
+            {shown.length === 0 && (
+              <p className="py-10 text-center text-sm text-muted-foreground">
+                {showDecided ? "No decisions yet." : "No TA requests waiting for a decision."}
+              </p>
+            )}
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import PageHeader from "@/components/layout/PageHeader";
 import RequestActions from "@/components/request/RequestActions";
 import RequestTabs from "@/components/request/RequestTabs";
 import StatusBadge from "@/components/request/StatusBadge";
@@ -30,21 +30,15 @@ export default async function RequestDetailLayout({ children, params }: Props) {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
-        <Link
-          href="/request"
-          className="transition-colors hover:text-foreground"
-        >
-          Manage Requests
-        </Link>
-        <span className="px-1.5">/</span>
-        <span aria-current="page">Request #{request.id}</span>
-      </nav>
-      <h1 className="pt-1 text-4xl font-extrabold text-brand">
-        Request #{request.id}
-      </h1>
+      <PageHeader
+        title={`Request #${request.id}`}
+        breadcrumbs={[
+          { label: "Manage Requests", href: "/request" },
+          { label: `Request #${request.id}` },
+        ]}
+      />
 
-      <section className="mt-10 rounded-3xl bg-white/45 p-8 shadow-lg ring-1 shadow-black/5 ring-white/80 backdrop-blur-xl">
+      <section className="rounded-3xl bg-white/45 p-8 shadow-lg ring-1 shadow-black/5 ring-white/80 backdrop-blur-xl">
         <header className="flex items-start justify-between gap-4 pb-5">
           <h2 className="font-heading text-2xl font-bold text-[#44607F]">
             Request #{request.id}
@@ -85,17 +79,5 @@ function WorkOnStatus({ request }: { request: LabRequest }) {
     <span className={cn("rounded-full bg-background px-4 py-1.5 text-sm font-semibold ring-1", chip.className)}>
       {chip.label}
     </span>
-  );
-}
-
-/** Decorative blurred blobs behind the page content. Purely cosmetic. */
-function BackgroundGlow() {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-      <div className="absolute top-20 left-[38%] size-80 rounded-full bg-[#5B92F5]/50 blur-sm" />
-      <div className="absolute -bottom-28 -left-24 size-96 rounded-full bg-[#93E8C1]/50 blur-sm" />
-      <div className="absolute -bottom-20 left-[52%] size-64 rounded-full bg-[#93E8C1]/50 blur-xl" />
-      <div className="absolute right-16 bottom-16 size-72 rounded-full bg-[#5B92F5]/50 blur-xl" />
-    </div>
   );
 }

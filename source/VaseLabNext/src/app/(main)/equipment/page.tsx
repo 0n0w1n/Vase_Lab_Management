@@ -5,7 +5,7 @@ import { formatDate, formatEquipmentId } from "@/lib/format";
 import { getCurrentUser } from "@/lib/auth";
 import { getEquipment } from "@/lib/equipment";
 import { type Equipment, type EquipmentState } from "@/types/equipment";
-import BackgroundGlow from "@/components/layout/BackgroundGlow";
+import PageHeader from "@/components/layout/PageHeader";
 import { EquipmentActions } from "@/components/equipment/ActionPopups";
 
 import { cn } from "cn";
@@ -28,8 +28,19 @@ export default async function EquipmentPage() {
   const isLabManager = user?.role === "lab_manager";
   const isAdmin = user?.role === "admin";
   return (
-    <div className="mx-auto max-w-5xl py-14">
-      <PageHeader isLabManager={isLabManager} />
+    <div className="mx-auto max-w-5xl">
+      <PageHeader
+        title="Lab Equipment"
+        actions={
+          // Only lab managers see this button.
+          isLabManager && (
+            <Link href="/equipment/new" className={cn(actionButton, "text-brand")}>
+              <Plus className="size-3.5" />
+              Add Equipment
+            </Link>
+          )
+        }
+      />
 
     {/* inside card */}
       <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
@@ -72,25 +83,6 @@ export default async function EquipmentPage() {
   );
 }
 
-
-function PageHeader({ isLabManager }: { isLabManager: boolean }) {
-  return (
-    <header className="flex items-end justify-between pb-3">
-      <h1 className="text-4xl font-extrabold text-brand">Lab Equipment</h1>
-
-      {/* Only lab managers see this button. */}
-      {/* <button className={cn(actionButton, "text-brand")}>
-        Idk chat
-      </button> */}
-      {isLabManager && (
-        <Link href="/equipment/new" className={cn(actionButton, "text-brand")}>
-          <Plus className="size-3.5" />
-          Add Equipment
-        </Link>
-      )}
-    </header>
-  );
-}
 
 function TableHeaderRow() {
   return (

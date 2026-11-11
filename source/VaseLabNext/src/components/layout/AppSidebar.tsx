@@ -107,7 +107,7 @@ export default function AppSidebar({ user }: Props) {
           {!collapsed && <span className="hidden md:inline">Announcements</span>}
         </Link>
 
-        <div className="border-b border-white/15" />
+        <div className="border-b-2 border-white/67" />
 
         <div className="py-6">
           {!collapsed && (

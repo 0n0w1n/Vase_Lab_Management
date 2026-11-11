@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation"; // Hugo : When we don't find correspoding id
 import { Briefcase, Building2, CalendarDays, Clock, Mail } from "lucide-react";
-import BackgroundGlow from "@/components/layout/BackgroundGlow";
+import PageHeader from "@/components/layout/PageHeader";
 import InitialsAvatar from "@/components/request/InitialsAvatar";
 import { getCurrentUser, getUser } from "@/lib/auth";
 import SeedUserForm from "@/components/profile/SeedUserForm";
-import { formatDate } from "@/lib/format"; // Hugo : used on line 46 
+import { formatDate } from "@/lib/format"; // Hugo : used on line 46
 
 // Spacing 1 unit in tailwinds = 0.25 rems = 4 px
 // Foreground -- color bind to main color of the page color: var(--foreground)
@@ -49,73 +49,64 @@ export default async function ProfilePage({ params }: Props) {
   const isOwner = user.isOwner
 
   return (
-    <div className="relative isolate min-h-screen overflow-hidden py-8 sm:py-10 lg:py-14">
-      <BackgroundGlow />
+    <div className="mx-auto max-w-5xl">
+      <PageHeader
+        title="Profile"
+        breadcrumbs={[{ label: "Manage Requests", href: "/request" }, { label: `Profile #${profileId}` }]}
+      />
 
-      <div className="mx-auto max-w-5xl px-3 sm:px-6 lg:px-8">
-        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-y-1 text-xs text-muted-foreground">
-          <Link href="/request" className="transition-colors hover:text-foreground">
-            Manage Requests
-          </Link>
-          <span className="px-1.5">/</span>
-          <span aria-current="page">Profile #{profileId}</span>
-        </nav>
+      {/* flex-col + gap-4 stacks the two cards with 16px between them */}
+      <div className="@container flex min-w-0 flex-col gap-4 rounded-3xl bg-white/60 p-2 sm:p-4 lg:p-6 ring-3 ring-black/10 backdrop-blur-xl">
+        {/* Respond to the available card width, including space taken by the sidebar. */}
+        <section className={`${card} flex flex-col gap-5 @2xl:flex-row @2xl:items-center @2xl:justify-between`}>
+          <div className="flex min-w-0 flex-1 flex-col items-start gap-3 @sm:flex-row @sm:gap-4">
+            <InitialsAvatar initials={initials} className="size-14 text-lg @sm:size-16" />
 
-        <h1 className="pt-2 pb-4 text-3xl sm:text-4xl font-extrabold text-brand">Profile</h1>
-
-        {/* flex-col + gap-4 stacks the two cards with 16px between them */}
-        <div className="@container flex min-w-0 flex-col gap-4 rounded-3xl bg-white/60 p-2 sm:p-4 lg:p-6 ring-3 ring-black/10 backdrop-blur-xl">
-          {/* Respond to the available card width, including space taken by the sidebar. */}
-          <section className={`${card} flex flex-col gap-5 @2xl:flex-row @2xl:items-center @2xl:justify-between`}>
-            <div className="flex min-w-0 flex-1 flex-col items-start gap-3 @sm:flex-row @sm:gap-4">
-              <InitialsAvatar initials={initials} className="size-14 text-lg @sm:size-16" />
-
-              <div className="min-w-0 w-full">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="min-w-0 text-xl font-bold [overflow-wrap:anywhere] sm:text-2xl">{user.name}</h2>
-                  <span className="max-w-full rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand ring-1 ring-brand">
-                    {role}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground [overflow-wrap:anywhere]">{user.email}</p>
-                <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs text-muted-foreground">
-                  <span className="flex min-w-0 items-start gap-1.5">
-                    <Building2 className="mt-0.5 size-3.5 shrink-0" /> <span className="min-w-0 [overflow-wrap:anywhere]">{user.organization ?? "Not provided"}</span>
-                  </span>
-                  <span className="flex min-w-0 items-start gap-1.5">
-                    <CalendarDays className="mt-0.5 size-3.5 shrink-0" /> <span>Joined {joined}</span>
-                  </span>
-                </div>
+            <div className="min-w-0 w-full">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="min-w-0 text-xl font-bold [overflow-wrap:anywhere] sm:text-2xl">{user.name}</h2>
+                <span className="max-w-full rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand ring-1 ring-brand">
+                  {role}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground [overflow-wrap:anywhere]">{user.email}</p>
+              <div className="flex flex-wrap gap-x-4 gap-y-2 pt-2 text-xs text-muted-foreground">
+                <span className="flex min-w-0 items-start gap-1.5">
+                  <Building2 className="mt-0.5 size-3.5 shrink-0" /> <span className="min-w-0 [overflow-wrap:anywhere]">{user.organization ?? "Not provided"}</span>
+                </span>
+                <span className="flex min-w-0 items-start gap-1.5">
+                  <CalendarDays className="mt-0.5 size-3.5 shrink-0" /> <span>Joined {joined}</span>
+                </span>
               </div>
             </div>
+          </div>
 
-            { isOwner && (
-              <div className="grid w-full gap-2 @sm:grid-cols-2 @2xl:w-auto @2xl:shrink-0 @2xl:grid-cols-1">
-                <Link href={`/profile/${user.id}/edit`} className="flex min-h-11 items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-semibold text-brand-foreground hover:bg-brand/85">
-                  Edit Profile
-                </Link>
-                <Link href={`/profile/${user.id}/edit#password`} className="flex min-h-11 items-center justify-center rounded-lg bg-white px-4 py-2.5 text-center text-sm font-semibold ring-1 ring-black/10 hover:bg-black/5">
-                  Account Settings
-                </Link>
-              </div>
-              )
-            }
+          { isOwner && (
+            <div className="grid w-full gap-2 @sm:grid-cols-2 @2xl:w-auto @2xl:shrink-0 @2xl:grid-cols-1">
+              <Link href={`/profile/${user.id}/edit`} className="flex min-h-11 items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-semibold text-brand-foreground hover:bg-brand/85">
+                Edit Profile
+              </Link>
+              <Link href={`/profile/${user.id}/edit#password`} className="flex min-h-11 items-center justify-center rounded-lg bg-white px-4 py-2.5 text-center text-sm font-semibold ring-1 ring-black/10 hover:bg-black/5">
+                Account Settings
+              </Link>
+            </div>
+            )
+          }
 
-          </section>
+        </section>
 
-          {/* Contact card */}
-          <section className={card}>
-            <h3 className="pb-3 font-bold">Contact &amp; Organization</h3>
-            <ul className="flex flex-col gap-3 text-sm font-medium">
-              <ContactRow icon={<Mail className="size-4" />} text={user.email} />
-              <ContactRow icon={<Building2 className="size-4" />} text={user.organization ?? "Not provided"} />
-              <ContactRow icon={<Briefcase className="size-4" />} text={role} />
-              <ContactRow icon={<Clock className="size-4" />} text={`Created: ${joined}`} />
-            </ul>
-          </section>
-        </div>
-        {viewer?.role === "admin" && viewer.id === user.id && <SeedUserForm />}
+        {/* Contact card */}
+        <section className={card}>
+          <h3 className="pb-3 font-bold">Contact &amp; Organization</h3>
+          <ul className="flex flex-col gap-3 text-sm font-medium">
+            <ContactRow icon={<Mail className="size-4" />} text={user.email} />
+            <ContactRow icon={<Building2 className="size-4" />} text={user.organization ?? "Not provided"} />
+            <ContactRow icon={<Briefcase className="size-4" />} text={role} />
+            <ContactRow icon={<Clock className="size-4" />} text={`Created: ${joined}`} />
+          </ul>
+        </section>
       </div>
+      {viewer?.role === "admin" && viewer.id === user.id && <SeedUserForm />}
     </div>
   );
 }
