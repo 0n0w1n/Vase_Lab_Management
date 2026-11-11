@@ -5,7 +5,7 @@ import { formatDate, formatEquipmentId } from "@/lib/format";
 import { getCurrentUser } from "@/lib/auth";
 import { getEquipment } from "@/lib/equipment";
 import { type Equipment, type EquipmentState } from "@/types/equipment";
-import BackgroundGlow from "@/components/layout/BackgroundGlow";
+import PageHeader from "@/components/layout/PageHeader";
 import { EquipmentActions } from "@/components/equipment/ActionPopups";
 
 import { cn } from "cn";
@@ -28,47 +28,54 @@ export default async function EquipmentPage() {
   const isLabManager = user?.role === "lab_manager";
   const isAdmin = user?.role === "admin";
   return (
-    <div className="relative isolate min-h-screen overflow-hidden py-14">
-      <BackgroundGlow />
+    <div className="mx-auto max-w-5xl">
+      <PageHeader
+        title="Lab Equipment"
+        actions={
+          // Only lab managers see this button.
+          isLabManager && (
+            <Link href="/equipment/new" className={cn(actionButton, "text-brand")}>
+              <Plus className="size-3.5" />
+              Add Equipment
+            </Link>
+          )
+        }
+      />
 
-      <div className="mx-auto max-w-5xl">
-        <PageHeader isLabManager={isLabManager} />
+    {/* inside card */}
+      <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
 
-      {/* inside card */}
-        <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
+        {/* Top msg */}
+        <p className="pb-3 text-sm text-muted-foreground">
+          To borrow equipment,{" "}
+          <Link href="/request/new" className="font-semibold text-brand underline">
+            create a request
+          </Link>{" "}
+          and choose the equipment in the request form.
+        </p>
 
-          {/* Top msg */}
-          <p className="pb-3 text-sm text-muted-foreground">
-            To borrow equipment,{" "}
-            <Link href="/request/new" className="font-semibold text-brand underline">
-              create a request
-            </Link>{" "}
-            and choose the equipment in the request form.
-          </p>
+        {/* other content */}
+        <div className="overflow-x-auto px-1">
+          <div className="min-w-[44rem]">
 
-          {/* other content */}
-          <div className="overflow-x-auto">
-            <div className="min-w-[44rem]">
+            <TableHeaderRow />
 
-              <TableHeaderRow />
+            {/* items */}
+            <ul className="flex flex-col gap-1 pt-2">
+              {items.map((item) => (
+                <EquipmentRow key={item.id}
+                item={item}
+                isLabManager={isLabManager}
+                isAdmin={isAdmin}  />
+              ))}
+            </ul>
 
-              {/* items */}
-              <ul className="flex flex-col gap-1 pt-2">
-                {items.map((item) => (
-                  <EquipmentRow key={item.id}
-                  item={item}
-                  isLabManager={isLabManager}
-                  isAdmin={isAdmin}  />
-                ))}
-              </ul>
-
-              {/* item when 0 */}
-              {items.length === 0 && (
-                <p className="py-10 text-center text-sm text-muted-foreground">
-                  No equipment yet.
-                </p>
-              )}
-            </div>
+            {/* item when 0 */}
+            {items.length === 0 && (
+              <p className="py-10 text-center text-sm text-muted-foreground">
+                No equipment yet.
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -76,25 +83,6 @@ export default async function EquipmentPage() {
   );
 }
 
-
-function PageHeader({ isLabManager }: { isLabManager: boolean }) {
-  return (
-    <header className="flex items-end justify-between pb-3">
-      <h1 className="text-4xl font-extrabold text-brand">Lab Equipment</h1>
-
-      {/* Only lab managers see this button. */}
-      {/* <button className={cn(actionButton, "text-brand")}>
-        Idk chat
-      </button> */}
-      {isLabManager && (
-        <Link href="/equipment/new" className={cn(actionButton, "text-brand")}>
-          <Plus className="size-3.5" />
-          Add Equipment
-        </Link>
-      )}
-    </header>
-  );
-}
 
 function TableHeaderRow() {
   return (

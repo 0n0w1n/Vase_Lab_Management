@@ -47,7 +47,7 @@ export default function AppSidebar({ user }: Props) {
     <div className="shrink-0">
       <aside
         className={cn(
-          "sticky top-0 flex h-dvh flex-col rounded-tr-[2.5rem] bg-sidebar text-sidebar-foreground transition-[width] duration-200",
+          "sticky top-0 z-20 flex h-dvh flex-col rounded-tr-[2.5rem] bg-sidebar text-sidebar-foreground transition-[width] duration-200",
           collapsed ? "w-16 px-2 md:w-20 md:px-3" : "w-16 px-2 md:w-72 md:px-6"
         )}
       >
@@ -92,14 +92,14 @@ export default function AppSidebar({ user }: Props) {
           })}
         </nav>
 
-        <div className="flex-1" />
+        {/* <div className="flex-1" /> */}
 
         <Link
           href="/Announcements"
           title="Announcements"
           aria-label="Announcements"
           className={cn(
-            "flex items-center justify-center gap-3 py-4 md:justify-start text-sm font-semibold text-warn transition-opacity hover:opacity-80",
+            "flex items-center justify-center gap-4 py-7 md:justify-start text-sm font-semibold text-warn transition-opacity hover:opacity-80",
             collapsed && "md:justify-center"
           )}
         >
@@ -107,7 +107,7 @@ export default function AppSidebar({ user }: Props) {
           {!collapsed && <span className="hidden md:inline">Announcements</span>}
         </Link>
 
-        <div className="border-b border-white/15" />
+        <div className="border-b-2 border-white/67" />
 
         <div className="py-6">
           {!collapsed && (
