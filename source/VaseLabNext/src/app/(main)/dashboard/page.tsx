@@ -21,12 +21,36 @@ export const metadata = {
 
 const rowColumns = "grid grid-cols-[minmax(0,1fr)_6rem_7rem_6rem_5.5rem_5.5rem] items-center gap-4 px-4";
 
-export default async function DashboardPage() {
+const cardLink = "rounded-2xl transition-shadow hover:shadow-md";
+
+// Which list the table shows, picked by clicking a stat card
+const VIEWS = {
+  active: { title: "Current", empty: "No active requests." },
+  "in-progress": { title: "In Progress", empty: "Nothing is in progress right now." },
+  completed: { title: "Completed This Month", empty: "Nothing has been completed this month yet." },
+} as const;
+
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export default async function DashboardPage({ searchParams }: Props) {
   // Lab managers only
   const user = await getCurrentUser();
   if (user?.role !== "lab_manager") redirect("/request");
 
-  const { stats, requests } = await getDashboard();
+  // The view lives in the URL so a refresh keeps it; anything unknown means all active
+  const requested = (await searchParams).view;
+  const view: keyof typeof VIEWS =
+    requested === "in-progress" || requested === "completed" ? requested : "active";
+
+  const { stats, requests, completed } = await getDashboard();
+  const shown =
+    view === "completed"
+      ? completed
+      : view === "in-progress"
+        ? requests.filter((request) => request.status === "in-progress")
+        : requests;
   // The decisions list feeds the preview; the dashboard API supplies the count.
   const waitingAsks = (await getDecisions()).filter((ask) => ask.state === "waiting");
   const pendingApproval = stats.pendingApproval;
@@ -46,17 +70,30 @@ export default async function DashboardPage() {
         </header>
 
         {/* Stat cards*/}
+        {/* Three cards filter the table below (outlined = selected); Pending Approval opens Decisions */}
         <div className="grid grid-cols-2 gap-4 pb-8 lg:grid-cols-4">
-          <StatCard label="Total Active Requests" value={stats.totalActive} />
-          <Link href="/dashboard/decisions" className="rounded-2xl transition-shadow hover:shadow-md">
-            <StatCard
-              label="Pending Approval"
-              value={pendingApproval}
-              alert={pendingApproval > 0 ? "Action Required" : undefined}
-            />
+          <Link href="/dashboard" scroll={false} aria-current={view === "active" ? "page" : undefined} className={cardLink}>
+            <StatCard label="Total Active Requests" value={stats.totalActive} selected={view === "active"} />
           </Link>
-          <StatCard label="In Progress" value={stats.inProgress} />
-          <StatCard label="Completed This Month" value={stats.completedThisMonth} />
+          <Link href="/dashboard/decisions" className={cardLink}>
+            <StatCard label="Pending Approval" value={pendingApproval} urgent={pendingApproval > 0} />
+          </Link>
+          <Link
+            href="/dashboard?view=in-progress"
+            scroll={false}
+            aria-current={view === "in-progress" ? "page" : undefined}
+            className={cardLink}
+          >
+            <StatCard label="In Progress" value={stats.inProgress} selected={view === "in-progress"} />
+          </Link>
+          <Link
+            href="/dashboard?view=completed"
+            scroll={false}
+            aria-current={view === "completed" ? "page" : undefined}
+            className={cardLink}
+          >
+            <StatCard label="Completed This Month" value={stats.completedThisMonth} selected={view === "completed"} />
+          </Link>
         </div>
 
         {/* Panels sit beside the table only when the content area fits both (72rem); otherwise they stack below it */}
@@ -65,19 +102,19 @@ export default async function DashboardPage() {
           {/* min-w-0: a grid item won't shrink below the 48rem table otherwise, so it would
               overflow the page (clipped) instead of scrolling inside its own box */}
           <section className="min-h-96 min-w-0 rounded-3xl bg-white/60 p-4 ring-3 ring-black/10 backdrop-blur-xl">
-            <h2 className="pb-4 text-xl font-bold">Current</h2>
+            <h2 className="pb-4 text-xl font-bold">{VIEWS[view].title}</h2>
 
             <div className="overflow-x-auto">
               <div className="min-w-[48rem]">
                 <TableHeaderRow />
                 <ul className="flex flex-col gap-1 pt-2">
-                  {requests.map((request) => (
+                  {shown.map((request) => (
                     <RequestRow key={request.id} request={request} />
                   ))}
                 </ul>
-                {requests.length === 0 && (
+                {shown.length === 0 && (
                   <p className="py-10 text-center text-sm text-muted-foreground">
-                    No active requests.
+                    {VIEWS[view].empty}
                   </p>
                 )}
               </div>

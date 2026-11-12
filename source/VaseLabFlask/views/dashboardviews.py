@@ -54,6 +54,16 @@ def get_dashboard():
         .where(Request.RequestState.in_(ACTIVE_STATES))
         .order_by(Request.CreatedAt.desc(), Request.RequestID.desc())
     ).all()
+    # Same filter as completed_count, so the list always matches the card's number
+    completed_rows = db.session.execute(
+        db.select(Request, User)
+        .join(User, Request.UserID == User.UserID)
+        .where(
+            Request.CompletedAt >= month_start,
+            Request.CompletedAt < next_month,
+        )
+        .order_by(Request.CompletedAt.desc(), Request.RequestID.desc())
+    ).all()
 
     approved_owners = db.session.execute(
         db.select(RequestAssignment.RequestID, User.UserFullName)
@@ -68,6 +78,19 @@ def get_dashboard():
     for request_id, name in approved_owners:
         owners.setdefault(request_id, name)
 
+    # One row shape for both lists, so the table renders them the same way
+    def table_row(req, requester):
+        return {
+            "id": str(req.RequestID),
+            "title": req.RequestTitle,
+            "requestedBy": requester.UserFullName,
+            "status": req.RequestState,
+            "priority": req.RequestPriority,
+            "isEquipment": req.EquipmentID is not None,
+            "owner": owners.get(req.RequestID),
+            "createdAt": iso(req.CreatedAt),
+        }
+
     return {
         "stats": {
             "totalActive": active_count or 0,
@@ -75,19 +98,8 @@ def get_dashboard():
             "inProgress": in_progress_count or 0,
             "completedThisMonth": completed_count or 0,
         },
-        "requests": [
-            {
-                "id": str(req.RequestID),
-                "title": req.RequestTitle,
-                "requestedBy": requester.UserFullName,
-                "status": req.RequestState,
-                "priority": req.RequestPriority,
-                "isEquipment": req.EquipmentID is not None,
-                "owner": owners.get(req.RequestID),
-                "createdAt": iso(req.CreatedAt),
-            }
-            for req, requester in rows
-        ],
+        "requests": [table_row(req, requester) for req, requester in rows],
+        "completed": [table_row(req, requester) for req, requester in completed_rows],
     }
 
 
