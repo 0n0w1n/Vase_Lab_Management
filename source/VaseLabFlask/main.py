@@ -8,6 +8,7 @@ from VaseLabFlask.extensions import db, migrate, jwt
 import VaseLabFlask.seeds as seeds
 
 from .views.requestviews import request_api
+from .views.commentsviews import comments_api
 from .views.authviews import auth_api
 from .views.userviews import user_api
 from .views.dashboardviews import dashboard_api
@@ -52,6 +53,7 @@ def create_app(test_config=None):
 
 
     app.register_blueprint(request_api, url_prefix="/request")
+    app.register_blueprint(comments_api, url_prefix="/request")
     app.register_blueprint(auth_api, url_prefix="/auth")
     app.register_blueprint(user_api, url_prefix="/user")
     app.register_blueprint(dashboard_api, url_prefix="/dashboard")

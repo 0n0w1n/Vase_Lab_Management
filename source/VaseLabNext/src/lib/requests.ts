@@ -4,6 +4,7 @@ import {
   type EditRequestInput,
   type EditRequestState,
   type LabRequest,
+  type LogMessage,
   type NewRequestInput,
   type NewRequestState,
   type RequestPriority,
@@ -38,6 +39,15 @@ export async function getRequest(id: string): Promise<LabRequest | undefined> {
   if (res.status === 404) return undefined;
   if (res.status === 403) forbidden();
   if (!res.ok) throw new Error(`Get request ${id} failed: ${res.status}`);
+  return res.json();
+}
+
+export async function getRequestComments(id: string): Promise<LogMessage[] | undefined> {
+  if (!/^\d+$/.test(id)) return undefined;
+  const res = await authFetch(`/request/${id}/comments`, { cache: "no-store" });
+  if (res.status === 404) return undefined;
+  if (res.status === 403) forbidden();
+  if (!res.ok) throw new Error(`Get request comments failed: ${res.status}`);
   return res.json();
 }
 
