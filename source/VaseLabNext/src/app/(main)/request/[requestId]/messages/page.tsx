@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import MessageLog from "@/components/request/MessageLog";
-import { getRequest } from "@/lib/requests";
+import { getRequestComments } from "@/lib/requests";
 
 type Props = {
   params: Promise<{ requestId: string }>;
@@ -8,15 +8,9 @@ type Props = {
 
 export default async function MessageLogPage({ params }: Props) {
   const { requestId } = await params;
-  const request = await getRequest(requestId);
+  const messages = await getRequestComments(requestId);
 
-  if (!request) notFound();
+  if (!messages) notFound();
 
-  return (
-    // wait for endpoint finish
-    <MessageLog
-      messages={[]}
-      author={{ name: "Definate", initials: "DF" }}
-    />
-  );
+  return <MessageLog key={requestId} requestId={requestId} messages={messages} />;
 }

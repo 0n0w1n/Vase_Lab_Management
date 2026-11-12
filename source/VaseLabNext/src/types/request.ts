@@ -35,7 +35,7 @@ export type ActivityEntry = {
 export type LogMessage = {
   id: string;
   author: Person;
-  at: string;
+  at: string | null;
   body: string;
 };
 

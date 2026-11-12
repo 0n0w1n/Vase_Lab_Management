@@ -32,6 +32,34 @@ const UPLOAD_MESSAGES: Record<string, string> = {
 
 const GENERIC = "Something went wrong. Please try again.";
 
+export async function postComment(requestId: string, formData: FormData): Promise<ActionState> {
+  if (!/^\d+$/.test(requestId)) return { message: "Request not found." };
+  const body = formData.get("body");
+  if (typeof body !== "string" || !body.trim()) return { message: "Enter a message." };
+
+  try {
+    const res = await authFetch(`/request/${requestId}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ Comment: body }),
+    });
+    if (res.status === 403) return { message: "You can't post to this request." };
+    if (res.status === 404) return { message: "Request not found." };
+    if (!res.ok) {
+      const error = await res.json().catch(() => null);
+      if (error?.errorCode === "30") return { message: "Enter a message." };
+      if (error?.errorCode === "31") return { message: "Use 1000 characters or fewer." };
+      return { message: GENERIC };
+    }
+  } catch (error) {
+    unstable_rethrow(error);
+    return { message: GENERIC };
+  }
+
+  revalidatePath(`/request/${requestId}/messages`);
+  return {};
+}
+
 export async function downloadAttachment(fileId: number): Promise<
   { data: ArrayBuffer; type: string } | { message: string }
 > {
