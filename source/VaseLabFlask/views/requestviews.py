@@ -15,7 +15,7 @@ from sqlalchemy import func
 from VaseLabFlask.extensions import db
 from VaseLabFlask.lib.authUtils import STAFF, FILE_MANAGERS, can_read_request, can_read_request_files, can_upload_now
 from VaseLabFlask.lib.requestUtils import ASSIGNMENT_STATES, verify_user_input, REQUEST_STATES
-from VaseLabFlask.models import ActivityLog, File, Request, RequestAssignment, User
+from VaseLabFlask.models import ActivityLog, Equipment, File, Request, RequestAssignment, User
 
 # A JSON body, optionally paired with an HTTP status code
 JsonDict = dict[str, Any]
@@ -132,6 +132,8 @@ def get_request_details(request_id: int) -> ApiResponse:
                 "uploadedAt": created_at,
             })
 
+    equipment = db.session.get(Equipment, req.EquipmentID) if req.EquipmentID else None
+
     return {
         "id": str(req.RequestID),
         "title": req.RequestTitle,
@@ -147,6 +149,7 @@ def get_request_details(request_id: int) -> ApiResponse:
         "myAsk": ASSIGNMENT_STATES.get(my_state),
         "files": file_list,
         "canUpload": can_upload_now(current_user, req),
+        "equipment": {"id": equipment.EquipmentID, "name": equipment.EquipmentName} if equipment else None,
     }
 
 
@@ -192,12 +195,22 @@ def create_request() -> ApiResponse:
     if deadline.date() < date.today():
         return {"errorCode": "34", "error": "Invalid date"}, 400
 
+    # only available equipment can be requested
+    equipment_id = user_input.get("equipment_id")
+    if equipment_id is not None:
+        if type(equipment_id) is not int:
+            return {"errorCode": "35", "error": "Invalid equipment"}, 400
+        equipment = db.session.get(Equipment, equipment_id)
+        if equipment is None or equipment.EquipmentState != "available":
+            return {"errorCode": "36", "error": "Equipment not available"}, 400
+
     req = Request(
         RequestTitle=user_input["title"],
         RequestDetails=user_input["details"],
         RequestPriority=user_input["priority"],
         RequestDeadline=deadline.date().isoformat(),
         UserID=user_id,
+        EquipmentID=equipment_id,
     )
     db.session.add(req)
     db.session.flush()
@@ -213,6 +226,7 @@ def create_request() -> ApiResponse:
             "RequestState": req.RequestState,
             "RequestPriority": req.RequestPriority,
             "RequestDeadline": deadline.date().isoformat(),
+            "EquipmentID": equipment_id,
         },
     )
 
