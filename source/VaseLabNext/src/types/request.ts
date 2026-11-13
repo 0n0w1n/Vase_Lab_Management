@@ -62,8 +62,20 @@ export type LabRequest = RequestSummary & {
   assignees: string[];
   /** the signed-in TA's own ask, null when they haven't asked */
   myAsk: AskState | null;
+  /** the signed-in TA is approved and has asked the lab manager to take them off */
+  myLeaveRequested: boolean;
+  /** everyone on or asking for this request, for the lab manager's Manage TAs pop-up */
+  team: TeamMember[];
   /** whether the signed-in user can add files right now */
   canUpload: boolean;
+};
+
+export type TeamMember = {
+  id: string;
+  name: string;
+  state: AskState;
+  /** approved, but asked to be taken off */
+  leaving: boolean;
 };
 
 /** What the New Request form submits the server fills in everything else */
