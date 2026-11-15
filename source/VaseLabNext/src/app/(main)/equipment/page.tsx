@@ -1,7 +1,7 @@
 // app/equipment/page.tsx
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { formatDate, formatEquipmentId } from "@/lib/format";
+import { formatDate, formatEquipmentId } from "@/utils/format";
 import { getCurrentUser } from "@/lib/auth";
 import { getEquipment } from "@/lib/equipment";
 import { type Equipment, type EquipmentState } from "@/types/equipment";

@@ -4,7 +4,7 @@ import EquipmentTabs from "@/components/equipment/EquipmentTabs";
 import { EquipmentActions } from "@/components/equipment/ActionPopups";
 import { getCurrentUser } from "@/lib/auth";
 import { getEquipmentById } from "@/lib/equipment";
-import { formatEquipmentId } from "@/lib/format";
+import { formatEquipmentId } from "@/utils/format";
 import type { EquipmentState } from "@/types/equipment";
 import { cn } from "cn";
 

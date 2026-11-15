@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import PriorityDot from "@/components/request/PriorityDot";
 import RequestFilters from "@/components/request/RequestFilters";
 import StatusPill from "@/components/request/StatusPill";
-import { formatDate } from "@/lib/format";
+import { formatDate } from "@/utils/format";
 import RequestActions from "@/components/request/RequestActions";
 import { getCurrentUser, type User } from "@/lib/auth";
 import { canEditRequest, getRequests } from "@/lib/requests";

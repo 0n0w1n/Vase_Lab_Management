@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import DetailField from "@/components/request/DetailField";
-import { formatDate } from "@/lib/format";
+import { formatDate } from "@/utils/format";
 import { getEquipmentById } from "@/lib/equipment";
 
 type Props = {

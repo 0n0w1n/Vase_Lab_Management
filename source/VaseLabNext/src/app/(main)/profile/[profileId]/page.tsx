@@ -5,7 +5,7 @@ import PageHeader from "@/components/layout/PageHeader";
 import InitialsAvatar from "@/components/request/InitialsAvatar";
 import { getCurrentUser, getUser } from "@/lib/auth";
 import SeedUserForm from "@/components/profile/SeedUserForm";
-import { formatDate } from "@/lib/format"; // Hugo : used on line 46
+import { formatDate } from "@/utils/format"; // Hugo : used on line 46
 
 // Spacing 1 unit in tailwinds = 0.25 rems = 4 px
 // Foreground -- color bind to main color of the page color: var(--foreground)

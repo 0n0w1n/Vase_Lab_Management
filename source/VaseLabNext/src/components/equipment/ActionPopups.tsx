@@ -7,7 +7,7 @@ import { SelectInput, TextArea, TextInput } from "@/components/ui/FormFields";
 import { ItemActions } from "@/components/ui/ItemActions";
 import { Modal, ModalFormButtons } from "@/components/ui/Modal";
 import { useModalForm } from "@/components/ui/useModalForm";
-import { formatEquipmentId } from "@/lib/format";
+import { formatEquipmentId } from "@/utils/format";
 import type { EditEquipmentState, Equipment } from "@/types/equipment";
 
 type Props = {
