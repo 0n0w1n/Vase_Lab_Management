@@ -150,15 +150,15 @@ def create_equipment():
     description = data["description"]
 
     if not isinstance(name, str) or not name.strip():
-        return {"errorCode": "20", "error": "Name is required"}, 400
+        return {"errorCode": "30", "error": "Name is required"}, 400
     if len(name.strip()) > 140:
-        return {"errorCode": "20", "error": "Name is too long"}, 400
+        return {"errorCode": "31", "error": "Name is too long"}, 400
     if not isinstance(model, str) or len(model.strip()) > 140:
-        return {"errorCode": "21", "error": "Model is too long"}, 400
+        return {"errorCode": "32", "error": "Model is too long"}, 400
     if state not in {"available", "in_use", "maintenance", "retired"}:
-        return {"errorCode": "22", "error": "Invalid state"}, 400
+        return {"errorCode": "33", "error": "Invalid state"}, 400
     if not isinstance(description, str):
-        return {"errorCode": "23", "error": "Invalid description"}, 400
+        return {"errorCode": "34", "error": "Invalid description"}, 400
 
     equipment = Equipment(
         EquipmentName=name.strip(),
@@ -206,15 +206,15 @@ def edit_equipment(equipment_id: int):
     description = data["description"]
 
     if not isinstance(name, str) or not name.strip():
-        return {"errorCode": "20", "error": "Name is required"}, 400
+        return {"errorCode": "30", "error": "Name is required"}, 400
     if len(name.strip()) > 140:
-        return {"errorCode": "20", "error": "Name is too long"}, 400
+        return {"errorCode": "31", "error": "Name is too long"}, 400
     if not isinstance(model, str) or len(model.strip()) > 140:
-        return {"errorCode": "21", "error": "Model is too long"}, 400
+        return {"errorCode": "32", "error": "Model is too long"}, 400
     if state not in {"available", "in_use", "maintenance", "retired"}:
-        return {"errorCode": "22", "error": "Invalid state"}, 400
+        return {"errorCode": "33", "error": "Invalid state"}, 400
     if not isinstance(description, str):
-        return {"errorCode": "23", "error": "Invalid description"}, 400
+        return {"errorCode": "34", "error": "Invalid description"}, 400
 
     new = {
         "EquipmentName": name.strip(),
