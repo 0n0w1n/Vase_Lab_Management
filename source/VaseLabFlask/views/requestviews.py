@@ -218,6 +218,14 @@ def create_request() -> ApiResponse:
         equipment = db.session.get(Equipment, equipment_id)
         if equipment is None or equipment.EquipmentState != "available":
             return {"errorCode": "36", "error": "Equipment not available"}, 400
+        # already taken by another open request
+        in_use = db.session.scalar(
+            db.select(Request.RequestID)
+            .where(Request.EquipmentID == equipment_id, Request.RequestState.in_(ACTIVE_STATES))
+            .limit(1)
+        )
+        if in_use is not None:
+            return {"errorCode": "36", "error": "Equipment not available"}, 400
 
     req = Request(
         RequestTitle=user_input["title"],
