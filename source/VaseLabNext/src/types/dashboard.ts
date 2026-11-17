@@ -22,5 +22,8 @@ export type Dashboard = {
     inProgress: number;
     completedThisMonth: number;
   };
+  /** active requests (pending + in-progress + review) */
   requests: DashboardRequest[];
+  /** requests completed this month, newest first; same count as stats.completedThisMonth */
+  completed: DashboardRequest[];
 };

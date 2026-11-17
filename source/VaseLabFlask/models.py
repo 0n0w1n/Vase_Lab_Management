@@ -200,6 +200,9 @@ class RequestAssignment(db.Model):
         db.DateTime, nullable=False, server_default=db.func.now()
     )
     DecidedAt: datetime | None = mapped_column(db.DateTime, nullable=True)
+    # Set when an approved TA asks the lab manager to take them off the request.
+    # They stay approved until the manager approves the leave.
+    LeaveRequestedAt: datetime | None = mapped_column(db.DateTime, nullable=True)
     UpdatedAt: datetime | None = mapped_column(
         db.DateTime, server_default=db.func.now(), onupdate=datetime.utcnow
     )

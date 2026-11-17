@@ -3,29 +3,32 @@ import { cn } from "cn";
 type Props = {
   label: string;
   value: number;
-  /** highlights card*/
-  alert?: string;
+  /** the card currently filtering the table: green outline */
+  selected?: boolean;
+  /** something needs action: red number */
+  urgent?: boolean;
 };
 
-export default function StatCard({ label, value, alert }: Props) {
+export default function StatCard({ label, value, selected, urgent }: Props) {
   return (
     <div
       className={cn(
-        "rounded-2xl bg-white px-5 py-5 ring-1 ring-black/5",
-        alert && "ring-2 ring-brand"
+        "h-full rounded-2xl bg-white px-5 py-5 ring-1 ring-black/5",
+        selected && "ring-2 ring-brand"
       )}
     >
       <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
         {label}
       </p>
-      <div className="flex items-center justify-between gap-2 pt-2">
-        <p className={cn("text-4xl font-extrabold", alert && "text-brand")}>{value}</p>
-        {alert && (
-          <span className="rounded-full bg-brand-soft px-2.5 py-1 text-[0.6rem] font-bold tracking-wide text-brand uppercase">
-            {alert}
-          </span>
+      <p
+        className={cn(
+          "pt-2 text-4xl font-extrabold",
+          selected && "text-brand",
+          urgent && "text-warn"
         )}
-      </div>
+      >
+        {value}
+      </p>
     </div>
   );
 }

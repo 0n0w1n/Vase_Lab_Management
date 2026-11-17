@@ -52,11 +52,11 @@ def add_comment(request_id: int):
     db.session.flush()
     comment_id = comment.CommentID
     db.session.add(ActivityLog(
-        UserID=current_user.UserID,
+        # UserID=current_user.UserID,
         Action="create",
         EntityType="comment",
         EntityID=comment_id,
-        NewValue={"RequestID": request_id},
+        fields={"userID": current_user.UserID, "RequestID": request_id},
     ))
     db.session.commit()
     return {"id": str(comment_id)}, 201

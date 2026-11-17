@@ -127,16 +127,25 @@ function RequestRow({ asks }: { asks: TaAsk[] }) {
       <ul className="col-span-2 grid grid-cols-subgrid gap-y-4">
         {asks.map((ask) => (
           <li
-            key={ask.id}
+            // A TA's join ask and leave ask share an id
+            key={`${ask.kind}-${ask.id}`}
             className="col-span-2 grid grid-cols-subgrid border-t border-black/5 pt-4 first:border-t-0 first:pt-0"
           >
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <InitialsAvatar initials={ask.ta.initials} />
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{ask.ta.name}</p>
+                  <p className="flex items-center gap-2 text-sm font-semibold">
+                    <span className="truncate">{ask.ta.name}</span>
+                    {ask.kind === "leave" && (
+                      <span className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[0.65rem] text-amber-800">
+                        Wants to leave
+                      </span>
+                    )}
+                  </p>
                   <p className="text-xs text-muted-foreground">
-                    {ask.ta.openCount} open now · asked {timeAgo(ask.askedAt)}
+                    {ask.ta.openCount} open now · {ask.kind === "leave" ? "asked to leave" : "asked"}{" "}
+                    {timeAgo(ask.askedAt)}
                   </p>
                 </div>
               </div>
@@ -145,7 +154,8 @@ function RequestRow({ asks }: { asks: TaAsk[] }) {
 
             <div className="flex justify-end">
               {ask.state === "waiting" ? (
-                <DecisionButtons askId={ask.id} full={full} />
+                // Letting someone leave frees a slot, so "full" only blocks join asks
+                <DecisionButtons askId={ask.id} full={ask.kind === "join" && full} />
               ) : (
                 <span
                   className={cn(
