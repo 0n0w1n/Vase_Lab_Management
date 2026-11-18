@@ -1,6 +1,8 @@
 import type { Person, RequestPriority } from "@/types/request";
 
-export type AskState = "waiting" | "approved" | "declined";
+export const ASK_STATES = ["waiting", "approved", "declined"] as const;
+export type AskState = (typeof ASK_STATES)[number];
+
 
 /** One TA asking the lab manager to work on a request (GET /dashboard/decisions) */
 export type TaAsk = {

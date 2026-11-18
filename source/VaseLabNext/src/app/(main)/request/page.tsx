@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import PriorityDot from "@/components/request/PriorityDot";
-import RequestFilters from "@/components/request/RequestFilters";
 import StatusPill from "@/components/request/StatusPill";
 import { formatDate } from "@/utils/format";
 import RequestActions from "@/components/request/RequestActions";
+import UrlFilter from "@/components/ui/UrlFilter";
 import { getCurrentUser, type User } from "@/lib/auth";
 import { canEditRequest, getRequests } from "@/lib/requests";
 import { REQUEST_PRIORITIES, REQUEST_STATUSES } from "@/types/request";
+import { ASK_STATES } from "@/types/decision";
 import { cn } from "cn";
 import VideoPlayer from "@/components/test/video";
 import PageHeader from "@/components/layout/PageHeader";
@@ -25,6 +26,15 @@ const actionButton =
 const rowColumns =
   "grid grid-cols-[7rem_minmax(0,1fr)_7rem_7rem_7rem] items-center gap-4 px-4";
 
+// "none" = the TA hasn't asked to work on it (workOnStatus is null).
+const WORK_ON_CHOICES = [...ASK_STATES, "none"] as const;
+const WORK_ON_LABELS: Record<(typeof WORK_ON_CHOICES)[number], string> = {
+  waiting: "Waiting",
+  approved: "Approved",
+  declined: "Declined",
+  none: "Not asked",
+};
+
 type Request = Awaited<ReturnType<typeof getRequests>>[number];
 
 type Props = {
@@ -38,10 +48,17 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
   const priority = REQUEST_PRIORITIES.find((value) => value === params.priority);
 
   const [allRequests, user] = await Promise.all([getRequests(), getCurrentUser()]);
+  // Only TAs get workOnStatus back from the API, so only they can filter on it.
+  const isTa = user?.role === "lab_ta";
+  const workOnStatus = isTa
+    ? WORK_ON_CHOICES.find((value) => value === params.workOnStatus)
+    : undefined;
+
   const requests = allRequests.filter(
     (request) =>
       (!status || request.status === status) &&
-      (!priority || request.priority === priority)
+      (!priority || request.priority === priority) &&
+      (!workOnStatus || (request.workOnStatus ?? "none") === workOnStatus)
   );
 
   return (
@@ -59,7 +76,28 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
         />
 
         <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
-          <RequestFilters status={status} priority={priority} />
+          <div className="flex justify-end gap-2 pb-4">
+            {isTa && (
+              <UrlFilter
+                param="workOnStatus"
+                label="Work On"
+                options={WORK_ON_CHOICES}
+                optionPill={(value) => WORK_ON_LABELS[value]}
+              />
+            )}
+            <UrlFilter
+              param="status"
+              label="Status"
+              options={REQUEST_STATUSES}
+              optionPill={(value) => <StatusPill status={value} />}
+            />
+            <UrlFilter
+              param="priority"
+              label="Priority"
+              options={REQUEST_PRIORITIES}
+              optionPill={(value) => <PriorityDot priority={value} className="text-xs" />}
+            />
+          </div>
 
           <div className="overflow-x-auto px-1">
             <div className="min-w-[44rem]">
@@ -71,7 +109,7 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
               </ul>
               {requests.length === 0 && (
                 <p className="py-10 text-center text-sm text-muted-foreground">
-                  {status || priority
+                  {status || priority || workOnStatus
                     ? "No requests match these filters."
                     : "No requests yet."}
                 </p>
