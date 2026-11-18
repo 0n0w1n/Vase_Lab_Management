@@ -365,8 +365,8 @@ def edit_request(request_id):
                 updating["capacity"] = int(updating["capacity"])
             except ValueError:
                 return {"errorCode": "24", "error": "Capacity must be an integer"}, 400
-            if updating["capacity"] < 1 or updating["capacity"] < assigned_amount:
-                return {"errorCode": "25", "error": "Invalid capacity"}
+            if updating["capacity"] < 0 or updating["capacity"] < assigned_amount:
+                return {"errorCode": "25", "error": "Invalid capacity"}, 400
         updating["deadline"] = user_input.get("deadline")
         if updating["deadline"]:
             try:

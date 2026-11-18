@@ -15,6 +15,13 @@ type Props = {
 export default function CapacityForm({ requestId, capacity, assignedCount }: Props) {
   const [state, formAction, pending] = useActionState(updateCapacity, INITIAL_STATE);
   const [value, setValue] = useState(String(capacity));
+  // useState only reads `capacity` on first render, so when the saved capacity
+  // changes (Save here, the Edit tab, or another manager) put the new number in the box.
+  const [savedCapacity, setSavedCapacity] = useState(capacity);
+  if (capacity !== savedCapacity) {
+    setSavedCapacity(capacity);
+    setValue(String(capacity));
+  }
   const changed = value !== String(capacity);
 
   return (
