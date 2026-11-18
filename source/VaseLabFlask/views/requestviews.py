@@ -56,27 +56,37 @@ def get_requests_list() -> list[JsonDict]:
     Return all requests if the user's role is in STAFF roles.
     Otherwise, return only the requests the user created.
     """
+    is_ta = current_user.UserRole == "lab_ta"
+
     query = (
-        db.select(Request, User)
+        db.select(Request, User.UserFullName)
         .join(User, Request.UserID == User.UserID)
         .order_by(Request.RequestID.desc())
     )
-
-    if current_user.UserRole not in STAFF:
+    if is_ta:
+        # The TA's own ask on each request; the (RequestID, UserID) key allows at most one
+        query = query.add_columns(RequestAssignment.State).outerjoin(
+            RequestAssignment,
+            (RequestAssignment.RequestID == Request.RequestID)
+            & (RequestAssignment.UserID == current_user.UserID),
+        )
+    elif current_user.UserRole not in STAFF:
         query = query.where(Request.UserID == current_user.UserID)
 
-    rows: Sequence[tuple[Request, User]] = db.session.execute(query).tuples().all()
-
     result = []
-    for req, requester in rows:
-        result.append({
+    for row in db.session.execute(query):
+        req: Request = row[0]
+        item: JsonDict = {
             "id": str(req.RequestID),
             "title": req.RequestTitle,
             "status": req.RequestState,
             "priority": req.RequestPriority,
             "deadline": req.RequestDeadline.date().isoformat() if req.RequestDeadline else None,
-            "requestedBy": requester.UserFullName,
-        })
+            "requestedBy": row[1],
+        }
+        if is_ta:
+            item["workOnStatus"] = ASSIGNMENT_STATES.get(row[2])
+        result.append(item)
 
     return result
 
