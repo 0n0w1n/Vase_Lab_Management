@@ -18,6 +18,7 @@ import { authFetch, isManager, type User } from "@/lib/auth";
 export function canEditRequest(user: User | null, request: RequestSummary & { assignees?: string[] }) {
   if (!user) return false;
   if (isManager(user)) return true;
+  if (request.workOnStatus === "approved") return true; // approved TA on list page
   if (request.assignees?.includes(user.name)) return true;   // approved TA
   if (request.requesterId !== undefined) return request.requesterId === String(user.id);
   return request.requestedBy === user.name;
