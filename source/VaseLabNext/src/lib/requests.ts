@@ -79,16 +79,19 @@ export class RequestValidationError extends Error {
 }
 
 export async function createRequest(
-  input: NewRequestInput
+  input: NewRequestInput,
+  equipmentId?: number
 ): Promise<{ id: number }> {
   const res = await authFetch("/request/create", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
+    body: JSON.stringify({ ...input, equipment_id: equipmentId }),
   });
   const body = await res.json().catch(() => null);
   if (body?.errorCode !== undefined) {
     const code = String(body.errorCode);
+    if (code === "35" || code === "36")
+      throw new RequestValidationError(code, "That equipment isn't available. Please pick another.");
     throw new RequestValidationError(code, body.error, ERROR_FIELDS[code]);
   }
   if (!res.ok) throw new Error(`Create request failed: ${res.status}`);

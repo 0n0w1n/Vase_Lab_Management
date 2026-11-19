@@ -6,7 +6,7 @@ import DetailField from "@/components/request/DetailField";
 import ManageTas from "@/components/request/ManageTas";
 import PriorityLabel from "@/components/request/PriorityLabel";
 import { getCurrentUser } from "@/lib/auth";
-import { formatDateTime } from "@/utils/format";
+import { formatDateTime, formatEquipmentId } from "@/utils/format";
 import { getRequest } from "@/lib/requests";
 import { getWorkload } from "@/lib/workload";
 
@@ -72,6 +72,14 @@ export default async function RequestDetailPage({ params }: Props) {
             />
           ) : (
             `${request.assignedCount} / ${request.capacity} ${request.capacity === 1 ? "TA" : "TAs"}`
+          )}
+        </DetailField>
+
+        <DetailField label="Equipment" className="md:col-span-2">
+          {request.equipment ? (
+            `${formatEquipmentId(request.equipment.id)} · ${request.equipment.name}`
+          ) : (
+            <span className="text-muted-foreground">None</span>
           )}
         </DetailField>
 

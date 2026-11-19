@@ -15,9 +15,11 @@ export async function submitNewRequest(
   // rejects the call without a valid one, even on a direct POST to this action.
   const { values, errors, input } = parseRequestForm(formData);
   if (!input) return { values, errors };
+  // "" (None) becomes undefined
+  const equipmentId = Number(formData.get("equipmentId")) || undefined;
 
   try {
-    await createRequest(input);
+    await createRequest(input, equipmentId);
   } catch (error) {
     // Let the expired-session redirect to /login through.
     unstable_rethrow(error);

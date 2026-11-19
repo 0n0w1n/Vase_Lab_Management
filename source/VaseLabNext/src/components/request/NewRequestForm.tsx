@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "cn";
-import { Field, errorProps, inputBox } from "@/components/ui/FormFields";
+import { Field, SelectInput, errorProps, inputBox } from "@/components/ui/FormFields";
 import {
   submitNewRequest,
   type NewRequestState,
 } from "@/app/(main)/request/new/actions";
+import { formatEquipmentId } from "@/utils/format";
+import type { Equipment } from "@/types/equipment";
 import type { RequestPriority } from "@/types/request";
 
 const INITIAL_STATE: NewRequestState = {
@@ -22,7 +24,7 @@ export const PRIORITY_OPTIONS: { value: RequestPriority; label: string }[] = [
   { value: "high", label: "High" },
 ];
 
-export default function NewRequestForm() {
+export default function NewRequestForm({ equipment }: { equipment: Equipment[] }) {
   const [state, formAction, pending] = useActionState(
     submitNewRequest,
     INITIAL_STATE
@@ -96,6 +98,15 @@ export default function NewRequestForm() {
           />
         </Field>
       </div>
+
+      <SelectInput
+        name="equipmentId"
+        label="Equipment"
+        options={[
+          { value: "", label: "None" },
+          ...equipment.map((item) => ({ value: String(item.id), label: `${formatEquipmentId(item.id)} · ${item.name}` })),
+        ]}
+      />
 
       {state.message && (
         <p role="alert" className="text-sm text-red-600">

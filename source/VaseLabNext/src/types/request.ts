@@ -70,6 +70,7 @@ export type LabRequest = RequestSummary & {
   team: TeamMember[];
   /** whether the signed-in user can add files right now */
   canUpload: boolean;
+  equipment: { id: number; name: string } | null;
 };
 
 export type TeamMember = {
