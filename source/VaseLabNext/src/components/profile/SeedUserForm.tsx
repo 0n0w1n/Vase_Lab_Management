@@ -53,7 +53,7 @@ export default function SeedUserForm() {
         </p>}
         <div className="mt-6 flex justify-end">
           <button type="submit" disabled={pending} className="rounded-lg bg-brand px-6 py-3 text-sm font-bold text-brand-foreground hover:bg-brand/85 disabled:opacity-60">
-            {pending ? "Creating user…" : "Seed User"}
+            {pending ? "Creating user…" : "Create User"}
           </button>
         </div>
       </form>
