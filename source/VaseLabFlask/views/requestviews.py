@@ -15,7 +15,7 @@ from sqlalchemy import func
 from VaseLabFlask.extensions import db
 from VaseLabFlask.lib.authUtils import STAFF, FILE_MANAGERS, can_read_request, can_read_request_files, can_upload_now, is_manager
 from VaseLabFlask.lib.requestUtils import (
-    ACTIVE_STATES, ASSIGNMENT_STATES, REQUEST_STATES, reopen_if_no_tas, verify_user_input,
+    ACTIVE_STATES, ASSIGNMENT_STATES, REQUEST_STATES, iso, reopen_if_no_tas, verify_user_input,
 )
 from VaseLabFlask.models import ActivityLog, Equipment, File, Request, RequestAssignment, User
 
@@ -176,6 +176,38 @@ def get_request_details(request_id: int) -> ApiResponse:
         "canUpload": can_upload_now(current_user, req),
         "equipment": {"id": equipment.EquipmentID, "name": equipment.EquipmentName} if equipment else None,
     }
+
+
+@request_api.get("/activity/<int:request_id>")
+@jwt_required()
+def get_request_activity(request_id: int):
+    """Return the activity log of one request, newest first."""
+    req = db.session.get(Request, request_id)
+    if req is None:
+        return {"errorCode": "10", "error": "Not found"}, 404
+    if not can_read_request(current_user, req):
+        return {"errorCode": "11", "error": "Unauthorized"}, 403
+
+    logs = db.session.scalars(
+        db.select(ActivityLog)
+        .where(ActivityLog.EntityType == "request", ActivityLog.EntityID == request_id)
+        .order_by(ActivityLog.CreatedAt.desc(), ActivityLog.LogID.desc())
+    ).all()
+
+    result = []
+    for log in logs:
+        # some logs have no userID (status changed by the system)
+        user_id = log.fields.get("userID")
+        user = db.session.get(User, user_id) if user_id else None
+        result.append({
+            "id": str(log.LogID),
+            "entity": log.EntityType,
+            "action": log.Action,
+            "fields": log.fields,
+            "by": user.UserFullName if user else None,
+            "at": iso(log.CreatedAt),
+        })
+    return result
 
 
 def _validate_request_text(user_input: JsonDict) -> Optional[ApiResponse]:
