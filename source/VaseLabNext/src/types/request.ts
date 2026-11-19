@@ -32,6 +32,20 @@ export type ActivityEntry = {
   message: string;
 };
 
+/** One row of GET /request/activity/<id>, newest first; describeActivity turns it into an ActivityEntry */
+export type RawActivity = {
+  id: string;
+  /** always "request" for this endpoint */
+  entity: string;
+  /** e.g. "create", "update", "update-assign-ta", "update-status" */
+  action: string;
+  /** details that depend on the action; userID is the person the entry is about */
+  fields: Record<string, unknown>;
+  /** name of fields.userID; null for automatic changes such as status updates */
+  by: string | null;
+  at: string;
+};
+
 export type LogMessage = {
   id: string;
   author: Person;
