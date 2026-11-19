@@ -100,8 +100,14 @@ export function describeActivity(raw: RawActivity): ActivityEntry {
       : // No user means an automatic change, e.g. the status moving when a TA is approved
         { name: "System", initials: "SYS" },
     at: raw.at,
-    // Unknown actions still show something instead of breaking the page
-    message: wording ? wording(raw.fields ?? {}) : "updated this request",
+    message:
+      // File uploads are logged as a "create" too, so check the entity before the action table
+      raw.entity === "file"
+        ? `attached ${typeof raw.fields?.FileName === "string" ? raw.fields.FileName : "a file"}`
+        : // Unknown actions still show something instead of breaking the page
+          wording
+          ? wording(raw.fields ?? {})
+          : "updated this request",
   };
 }
 

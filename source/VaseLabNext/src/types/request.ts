@@ -35,7 +35,7 @@ export type ActivityEntry = {
 /** One row of GET /request/activity/<id>, newest first; describeActivity turns it into an ActivityEntry */
 export type RawActivity = {
   id: string;
-  /** always "request" for this endpoint */
+  /** "request" for changes to the request, "file" for an attachment upload */
   entity: string;
   /** e.g. "create", "update", "update-assign-ta", "update-status" */
   action: string;
