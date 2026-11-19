@@ -10,7 +10,7 @@ from typing import Any, Optional, Union, cast
 
 from flask import Blueprint, request
 from flask_jwt_extended import current_user, jwt_required
-from sqlalchemy import func
+from sqlalchemy import and_, func, or_
 
 from VaseLabFlask.extensions import db
 from VaseLabFlask.lib.authUtils import STAFF, FILE_MANAGERS, can_read_request, can_read_request_files, can_upload_now, is_manager
@@ -181,16 +181,28 @@ def get_request_details(request_id: int) -> ApiResponse:
 @request_api.get("/activity/<int:request_id>")
 @jwt_required()
 def get_request_activity(request_id: int):
-    """Return the activity log of one request, newest first."""
+    """Return the activity log of one request and its file uploads, newest first."""
     req = db.session.get(Request, request_id)
     if req is None:
         return {"errorCode": "10", "error": "Not found"}, 404
     if not can_read_request(current_user, req):
         return {"errorCode": "11", "error": "Unauthorized"}, 403
 
+    is_request_log = and_(ActivityLog.EntityType == "request", ActivityLog.EntityID == request_id)
+    # file logs keep the request id inside fields
+    is_file_log = and_(ActivityLog.EntityType == "file", ActivityLog.fields["RequestID"].as_integer() == request_id)
+
+    # unapproved TAs can't see attachments
+    mine = db.session.get(RequestAssignment, (request_id, current_user.UserID))
+    can_see_files = can_read_request_files(current_user, req, mine.State if mine else None)
+    if can_see_files:
+        condition = or_(is_request_log, is_file_log)
+    else:
+        condition = is_request_log
+
     logs = db.session.scalars(
         db.select(ActivityLog)
-        .where(ActivityLog.EntityType == "request", ActivityLog.EntityID == request_id)
+        .where(condition)
         .order_by(ActivityLog.CreatedAt.desc(), ActivityLog.LogID.desc())
     ).all()
 
