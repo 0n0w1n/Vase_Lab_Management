@@ -9,9 +9,11 @@ export type ActionState = {
 };
 
 // Flask's error text is for the docs only, so the wording shown lives here.
+// Codes from POST /request/edit (capacity is one of the fields it takes).
 const CAPACITY_MESSAGES: Record<string, string> = {
-  "30": "Enter a whole number of at least 1.",
-  "31": "Can't go below the TAs already approved.",
+  "13": "Only the lab manager can change the capacity.",
+  "24": "Enter a whole number of at least 1.",
+  "25": "Can't go below the TAs already approved.",
 };
 
 const ASK_MESSAGES: Record<string, string> = {
@@ -81,10 +83,10 @@ export async function downloadAttachment(fileId: number): Promise<
 export async function updateCapacity(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const requestId = String(formData.get("requestId") ?? "");
   const capacity = Number(formData.get("capacity"));
-  if (!Number.isInteger(capacity) || capacity < 1) return { message: CAPACITY_MESSAGES["30"] };
+  if (!Number.isInteger(capacity) || capacity < 1) return { message: CAPACITY_MESSAGES["24"] };
 
   try {
-    const res = await authFetch(`/request/capacity/${encodeURIComponent(requestId)}`, {
+    const res = await authFetch(`/request/edit/${encodeURIComponent(requestId)}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ capacity }),

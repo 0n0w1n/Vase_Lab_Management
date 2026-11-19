@@ -11,7 +11,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getDashboard } from "@/lib/dashboard";
 import { getDecisions } from "@/lib/decisions";
 import { getWorkload } from "@/lib/workload";
-import { formatDate, timeAgo, timePassed } from "@/lib/format";
+import { formatDate, timeAgo, timePassed } from "@/utils/format";
 import type { DashboardRequest } from "@/types/dashboard";
 import { cn } from "cn";
 

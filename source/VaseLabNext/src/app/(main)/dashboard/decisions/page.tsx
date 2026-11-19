@@ -7,7 +7,7 @@ import InitialsAvatar from "@/components/request/InitialsAvatar";
 import PriorityDot from "@/components/request/PriorityDot";
 import { getCurrentUser } from "@/lib/auth";
 import { getDecisions } from "@/lib/decisions";
-import { formatDate, timeAgo, timePassed } from "@/lib/format";
+import { formatDate, timeAgo, timePassed } from "@/utils/format";
 import type { TaAsk } from "@/types/decision";
 import { cn } from "cn";
 

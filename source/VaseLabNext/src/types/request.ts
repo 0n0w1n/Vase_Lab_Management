@@ -49,6 +49,8 @@ export type RequestSummary = {
   deadline: string | null;
   priority: RequestPriority;
   status: RequestStatus;
+  /** TA only: the signed-in TA's own ask, null when they haven't asked */
+  workOnStatus?: AskState | null;
 };
 
 export type LabRequest = RequestSummary & {

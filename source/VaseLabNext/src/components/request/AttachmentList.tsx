@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { Download, FileText, Paperclip } from "lucide-react";
 import { downloadAttachment } from "@/app/(main)/request/[requestId]/actions";
 import AttachmentUpload from "@/components/request/AttachmentUpload";
-import { formatDate, formatFileSize } from "@/lib/format";
+import { formatDate, formatFileSize } from "@/utils/format";
 import type { Attachment } from "@/types/request";
 
 type Props = {

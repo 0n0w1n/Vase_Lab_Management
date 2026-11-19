@@ -8,7 +8,7 @@ import PriorityDot from "@/components/request/PriorityDot";
 import StatusPill from "@/components/request/StatusPill";
 import { getCurrentUser } from "@/lib/auth";
 import { getWorkload } from "@/lib/workload";
-import { formatDate, timeAgo, timePassed } from "@/lib/format";
+import { formatDate, timeAgo, timePassed } from "@/utils/format";
 
 export const metadata = { title: "TA Workload" };
 

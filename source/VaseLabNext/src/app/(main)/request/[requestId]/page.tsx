@@ -6,7 +6,7 @@ import DetailField from "@/components/request/DetailField";
 import ManageTas from "@/components/request/ManageTas";
 import PriorityLabel from "@/components/request/PriorityLabel";
 import { getCurrentUser } from "@/lib/auth";
-import { formatDateTime, formatEquipmentId } from "@/lib/format";
+import { formatDateTime, formatEquipmentId } from "@/utils/format";
 import { getRequest } from "@/lib/requests";
 import { getWorkload } from "@/lib/workload";
 

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatDate, formatEquipmentId } from "@/lib/format";
+import { formatDate, formatEquipmentId } from "@/utils/format";
 import { getEquipmentById, getEquipmentUsage } from "@/lib/equipment";
 import type { EquipmentUsage } from "@/types/equipment";
 

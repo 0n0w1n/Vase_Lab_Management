@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import InitialsAvatar from "@/components/request/InitialsAvatar";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@/utils/format";
 import { getRequest } from "@/lib/requests";
 import type { ActivityEntry } from "@/types/request";
 

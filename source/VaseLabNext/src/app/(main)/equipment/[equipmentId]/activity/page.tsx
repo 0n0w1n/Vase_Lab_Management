@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@/utils/format";
 import { getEquipmentActivity, getEquipmentById } from "@/lib/equipment";
 
 type Props = {

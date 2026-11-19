@@ -9,7 +9,7 @@ import {
   submitNewRequest,
   type NewRequestState,
 } from "@/app/(main)/request/new/actions";
-import { formatEquipmentId } from "@/lib/format";
+import { formatEquipmentId } from "@/utils/format";
 import type { Equipment } from "@/types/equipment";
 import type { RequestPriority } from "@/types/request";
 

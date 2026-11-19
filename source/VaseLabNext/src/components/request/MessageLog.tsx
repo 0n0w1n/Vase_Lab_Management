@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import { postComment, type ActionState } from "@/app/(main)/request/[requestId]/actions";
 import { Button } from "@/components/ui/button";
 import InitialsAvatar from "@/components/request/InitialsAvatar";
-import { formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@/utils/format";
 import type { LogMessage } from "@/types/request";
 
 type Props = {
