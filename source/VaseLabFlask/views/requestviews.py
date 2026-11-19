@@ -188,21 +188,19 @@ def get_request_activity(request_id: int):
     if not can_read_request(current_user, req):
         return {"errorCode": "11", "error": "Unauthorized"}, 403
 
+    # TAs only see history of requests they work on
+    mine = db.session.get(RequestAssignment, (request_id, current_user.UserID))
+    is_handling = mine is not None and mine.State == "Approved"
+    if current_user.UserRole == "lab_ta" and req.UserID != current_user.UserID and not is_handling:
+        return {"errorCode": "11", "error": "Unauthorized"}, 403
+
     is_request_log = and_(ActivityLog.EntityType == "request", ActivityLog.EntityID == request_id)
     # file logs keep the request id inside fields
     is_file_log = and_(ActivityLog.EntityType == "file", ActivityLog.fields["RequestID"].as_integer() == request_id)
 
-    # unapproved TAs can't see attachments
-    mine = db.session.get(RequestAssignment, (request_id, current_user.UserID))
-    can_see_files = can_read_request_files(current_user, req, mine.State if mine else None)
-    if can_see_files:
-        condition = or_(is_request_log, is_file_log)
-    else:
-        condition = is_request_log
-
     logs = db.session.scalars(
         db.select(ActivityLog)
-        .where(condition)
+        .where(or_(is_request_log, is_file_log))
         .order_by(ActivityLog.CreatedAt.desc(), ActivityLog.LogID.desc())
     ).all()
 
