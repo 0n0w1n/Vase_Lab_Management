@@ -4,7 +4,7 @@ from flask_jwt_extended import current_user, jwt_required
 from VaseLabFlask.extensions import db
 from VaseLabFlask.models import ActivityLog, Equipment, Request, User
 from VaseLabFlask.lib.requestUtils import ACTIVE_STATES, iso, verify_user_input
-from VaseLabFlask.lib.authUtils import STAFF, FILE_MANAGERS
+from VaseLabFlask.lib.authUtils import STAFF
 
 equipment_api = Blueprint("equipment_api", __name__)
 
@@ -136,6 +136,7 @@ def get_equipment_activity(equipment_id: int):
 @equipment_api.post("/create")
 @jwt_required()
 def create_equipment():
+    # SRS-12: TAs manage equipment the same as lab managers
     if current_user.UserRole not in STAFF:
         return {"errorCode": "12", "error": "Unauthorized"}, 403
 
@@ -188,7 +189,8 @@ def create_equipment():
 @equipment_api.post("/edit/<int:equipment_id>")
 @jwt_required()
 def edit_equipment(equipment_id: int):
-    if current_user.UserRole not in FILE_MANAGERS:
+    # Same rule as create (SRS-12)
+    if current_user.UserRole not in STAFF:
         return {"errorCode": "12", "error": "Unauthorized"}, 403
 
     equipment = db.session.get(Equipment, equipment_id)
@@ -247,8 +249,8 @@ def edit_equipment(equipment_id: int):
 @equipment_api.post("/delete/<int:equipment_id>")
 @jwt_required()
 def delete_equipment(equipment_id: int):
-    # Deleting can't be undone, so stricter than create: no TAs
-    if current_user.UserRole not in {"admin", "lab_manager"}:
+    # Same rule as create and edit (SRS-12)
+    if current_user.UserRole not in STAFF:
         return {"errorCode": "12", "error": "Unauthorized"}, 403
 
     equipment = db.session.get(Equipment, equipment_id)
