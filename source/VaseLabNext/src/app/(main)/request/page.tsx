@@ -5,6 +5,7 @@ import StatusPill from "@/components/request/StatusPill";
 import { formatDate } from "@/utils/format";
 import RequestActions from "@/components/request/RequestActions";
 import UrlFilter from "@/components/ui/UrlFilter";
+import UrlSearch from "@/components/ui/UrlSearch";
 import { getCurrentUser, type User } from "@/lib/auth";
 import { canEditRequest, getRequests } from "@/lib/requests";
 import { REQUEST_PRIORITIES, REQUEST_STATUSES } from "@/types/request";
@@ -46,6 +47,8 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
   // Anything that isn't a known value (typo, hand-edited URL) means no filter.
   const status = REQUEST_STATUSES.find((value) => value === params.status);
   const priority = REQUEST_PRIORITIES.find((value) => value === params.priority);
+  // Free-text search over title and ID ("12", "REQ-12" and "req12" all match request 12).
+  const query = typeof params.q === "string" ? params.q.trim().toLowerCase() : "";
 
   const [allRequests, user] = await Promise.all([getRequests(), getCurrentUser()]);
   // Only TAs get workOnStatus back from the API, so only they can filter on it.
@@ -58,7 +61,8 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
     (request) =>
       (!status || request.status === status) &&
       (!priority || request.priority === priority) &&
-      (!workOnStatus || (request.workOnStatus ?? "none") === workOnStatus)
+      (!workOnStatus || (request.workOnStatus ?? "none") === workOnStatus) &&
+      (!query || matchesQuery(request, query))
   );
 
   return (
@@ -76,7 +80,9 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
         />
 
         <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
-          <div className="flex justify-end gap-2 pb-4">
+          <div className="flex flex-row items-end justify-end gap-2 pb-4">
+            <UrlSearch placeholder="Search title or REQ-ID" className="mr-auto w-64" />
+          {/* <div className="flex flex-col items-end sm:flex-row justify-end gap-2 pb-4"> */}
             {isTa && (
               <UrlFilter
                 param="workOnStatus"
@@ -97,6 +103,7 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
               options={REQUEST_PRIORITIES}
               optionPill={(value) => <PriorityDot priority={value} className="text-xs" />}
             />
+            {/* </div> */}
           </div>
 
           <div className="overflow-x-auto px-1">
@@ -109,7 +116,7 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
               </ul>
               {requests.length === 0 && (
                 <p className="py-10 text-center text-sm text-muted-foreground">
-                  {status || priority || workOnStatus
+                  {status || priority || workOnStatus || query
                     ? "No requests match these filters."
                     : "No requests yet."}
                 </p>
@@ -119,6 +126,12 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
         </div>
     </div>
   );
+}
+
+function matchesQuery(request: Request, query: string) {
+  if (request.title.toLowerCase().includes(query)) return true;
+  const id = query.replace(/^req-?/, "");
+  return id !== "" && String(request.id) === id;
 }
 
 function TableHeaderRow() {
