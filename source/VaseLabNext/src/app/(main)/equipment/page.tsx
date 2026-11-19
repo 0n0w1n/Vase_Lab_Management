@@ -7,6 +7,7 @@ import { getEquipment } from "@/lib/equipment";
 import { type Equipment, type EquipmentState } from "@/types/equipment";
 import PageHeader from "@/components/layout/PageHeader";
 import { EquipmentActions } from "@/components/equipment/ActionPopups";
+import UrlSearch from "@/components/ui/UrlSearch";
 
 import { cn } from "cn";
 
@@ -23,10 +24,19 @@ const actionButton =
 const rowColumns =
   "grid grid-cols-[7rem_minmax(0,1fr)_7rem_7rem_7rem] items-center gap-4 px-4";
 
-export default async function EquipmentPage() {
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+};
+
+export default async function EquipmentPage({searchParams}: Props) {
+  const params = await searchParams;
   const [items, user] = await Promise.all([getEquipment(), getCurrentUser()]);
   const isLabManager = user?.role === "lab_manager";
   const isAdmin = user?.role === "admin";
+
+  const query = typeof params.q === "string" ? params.q.trim().toLowerCase() : "";
+  const equipments = items.filter((request) =>(!query || matchesQuery(request, query)));
+
   return (
     <div className="mx-auto max-w-5xl">
       <PageHeader
@@ -53,6 +63,7 @@ export default async function EquipmentPage() {
           </Link>{" "}
           and choose the equipment in the request form.
         </p>
+        <UrlSearch placeholder="Search by name, EQP-ID, or model" className="mr-auto w-64"/>
 
         {/* other content */}
         <div className="overflow-x-auto px-1">
@@ -62,7 +73,7 @@ export default async function EquipmentPage() {
 
             {/* items */}
             <ul className="flex flex-col gap-1 pt-2">
-              {items.map((item) => (
+              {equipments.map((item) => (
                 <EquipmentRow key={item.id}
                 item={item}
                 isLabManager={isLabManager}
@@ -71,7 +82,7 @@ export default async function EquipmentPage() {
             </ul>
 
             {/* item when 0 */}
-            {items.length === 0 && (
+            {equipments.length === 0 && (
               <p className="py-10 text-center text-sm text-muted-foreground">
                 No equipment yet.
               </p>
@@ -83,6 +94,12 @@ export default async function EquipmentPage() {
   );
 }
 
+function matchesQuery(equipment: Equipment, query: string) {
+  if (equipment.name.toLowerCase().includes(query)) return true;
+  if (equipment.model !== null && equipment.model.toLowerCase().includes(query)) return true;
+  const id = query.replace(/^eqp-?/, "");
+  return id !== "" && String(equipment.id) === id;
+}
 
 function TableHeaderRow() {
   return (
