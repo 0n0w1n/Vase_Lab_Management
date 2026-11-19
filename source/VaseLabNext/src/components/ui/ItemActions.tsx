@@ -37,7 +37,7 @@ export function ItemActions({ variant, dialogs }: Props) {
           </button>
         </div>
       ) : (
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex w-12 items-center justify-center rounded-r-lg opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 has-[[data-popup-open]]:pointer-events-auto has-[[data-popup-open]]:opacity-100">
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex w-12 items-center justify-center rounded-r-lg opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 pointer-coarse:pointer-events-auto pointer-coarse:opacity-100 has-[[data-popup-open]]:pointer-events-auto has-[[data-popup-open]]:opacity-100">
           <Menu.Root>
             <Menu.Trigger aria-label="Actions">
               <EllipsisVertical className="size-5" />
@@ -78,7 +78,7 @@ export function ItemActionsNoDelete({ variant, dialogs }: Props) {
           </button>
         </div>
       ) : (
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex w-12 items-center justify-center rounded-r-lg opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 has-[[data-popup-open]]:pointer-events-auto has-[[data-popup-open]]:opacity-100">
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 flex w-12 items-center justify-center rounded-r-lg opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100 pointer-coarse:pointer-events-auto pointer-coarse:opacity-100 has-[[data-popup-open]]:pointer-events-auto has-[[data-popup-open]]:opacity-100">
           <Menu.Root>
             <Menu.Trigger aria-label="Actions">
               <EllipsisVertical className="size-5" />

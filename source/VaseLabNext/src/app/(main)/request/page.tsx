@@ -24,8 +24,19 @@ const actionButton =
 
 // One column template shared by the header row and every data row,
 // so the two stay aligned by construction instead of by coincidence.
+// Below the @2xl container width each row becomes a small stacked card
+// (ID + status / title / priority + deadline) instead of a squashed table.
 const rowColumns =
-  "grid grid-cols-[7rem_minmax(0,1fr)_7rem_7rem_7rem] items-center gap-4 px-4";
+  "grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 px-4 @2xl:grid-cols-[7rem_minmax(0,1fr)_7rem_7rem_7rem]";
+
+// Where each cell sits in the narrow card; @2xl: puts them back in table order.
+const cell = {
+  topLeft: "row-start-1 @2xl:row-auto",
+  topRight: "col-start-2 row-start-1 justify-self-end @2xl:col-auto @2xl:row-auto @2xl:justify-self-auto",
+  main: "col-span-2 row-start-2 @2xl:col-span-1 @2xl:row-auto",
+  bottomLeft: "row-start-3 @2xl:row-auto",
+  bottomRight: "col-start-2 row-start-3 justify-self-end @2xl:col-auto @2xl:row-auto @2xl:justify-self-auto",
+};
 
 // "none" = the TA hasn't asked to work on it (workOnStatus is null).
 const WORK_ON_CHOICES = [...ASK_STATES, "none"] as const;
@@ -79,50 +90,47 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
           }
         />
 
-        <div className="rounded-3xl bg-white/60 p-4 pb-12 ring-3 ring-black/10 backdrop-blur-xl">
-          <div className="flex flex-row items-end justify-end gap-2 pb-4">
-            <UrlSearch placeholder="Search title or REQ-ID" className="mr-auto w-64" />
-          {/* <div className="flex flex-col items-end sm:flex-row justify-end gap-2 pb-4"> */}
-            {isTa && (
-              <UrlFilter
-                param="workOnStatus"
-                label="Work On"
-                options={WORK_ON_CHOICES}
-                optionPill={(value) => WORK_ON_LABELS[value]}
-              />
-            )}
-            <UrlFilter
-              param="status"
-              label="Status"
-              options={REQUEST_STATUSES}
-              optionPill={(value) => <StatusPill status={value} />}
-            />
-            <UrlFilter
-              param="priority"
-              label="Priority"
-              options={REQUEST_PRIORITIES}
-              optionPill={(value) => <PriorityDot priority={value} className="text-xs" />}
-            />
-            {/* </div> */}
-          </div>
-
-          <div className="overflow-x-auto px-1">
-            <div className="min-w-[44rem]">
-              <TableHeaderRow />
-              <ul className="flex flex-col gap-1 pt-2">
-                {requests.map((request) => (
-                  <RequestRow key={request.id} request={request} user={user} />
-                ))}
-              </ul>
-              {requests.length === 0 && (
-                <p className="py-10 text-center text-sm text-muted-foreground">
-                  {status || priority || workOnStatus || query
-                    ? "No requests match these filters."
-                    : "No requests yet."}
-                </p>
+        <div className="@container rounded-3xl bg-white/60 p-3 pb-8 ring-3 ring-black/10 backdrop-blur-xl sm:p-4 sm:pb-12">
+          {/* Toolbar: search on the left, filters on the right; stacks when narrow */}
+          <div className="flex flex-col gap-3 pb-4 @xl:flex-row @xl:items-center @xl:justify-between">
+            <UrlSearch placeholder="Search title or REQ-ID" className="w-full @xl:max-w-72" />
+            <div className="flex flex-wrap items-center gap-2">
+              {isTa && (
+                <UrlFilter
+                  param="workOnStatus"
+                  label="Work On"
+                  options={WORK_ON_CHOICES}
+                  optionPill={(value) => WORK_ON_LABELS[value]}
+                />
               )}
+              <UrlFilter
+                param="status"
+                label="Status"
+                options={REQUEST_STATUSES}
+                optionPill={(value) => <StatusPill status={value} />}
+              />
+              <UrlFilter
+                param="priority"
+                label="Priority"
+                options={REQUEST_PRIORITIES}
+                optionPill={(value) => <PriorityDot priority={value} className="text-xs" />}
+              />
             </div>
           </div>
+
+          <TableHeaderRow />
+          <ul className="flex flex-col gap-2 @2xl:gap-1 @2xl:pt-2">
+            {requests.map((request) => (
+              <RequestRow key={request.id} request={request} user={user} />
+            ))}
+          </ul>
+          {requests.length === 0 && (
+            <p className="py-10 text-center text-sm text-muted-foreground">
+              {status || priority || workOnStatus || query
+                ? "No requests match these filters."
+                : "No requests yet."}
+            </p>
+          )}
         </div>
     </div>
   );
@@ -138,8 +146,9 @@ function TableHeaderRow() {
   return (
     <div
       className={cn(
+        "hidden @2xl:grid",
         rowColumns,
-        "rounded-lg bg-black/10 py-2.5 text-[0.6rem] font-bold tracking-wide"
+        "rounded-lg bg-black/10 py-2.5 pr-12 text-[0.6rem] font-bold tracking-wide"
       )}
     >
       <span>REQUEST ID</span>
@@ -157,29 +166,33 @@ function RequestRow({ request, user }: { request: Request; user: User | null }) 
       <Link
         href={`/request/${request.id}`}
         className={cn(
+          "grid",
           rowColumns,
-          "rounded-lg bg-white py-4 ring-1 ring-black/5 hover:ring-black/30"
+          // pr-12 reserves room for the ⋮ actions button so it never covers a cell.
+          "rounded-lg bg-white py-3 pr-12 ring-1 ring-black/5 hover:ring-black/30 @2xl:py-4"
         )}
       >
-        <span className="text-sm font-bold text-[#4F46E5]">
+        <span className={cn(cell.topLeft, "text-sm font-bold text-[#4F46E5]")}>
           REQ-{request.id}
         </span>
-        <p className="min-w-0 text-sm font-semibold">{request.title}</p>
-        <StatusPill status={request.status} />
-        <PriorityDot priority={request.priority} />
-        <DeadlineCell deadline={request.deadline} />
+        <p className={cn(cell.main, "min-w-0 text-sm font-semibold break-words")}>{request.title}</p>
+        <StatusPill status={request.status} className={cn(cell.topRight, "w-fit")} />
+        <PriorityDot priority={request.priority} className={cell.bottomLeft} />
+        <DeadlineCell deadline={request.deadline} className={cell.bottomRight} />
       </Link>
       {canEditRequest(user, request) && <RequestActions request={request} variant="hover" role={user!.role} />}
     </li>
   );
 }
 
-function DeadlineCell({ deadline }: { deadline: string | null | undefined }) {
+function DeadlineCell({ deadline, className }: { deadline: string | null | undefined; className?: string }) {
   if (!deadline) {
-    return <span className="text-sm text-muted-foreground">—</span>;
+    // The dash only makes sense under a column header, so the card view drops it.
+    return <span className={cn(className, "hidden text-sm text-muted-foreground @2xl:inline")}>—</span>;
   }
   return (
-    <time dateTime={deadline} className="text-sm text-muted-foreground">
+    <time dateTime={deadline} className={cn(className, "text-sm text-muted-foreground")}>
+      <span className="@2xl:hidden">Due </span>
       {formatDate(deadline)}
     </time>
   );
