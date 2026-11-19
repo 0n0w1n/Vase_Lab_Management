@@ -86,9 +86,6 @@ export default async function ProfilePage({ params }: Props) {
               <Link href={`/profile/${user.id}/edit`} className="flex min-h-11 items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-semibold text-brand-foreground hover:bg-brand/85">
                 Edit Profile
               </Link>
-              <Link href={`/profile/${user.id}/edit#password`} className="flex min-h-11 items-center justify-center rounded-lg bg-white px-4 py-2.5 text-center text-sm font-semibold ring-1 ring-black/10 hover:bg-black/5">
-                Account Settings
-              </Link>
             </div>
             )
           }
