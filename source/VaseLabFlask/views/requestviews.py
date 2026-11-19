@@ -10,12 +10,12 @@ from typing import Any, Optional, Union, cast
 
 from flask import Blueprint, request
 from flask_jwt_extended import current_user, jwt_required
-from sqlalchemy import func
+from sqlalchemy import and_, func, or_
 
 from VaseLabFlask.extensions import db
 from VaseLabFlask.lib.authUtils import STAFF, FILE_MANAGERS, can_read_request, can_read_request_files, can_upload_now, is_manager
 from VaseLabFlask.lib.requestUtils import (
-    ACTIVE_STATES, ASSIGNMENT_STATES, REQUEST_STATES, reopen_if_no_tas, verify_user_input,
+    ACTIVE_STATES, ASSIGNMENT_STATES, REQUEST_STATES, iso, reopen_if_no_tas, verify_user_input,
 )
 from VaseLabFlask.models import ActivityLog, Equipment, File, Request, RequestAssignment, User
 
@@ -176,6 +176,48 @@ def get_request_details(request_id: int) -> ApiResponse:
         "canUpload": can_upload_now(current_user, req),
         "equipment": {"id": equipment.EquipmentID, "name": equipment.EquipmentName} if equipment else None,
     }
+
+
+@request_api.get("/activity/<int:request_id>")
+@jwt_required()
+def get_request_activity(request_id: int):
+    """Return the activity log of one request and its file uploads, newest first."""
+    req = db.session.get(Request, request_id)
+    if req is None:
+        return {"errorCode": "10", "error": "Not found"}, 404
+    if not can_read_request(current_user, req):
+        return {"errorCode": "11", "error": "Unauthorized"}, 403
+
+    # TAs only see history of requests they work on
+    mine = db.session.get(RequestAssignment, (request_id, current_user.UserID))
+    is_handling = mine is not None and mine.State == "Approved"
+    if current_user.UserRole == "lab_ta" and req.UserID != current_user.UserID and not is_handling:
+        return {"errorCode": "11", "error": "Unauthorized"}, 403
+
+    is_request_log = and_(ActivityLog.EntityType == "request", ActivityLog.EntityID == request_id)
+    # file logs keep the request id inside fields
+    is_file_log = and_(ActivityLog.EntityType == "file", ActivityLog.fields["RequestID"].as_integer() == request_id)
+
+    logs = db.session.scalars(
+        db.select(ActivityLog)
+        .where(or_(is_request_log, is_file_log))
+        .order_by(ActivityLog.CreatedAt.desc(), ActivityLog.LogID.desc())
+    ).all()
+
+    result = []
+    for log in logs:
+        # some logs have no userID (status changed by the system)
+        user_id = log.fields.get("userID")
+        user = db.session.get(User, user_id) if user_id else None
+        result.append({
+            "id": str(log.LogID),
+            "entity": log.EntityType,
+            "action": log.Action,
+            "fields": log.fields,
+            "by": user.UserFullName if user else None,
+            "at": iso(log.CreatedAt),
+        })
+    return result
 
 
 def _validate_request_text(user_input: JsonDict) -> Optional[ApiResponse]:

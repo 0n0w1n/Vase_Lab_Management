@@ -1,18 +1,18 @@
 /**
- * Formatters are pinned to en-US/UTC so the server and the client render the
+ * Formatters are pinned to en-US/Bangkok so the server and the client render the
  * exact same string — anything locale- or "now"-dependent would hydrate wrong.
  */
 const DATE = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
   year: "numeric",
-  timeZone: "UTC",
+  timeZone: "Asia/Bangkok",
 });
 
 const TIME = new Intl.DateTimeFormat("en-US", {
   hour: "numeric",
   minute: "2-digit",
-  timeZone: "UTC",
+  timeZone: "Asia/Bangkok",
 });
 
 export function formatDate(iso: string): string {

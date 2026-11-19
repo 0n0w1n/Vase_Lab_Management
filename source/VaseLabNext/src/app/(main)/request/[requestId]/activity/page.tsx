@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 import InitialsAvatar from "@/components/request/InitialsAvatar";
 import { formatDateTime } from "@/utils/format";
-import { getRequest } from "@/lib/requests";
-import type { ActivityEntry } from "@/types/request";
+import { getRequestActivity } from "@/lib/requests";
 
 type Props = {
   params: Promise<{ requestId: string }>;
@@ -10,12 +9,11 @@ type Props = {
 
 export default async function ActivityHistoryPage({ params }: Props) {
   const { requestId } = await params;
-  const request = await getRequest(requestId);
+  // Newest first, already worded; undefined means the request doesn't exist,
+  // and no access shows the forbidden page (SRS-10)
+  const activity = await getRequestActivity(requestId);
 
-  if (!request) notFound();
-
-  // wait for endpoint activity finish
-  const activity: ActivityEntry[] = [];
+  if (!activity) notFound();
 
   return (
     <section>

@@ -1,17 +1,20 @@
 import {
   REQUEST_PRIORITIES,
   REQUEST_STATUSES,
+  type ActivityEntry,
   type EditRequestInput,
   type EditRequestState,
   type LabRequest,
   type LogMessage,
   type NewRequestInput,
   type NewRequestState,
+  type RawActivity,
   type RequestPriority,
   type RequestStatus,
   type RequestSummary,
 } from "@/types/request";
 import { forbidden } from "next/navigation";
+import { STATUS } from "@/components/request/StatusPill";
 import { authFetch, isManager, type User } from "@/lib/auth";
 
 /** Owner, lab manager or admin. Flask checks this again on every edit / delete. */
@@ -50,6 +53,62 @@ export async function getRequestComments(id: string): Promise<LogMessage[] | und
   if (res.status === 403) forbidden();
   if (!res.ok) throw new Error(`Get request comments failed: ${res.status}`);
   return res.json();
+}
+
+/** The request's activity log, newest first, already worded for the page. */
+export async function getRequestActivity(id: string): Promise<ActivityEntry[] | undefined> {
+  if (!/^\d+$/.test(id)) return undefined;
+  const res = await authFetch(`/request/activity/${id}`, { cache: "no-store" });
+  if (res.status === 404) return undefined;
+  if (res.status === 403) forbidden();
+  if (!res.ok) throw new Error(`Get request activity failed: ${res.status}`);
+  return ((await res.json()) as RawActivity[]).map(describeActivity);
+}
+
+// Flask only stores what happened; the sentences live here. Each one continues
+// from the name shown above it. `by` is fields.userID, which is the person who
+// acted for most actions, but the TA it happened to for assign, unassign and
+// decisions (the manager isn't recorded), hence "was assigned" rather than "assigned".
+const ACTIVITY_WORDING: Record<string, (fields: Record<string, unknown>) => string> = {
+  create: () => "created this request",
+  // Flask logs every submitted field, not just changed ones, so they can't be listed
+  update: () => "edited this request",
+  "update-status": (fields) =>
+    `changed the status to ${STATUS[fields.status as RequestStatus]?.label ?? String(fields.status)}`,
+  "update-ask-assignment": () => "asked to work on this request",
+  "update-assign-ta": () => "was assigned to this request",
+  "update-unassign-ta": () => "was removed from this request",
+  "update-decide-assignment": (fields) =>
+    fields.decision === "Approved" ? "was approved to work on this request" : "was declined for this request",
+  "update-ask-leave": () => "asked to leave this request",
+  "update-decide-leave": (fields) =>
+    fields.decision === "Approved"
+      ? "had their leave approved and was removed from this request"
+      : "had their leave declined and stays on this request",
+};
+
+/** Turns one log row from Flask into what the Activity History page shows. */
+export function describeActivity(raw: RawActivity): ActivityEntry {
+  const wording = ACTIVITY_WORDING[raw.action];
+  return {
+    id: raw.id,
+    actor: raw.by
+      ? {
+          name: raw.by,
+          initials: raw.by.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase(),
+        }
+      : // No user means an automatic change, e.g. the status moving when a TA is approved
+        { name: "System", initials: "SYS" },
+    at: raw.at,
+    message:
+      // File uploads are logged as a "create" too, so check the entity before the action table
+      raw.entity === "file"
+        ? `attached ${typeof raw.fields?.FileName === "string" ? raw.fields.FileName : "a file"}`
+        : // Unknown actions still show something instead of breaking the page
+          wording
+          ? wording(raw.fields ?? {})
+          : "updated this request",
+  };
 }
 
 const ERROR_FIELDS: Record<string, keyof EditRequestInput> = {
