@@ -42,8 +42,8 @@ type Props = {
 export default async function EquipmentPage({searchParams}: Props) {
   const params = await searchParams;
   const [items, user] = await Promise.all([getEquipment(), getCurrentUser()]);
-  const isLabManager = user?.role === "lab_manager";
-  const isAdmin = user?.role === "admin";
+  // SRS-12: TAs manage equipment the same as lab managers
+  const canManage = user?.role === "lab_manager" || user?.role === "admin" || user?.role === "lab_ta";
 
   const query = typeof params.q === "string" ? params.q.trim().toLowerCase() : "";
   const equipments = items.filter((request) =>(!query || matchesQuery(request, query)));
@@ -53,8 +53,7 @@ export default async function EquipmentPage({searchParams}: Props) {
       <PageHeader
         title="Lab Equipment"
         actions={
-          // Only lab managers see this button.
-          isLabManager && (
+          canManage && (
             <Link href="/equipment/new" className={cn(actionButton, "text-brand")}>
               <Plus className="size-3.5" />
               Add Equipment
@@ -79,7 +78,7 @@ export default async function EquipmentPage({searchParams}: Props) {
         <TableHeaderRow />
         <ul className="flex flex-col gap-2 @2xl:gap-1 @2xl:pt-2">
           {equipments.map((item) => (
-            <EquipmentRow key={item.id} item={item} isLabManager={isLabManager} isAdmin={isAdmin} />
+            <EquipmentRow key={item.id} item={item} canManage={canManage} />
           ))}
         </ul>
 
@@ -118,7 +117,7 @@ function TableHeaderRow() {
   );
 }
 
-function EquipmentRow({ item, isLabManager, isAdmin}: { item: Equipment,  isLabManager: boolean, isAdmin: boolean  }) {
+function EquipmentRow({ item, canManage }: { item: Equipment; canManage: boolean }) {
   return (
     <li className="group relative">
       <Link
@@ -141,7 +140,7 @@ function EquipmentRow({ item, isLabManager, isAdmin}: { item: Equipment,  isLabM
         {/* Only show the date while the item is out on loan. */}
         <ReturnCell date={item.state === "in_use" ? item.expectedReturn : null} className={cell.bottomRight} />
       </Link>
-      {(isLabManager || isAdmin) &&
+      {canManage &&
       <EquipmentActions item={item} variant="hover" />}
     </li>
   );

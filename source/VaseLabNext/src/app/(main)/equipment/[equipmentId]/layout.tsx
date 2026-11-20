@@ -30,7 +30,8 @@ export default async function EquipmentDetailLayout({ children, params }: Props)
   ]);
   if (!equipment) notFound();
 
-  const canManage = user?.role === "lab_manager" || user?.role === "admin";
+  // SRS-12: TAs manage equipment the same as lab managers
+  const canManage = user?.role === "lab_manager" || user?.role === "admin" || user?.role === "lab_ta";
 
   const id = formatEquipmentId(equipment.id);
   const state = stateStyles[equipment.state];
