@@ -8,7 +8,6 @@ import {
   ClipboardList,
   LayoutGrid,
   LogOut,
-  Megaphone,
   SlidersHorizontal,
   type LucideIcon,
 } from "lucide-react";
@@ -92,20 +91,7 @@ export default function AppSidebar({ user }: Props) {
           })}
         </nav>
 
-        {/* <div className="flex-1" /> */}
-
-        <Link
-          href="/Announcements"
-          title="Announcements"
-          aria-label="Announcements"
-          className={cn(
-            "flex items-center justify-center gap-4 py-7 md:justify-start text-sm font-semibold text-warn transition-opacity hover:opacity-80",
-            collapsed && "md:justify-center"
-          )}
-        >
-          <Megaphone className="size-5" />
-          {!collapsed && <span className="hidden md:inline">Announcements</span>}
-        </Link>
+        <div className="flex-1" />
 
         <div className="border-b-2 border-white/67" />
 
