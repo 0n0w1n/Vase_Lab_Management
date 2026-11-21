@@ -1,3 +1,4 @@
+import AutoRefresh from "@/components/layout/AutoRefresh";
 // app/equipment/page.tsx
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -50,6 +51,7 @@ export default async function EquipmentPage({searchParams}: Props) {
 
   return (
     <div className="mx-auto max-w-5xl">
+      <AutoRefresh />
       <PageHeader
         title="Lab Equipment"
         actions={
