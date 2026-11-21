@@ -71,7 +71,8 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
 
   const requests = allRequests.filter(
     (request) =>
-      (!status || request.status === status) &&
+      // "All" means the open ones; closed and rejected only show when picked
+      (status ? request.status === status : request.status !== "close" && request.status !== "reject") &&
       (!priority || request.priority === priority) &&
       (!workOnStatus || (request.workOnStatus ?? "none") === workOnStatus) &&
       (!query || matchesQuery(request, query))
