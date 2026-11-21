@@ -3,8 +3,9 @@ import { notFound } from "next/navigation"; // Hugo : When we don't find corresp
 import { Briefcase, Building2, CalendarDays, Clock, Mail } from "lucide-react";
 import PageHeader from "@/components/layout/PageHeader";
 import InitialsAvatar from "@/components/request/InitialsAvatar";
-import { getCurrentUser, getUser } from "@/lib/auth";
+import { getCurrentUser, getUser, listUsers } from "@/lib/auth";
 import SeedUserForm from "@/components/profile/SeedUserForm";
+import UserSearch from "@/components/profile/UserSearch";
 import { formatDate } from "@/utils/format"; // Hugo : used on line 46
 
 // Spacing 1 unit in tailwinds = 0.25 rems = 4 px
@@ -46,7 +47,10 @@ export default async function ProfilePage({ params }: Props) {
   const initials = user.name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
   const role = user.role.replaceAll("_", " ").toUpperCase();
   const joined = user.createdAt ? formatDate(user.createdAt) : "Not provided"; // Profile creation date
-  const isOwner = user.isOwner
+  const isAdminHome = viewer?.role === "admin" && user.isOwner;
+  // Owners edit themselves; admins can edit anyone
+  const canEdit = user.isOwner || viewer?.role === "admin";
+  const users = isAdminHome ? await listUsers() : [];
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -81,7 +85,7 @@ export default async function ProfilePage({ params }: Props) {
             </div>
           </div>
 
-          { isOwner && (
+          { canEdit && (
             <div className="grid w-full gap-2 @sm:grid-cols-2 @2xl:w-auto @2xl:shrink-0 @2xl:grid-cols-1">
               <Link href={`/profile/${user.id}/edit`} className="flex min-h-11 items-center justify-center rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-semibold text-brand-foreground hover:bg-brand/85">
                 Edit Profile
@@ -103,7 +107,12 @@ export default async function ProfilePage({ params }: Props) {
           </ul>
         </section>
       </div>
-      {viewer?.role === "admin" && viewer.id === user.id && <SeedUserForm />}
+      {isAdminHome && (
+        <>
+          <UserSearch users={users} />
+          <SeedUserForm />
+        </>
+      )}
     </div>
   );
 }

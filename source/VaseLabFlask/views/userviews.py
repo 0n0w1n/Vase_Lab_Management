@@ -24,6 +24,8 @@ def update_user(user_id: int):
     ORG_MAX = 150
     PASSWORD_MIN = 12
     PASSWORD_MAX = 128
+    EMAIL_MAX = 254
+    ROLES = {"admin", "lab_manager", "lab_ta", "lab_member", "visitor"}
 
     user_input = request.get_json(silent=True)
     result = verify_user_input(user_input, EXPECTED_KEYS)
@@ -35,8 +37,13 @@ def update_user(user_id: int):
     if user is None:
         return {"errorCode": "12", "error": "Not found"}, 404
 
-    if user_id != current_user.UserID and current_user.UserRole != "admin":
+    # Admins may edit anyone (other admins and themselves included) and every field.
+    # Everyone else may only edit their own name, organization and password.
+    is_admin = current_user.UserRole == "admin"
+    if user_id != current_user.UserID and not is_admin:
         return {"errorCode": "13", "error": "unauthorized"}, 403
+    if not is_admin and ("email" in user_input or "role" in user_input):
+        return {"errorCode": "14", "error": "Only admins can change email or role"}, 403
 
     if "name" in user_input.keys():
         if len(user_input["name"]) <= 0:
@@ -54,15 +61,15 @@ def update_user(user_id: int):
     else: org = user.UserOrganization
 
     if "newPassword" in user_input.keys():
-        if "currentPassword" not in user_input.keys():
-            return {"errorCode": "33", "error": "currentPassword is required to change password"}, 400
-        current_password_hash = user.PasswordHash
         new_password = user_input["newPassword"]
-        if current_user.UserRole != "admin":
-            current_password = user_input["currentPassword"]
-            if not verify_password(current_password_hash, current_password):
+        # Admins reset passwords without knowing the old one
+        current_password = user_input.get("currentPassword")
+        if not is_admin:
+            if current_password is None:
+                return {"errorCode": "33", "error": "currentPassword is required to change password"}, 400
+            if not verify_password(user.PasswordHash, current_password):
                 return {"errorCode": "34", "error": "Invalid current password"}, 400
-        if len(new_password) < PASSWORD_MIN:
+        if not isinstance(new_password, str) or len(new_password) < PASSWORD_MIN:
             return {"errorCode": "35", "error": "New password too short"}, 400
         if len(new_password) > PASSWORD_MAX:
             return {"errorCode": "36", "error": "New password too long"}, 400
@@ -72,15 +79,59 @@ def update_user(user_id: int):
         new_password_hash = hash_password(new_password)
     else: new_password_hash = user.PasswordHash
 
+    if "email" in user_input.keys():
+        email = user_input["email"]
+        if (
+            not isinstance(email, str)
+            or not 3 <= len(email) <= EMAIL_MAX
+            or email.count("@") != 1
+            or email.startswith("@")
+            or email.endswith("@")
+            or any(character.isspace() for character in email)
+        ):
+            return {"errorCode": "38", "error": "Invalid email"}, 400
+        taken = db.session.execute(
+            db.select(User).where(User.Email == email, User.UserID != user.UserID)
+        ).scalar()
+        if taken is not None:
+            return {"errorCode": "50", "error": "Email already registered"}, 409
+    else: email = user.Email
+
+    if "role" in user_input.keys():
+        role = user_input["role"]
+        if role not in ROLES:
+            return {"errorCode": "39", "error": "Invalid role"}, 400
+    else: role = user.UserRole
+
     user.UserFullName = name
     user.UserOrganization = org
     user.PasswordHash = new_password_hash
+    user.Email = email
+    user.UserRole = role
     try:
         db.session.commit()
+    except IntegrityError:
+        # Two saves could pass the email check at the same time
+        db.session.rollback()
+        return {"errorCode": "50", "error": "Email already registered"}, 409
     except SQLAlchemyError:
         db.session.rollback()
-        return {{"errorCode": "40", "error": "Unknown error occured"}, 500}
+        return {"errorCode": "40", "error": "Unknown error occured"}, 500
     return get_user(user_id)
+
+
+@user_api.get("/list")
+@jwt_required()
+def list_users():
+    """Admin only: every user, for the profile search."""
+    if current_user.UserRole != "admin":
+        return {"errorCode": "13", "error": "unauthorized"}, 403
+
+    users = db.session.execute(db.select(User).order_by(User.UserFullName)).scalars()
+    return [
+        {"id": str(user.UserID), "name": user.UserFullName, "email": user.Email, "role": user.UserRole}
+        for user in users
+    ]
 
 @user_api.get("/current")
 @jwt_required()
