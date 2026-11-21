@@ -57,10 +57,11 @@ def update_user(user_id: int):
         if "currentPassword" not in user_input.keys():
             return {"errorCode": "33", "error": "currentPassword is required to change password"}, 400
         current_password_hash = user.PasswordHash
-        current_password = user_input["currentPassword"]
         new_password = user_input["newPassword"]
-        if not verify_password(current_password_hash, current_password):
-            return {"errorCode": "34", "error": "Invalid current password"}, 400
+        if current_user.UserRole != "admin":
+            current_password = user_input["currentPassword"]
+            if not verify_password(current_password_hash, current_password):
+                return {"errorCode": "34", "error": "Invalid current password"}, 400
         if len(new_password) < PASSWORD_MIN:
             return {"errorCode": "35", "error": "New password too short"}, 400
         if len(new_password) > PASSWORD_MAX:
