@@ -27,10 +27,10 @@ export default function EditProfileForm({ user }: { user: User }) {
   const initial: ProfileState = {
     values: { name: user.name, organization: user.organization ?? "" }, errors: {},
   };
-  const [profile, profileAction, saving] = useActionState(updateProfile, initial);
+  const [profile, profileAction, saving] = useActionState(updateProfile.bind(null, user.id), initial);
   // Controlled profile fields preserve edits when a server action returns errors.
   const [values, setValues] = useState(initial.values);
-  const [password, passwordAction, changing] = useActionState<PasswordState, FormData>(updatePassword, { errors: {} });
+  const [password, passwordAction, changing] = useActionState<PasswordState, FormData>(updatePassword.bind(null, user.id), { errors: {} });
 
   return (
     <div className="flex flex-col gap-6">

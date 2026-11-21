@@ -11,7 +11,7 @@ export type User = {
   role: UserRole;
   organization: string | null;
   createdAt: string | null;
-  isOwner: Boolean;
+  isOwner: boolean;
 };
 
 /** Lab managers and admins may edit or delete anything. */
@@ -96,3 +96,12 @@ export function tokenExpiry(token: string): Date | undefined {
   }
 }
 
+
+export type UserSummary = Pick<User, "id" | "name" | "email" | "role">;
+
+/** Admin only: every user, for the profile search. */
+export async function listUsers(): Promise<UserSummary[]> {
+  const res = await authFetch("/user/list", { cache: "no-store" });
+  if (!res.ok) throw new Error(`List users failed: ${res.status}`);
+  return res.json();
+}
