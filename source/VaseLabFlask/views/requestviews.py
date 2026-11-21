@@ -398,6 +398,12 @@ def edit_request(request_id):
 
     updating["title"] = user_input.get("title")
     updating["details"] = user_input.get("details")
+    updating["deadline"] = user_input.get("deadline")
+    if updating["deadline"]:
+        try:
+            updating["deadline"] = datetime.strptime(updating["deadline"], "%Y-%m-%d")
+        except ValueError, TypeError:
+            return {"errorCode": "26", "error": "Invalid deadline date format"}, 400
 
     # fields managers and lab tas can change
     if current_user.UserRole in FILE_MANAGERS or current_user.UserRole == "lab_ta":
@@ -433,12 +439,6 @@ def edit_request(request_id):
                 return {"errorCode": "24", "error": "Capacity must be an integer"}, 400
             if updating["capacity"] < 0 or updating["capacity"] < assigned_amount:
                 return {"errorCode": "25", "error": "Invalid capacity"}, 400
-        updating["deadline"] = user_input.get("deadline")
-        if updating["deadline"]:
-            try:
-                updating["deadline"] = datetime.strptime(updating["deadline"], "%Y-%m-%d")
-            except ValueError, TypeError:
-                return {"errorCode": "26", "error": "Invalid deadline date format"}, 400
 
     # anyone who can edit may change the equipment; null removes it, keeping the current one always works
     changing_equipment = "equipment_id" in user_input
@@ -457,6 +457,8 @@ def edit_request(request_id):
         if updating["status"] not in allowed_status:
             return {"errorCode": "23", "error": "Unauthorized status change"}, 403
         req.RequestState = updating["status"]
+        # dashboard and workload count completed requests by this time; reopening clears it
+        req.CompletedAt = datetime.now(timezone.utc) if req.RequestState == "close" else None
     if updating["title"]: req.RequestTitle = updating["title"]
     if updating["details"]: req.RequestDetails = updating["details"]
     if updating["priority"]: req.RequestPriority = updating["priority"]
