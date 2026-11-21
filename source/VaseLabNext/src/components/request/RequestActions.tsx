@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { loadRequestDetails, removeRequest, updateRequest } from "@/app/(main)/request/actions";
+import { loadRequestDetails, removeRequest, submitRequestForReview, updateRequest } from "@/app/(main)/request/actions";
 import { PRIORITY_OPTIONS, equipmentOptions } from "@/components/request/NewRequestForm";
 import { STATUS } from "@/components/request/StatusPill";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
