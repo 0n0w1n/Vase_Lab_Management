@@ -53,9 +53,12 @@ def _describe(log: ActivityLog):
         return "Equipment added"
     if log.Action == "delete":
         return "Equipment removed"
-    old = log.fields["old_value"] or {}
+    fields = log.fields or {}
+    
+    old = fields.get("old", fields.get("old_value")) or {}
+    new_values = fields.get("new", fields.get("new_value")) or {}
     changes = []
-    for field, new in (log.fields["new_value"] or {}).items():
+    for field, new in new_values.items():
         label = FIELD_LABELS.get(field, field)
         if field == "EquipmentState" and field in old:
             changes.append(f"{label} changed from {old[field].replace('_', ' ')} to {new.replace('_', ' ')}")
