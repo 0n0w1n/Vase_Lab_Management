@@ -242,7 +242,7 @@ async function throwOnError(res: Response, what: string) {
 }
 
 // TODO(backend): POST /request/edit/<id>, owner + lab manager + admin
-export async function editRequest(id: string, input: EditRequestInput): Promise<void> {
+export async function editRequest(id: string, input: Partial<EditRequestInput>): Promise<void> {
   const res = await authFetch(`/request/edit/${encodeURIComponent(id)}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
