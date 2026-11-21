@@ -2,7 +2,7 @@
 
 import { updateEquipment, removeEquipment } from "@/app/(main)/equipment/actions";
 import { STATE_OPTIONS } from "@/components/equipment/NewEquipmentForm";
-import { ConfirmDeleteModal } from "@/components/ui/ConfirmDeleteModal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { SelectInput, TextArea, TextInput } from "@/components/ui/FormFields";
 import { ItemActions } from "@/components/ui/ItemActions";
 import { Modal, ModalFormButtons } from "@/components/ui/Modal";
@@ -23,23 +23,35 @@ export function EquipmentActions({ item, variant }: Props) {
   return (
     <ItemActions
       variant={variant}
-      dialogs={(open, close) => (
-        <>
-          <Modal open={open === "edit"} onClose={close} title={`Edit ${id}`}>
-            {/* Mounted only while open, so every open starts from the saved values */}
-            <EditEquipmentForm item={item} onDone={close} />
-          </Modal>
-          <ConfirmDeleteModal
-            open={open === "delete"}
-            onClose={close}
-            title={`Delete ${id}?`}
-            description={`${item.name} will be permanently removed.`}
-            onConfirm={() => removeEquipment(item.id)}
-            successText={`${id} deleted`}
-            redirectTo={variant === "buttons" ? "/equipment" : undefined}
-          />
-        </>
-      )}
+      actions={[
+        {
+          label: "Edit",
+          dialog: (open, close) => (
+            <Modal open={open} onClose={close} title={`Edit ${id}`}>
+              {/* Mounted only while open, so every open starts from the saved values */}
+              <EditEquipmentForm item={item} onDone={close} />
+            </Modal>
+          ),
+        },
+        {
+          label: "Delete",
+          tone: "danger",
+          dialog: (open, close) => (
+            <ConfirmModal
+              open={open}
+              onClose={close}
+              title={`Delete ${id}?`}
+              description={`${item.name} will be permanently removed.`}
+              onConfirm={() => removeEquipment(item.id)}
+              confirmText="Delete"
+              pendingText="Deleting…"
+              tone="danger"
+              successText={`${id} deleted`}
+              redirectTo={variant === "buttons" ? "/equipment" : undefined}
+            />
+          ),
+        },
+      ]}
     />
   );
 }

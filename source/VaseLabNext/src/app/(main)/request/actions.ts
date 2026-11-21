@@ -10,7 +10,9 @@ import {
   parseRequestForm,
   RequestValidationError,
 } from "@/lib/requests";
+import { getEquipment } from "@/lib/equipment";
 import type { ActionResult } from "@/types/action";
+import type { Equipment } from "@/types/equipment";
 import type { EditRequestInput, EditRequestState, RequestStatus } from "@/types/request";
 
 // Flask's error text is for the docs only, so the wording shown lives here.
@@ -42,8 +44,11 @@ export async function updateRequest(
     input.status = String(formData.get("status")) as RequestStatus;
   }
 
+  // "" is None; left out entirely when the form has no equipment field
+  const equipmentId = formData.has("equipmentId") ? Number(formData.get("equipmentId")) || null : undefined;
+
   try {
-    await editRequest(id, input);
+    await editRequest(id, input, equipmentId);
   } catch (error) {
     // Let the expired-session redirect to /login through.
     unstable_rethrow(error);
@@ -74,18 +79,49 @@ export async function removeRequest(id: string): Promise<ActionResult> {
   return { ok: true };
 }
 
-/** The list rows don't carry details, capacity or assignedCount, so the edit modal loads them on open. */
-export async function loadRequestDetails(
-  id: string
-): Promise<{ details: string; capacity: number; assignedCount: number } | null> {
+const REVIEW_MESSAGES: Record<string, string> = {
+  "12": "This request no longer exists.",
+  "13": "You don't have permission to change this request.",
+  "23": "This request can only be submitted for review while it's in progress.",
+};
+
+/** An assigned TA hands an in-progress request over for review. Flask checks the role and current status. */
+export async function submitRequestForReview(id: string): Promise<ActionResult> {
   try {
-    const res = await authFetch(`/request/details/${encodeURIComponent(id)}`, { cache: "no-store" });
+    await editRequest(id, { status: "review" });
+  } catch (error) {
+    unstable_rethrow(error);
+    const code = error instanceof RequestValidationError ? error.errorCode : "";
+    return { ok: false, message: REVIEW_MESSAGES[code] ?? "Couldn't submit for review. Please try again." };
+  }
+
+  revalidatePath("/request");
+  revalidatePath(`/request/${id}`, "layout");
+  revalidatePath("/dashboard", "layout");
+  return { ok: true };
+}
+
+/** What the edit modal loads on open: fields the list rows don't carry, plus the equipment to pick from. */
+export async function loadRequestDetails(id: string): Promise<{
+  details: string;
+  capacity: number;
+  assignedCount: number;
+  equipmentId: number | null;
+  equipment: Pick<Equipment, "id" | "name" | "state">[];
+} | null> {
+  try {
+    const [res, equipment] = await Promise.all([
+      authFetch(`/request/details/${encodeURIComponent(id)}`, { cache: "no-store" }),
+      getEquipment(),
+    ]);
     if (!res.ok) return null;
     const body = await res.json();
     return {
       details: typeof body?.details === "string" ? body.details : "",
       capacity: typeof body?.capacity === "number" ? body.capacity : 1,
       assignedCount: typeof body?.assignedCount === "number" ? body.assignedCount : 0,
+      equipmentId: typeof body?.equipment?.id === "number" ? body.equipment.id : null,
+      equipment: equipment.map(({ id, name, state }) => ({ id, name, state })),
     };
   } catch (error) {
     unstable_rethrow(error);

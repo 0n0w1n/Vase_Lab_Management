@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { loadRequestDetails, removeRequest, updateRequest } from "@/app/(main)/request/actions";
-import { PRIORITY_OPTIONS } from "@/components/request/NewRequestForm";
+import { loadRequestDetails, removeRequest, submitRequestForReview, updateRequest } from "@/app/(main)/request/actions";
+import { PRIORITY_OPTIONS, equipmentOptions } from "@/components/request/NewRequestForm";
 import { STATUS } from "@/components/request/StatusPill";
-import { ConfirmDeleteModal } from "@/components/ui/ConfirmDeleteModal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { SelectInput, TextArea, TextInput } from "@/components/ui/FormFields";
-import { ItemActionsNoDelete } from "@/components/ui/ItemActions";
+import { ItemActions, type ItemAction } from "@/components/ui/ItemActions";
 import { Modal, ModalFormButtons } from "@/components/ui/Modal";
 import { useModalForm } from "@/components/ui/useModalForm";
 import type { UserRole } from "@/lib/auth";
@@ -40,7 +40,8 @@ function statusOptions(role: UserRole, request: LoadedRequest) {
 
 /** A list row lacks details, capacity and assignedCount; the detail page passes them in. */
 type EditableRequest = RequestSummary & { details?: string; capacity?: number; assignedCount?: number };
-type LoadedRequest = RequestSummary & { details: string; capacity: number; assignedCount: number };
+type Loaded = NonNullable<Awaited<ReturnType<typeof loadRequestDetails>>>;
+type LoadedRequest = RequestSummary & Loaded;
 
 type Props = {
   request: EditableRequest;
@@ -50,40 +51,67 @@ type Props = {
   role: UserRole;
 };
 
-/** Edit + Delete for one request. Only render it for the owner, assigned TAs, lab managers and admins. */
+/** Edit (+ Submit for Review for TAs) for one request. Only render it for the owner, assigned TAs, lab managers and admins. */
 export default function RequestActions({ request, variant, role }: Props) {
-  return (
-    <ItemActionsNoDelete
-      variant={variant}
-      dialogs={(open, close) => (
-        <>
-          <Modal open={open === "edit"} onClose={close} title={`Edit Request #${request.id}`} description={`Requested by ${request.requestedBy}`}>
-            <EditRequestLoader request={request} role={role} onDone={close} />
-          </Modal>
-          {/* <ConfirmDeleteModal
-            open={open === "delete"}
-            onClose={close}
-            title={`Delete Request #${request.id}?`}
-            description={`"${request.title}" will be permanently removed.`}
-            onConfirm={() => removeRequest(request.id)}
-            successText={`Request #${request.id} deleted`}
-            redirectTo={variant === "buttons" ? "/request" : undefined}
-          /> */}
-        </>
-      )}
-    />
-  );
+  const actions: ItemAction[] = [
+    {
+      label: "Edit",
+      dialog: (open, close) => (
+        <Modal open={open} onClose={close} title={`Edit Request #${request.id}`} description={`Requested by ${request.requestedBy}`}>
+          <EditRequestLoader request={request} role={role} onDone={close} />
+        </Modal>
+      ),
+    },
+  ];
+
+  // Flask only lets a TA move in-progress -> review, so only offer it then.
+  if (role === "lab_ta" && request.status === "in-progress") {
+    actions.push({
+      label: "Review",
+      tone: "neutral",
+      dialog: (open, close) => (
+        <ConfirmModal
+          open={open}
+          onClose={close}
+          title={`Submit Request #${request.id} for review?`}
+          description={`"${request.title}" will be handed to a lab manager for a review. You can't move it back to in progress yourself.`}
+          onConfirm={() => submitRequestForReview(request.id)}
+          confirmText="Submit for Review"
+          pendingText="Submitting…"
+          successText={`Request #${request.id} submitted for review`}
+        />
+      ),
+    });
+  }
+
+  // Delete is off for now. To bring it back:
+  // actions.push({
+  //   label: "Delete",
+  //   tone: "danger",
+  //   dialog: (open, close) => (
+  //     <ConfirmModal
+  //       open={open}
+  //       onClose={close}
+  //       title={`Delete Request #${request.id}?`}
+  //       description={`"${request.title}" will be permanently removed.`}
+  //       onConfirm={() => removeRequest(request.id)}
+  //       confirmText="Delete"
+  //       pendingText="Deleting…"
+  //       tone="danger"
+  //       successText={`Request #${request.id} deleted`}
+  //       redirectTo={variant === "buttons" ? "/request" : undefined}
+  //     />
+  //   ),
+  // });
+
+  return <ItemActions variant={variant} actions={actions} />;
 }
 
 type FormProps = { role: UserRole; onDone: () => void };
 
-/** List rows lack details, capacity and assignedCount: load them first so saving can't blank them. */
+/** Loads on open: list rows lack details and capacity, and every form needs the equipment list. */
 function EditRequestLoader({ request, ...props }: FormProps & { request: EditableRequest }) {
-  const [extra, setExtra] = useState(
-    request.details !== undefined && request.capacity !== undefined && request.assignedCount !== undefined
-      ? { details: request.details, capacity: request.capacity, assignedCount: request.assignedCount }
-      : null
-  );
+  const [extra, setExtra] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -136,6 +164,13 @@ function EditRequestForm({ request, role, onDone }: FormProps & { request: Loade
           )}
         </div>
       )}
+
+      <SelectInput
+        name="equipmentId"
+        label="Equipment"
+        options={equipmentOptions(request.equipment, request.equipmentId)}
+        defaultValue={request.equipmentId === null ? "" : String(request.equipmentId)}
+      />
 
       <TextArea name="details" label="Details" maxLength={2000} className="h-28" defaultValue={values.details} error={errors.details} />
 

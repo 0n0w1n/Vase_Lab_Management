@@ -10,7 +10,7 @@ import {
   type NewRequestState,
 } from "@/app/(main)/request/new/actions";
 import { formatEquipmentId } from "@/utils/format";
-import type { Equipment } from "@/types/equipment";
+import type { Equipment, EquipmentState } from "@/types/equipment";
 import type { RequestPriority } from "@/types/request";
 
 const INITIAL_STATE: NewRequestState = {
@@ -23,6 +23,29 @@ export const PRIORITY_OPTIONS: { value: RequestPriority; label: string }[] = [
   { value: "medium", label: "Medium" },
   { value: "high", label: "High" },
 ];
+
+const EQUIPMENT_STATE_LABELS: Record<EquipmentState, string> = {
+  available: "Available",
+  in_use: "In Use",
+  maintenance: "Maintenance",
+  retired: "Retired",
+};
+
+/**
+ * Equipment dropdown for the new and edit request forms. Any state can be picked,
+ * so the state is shown as a reminder; retired items are left out unless already picked.
+ */
+export function equipmentOptions(equipment: Pick<Equipment, "id" | "name" | "state">[], currentId?: number | null) {
+  return [
+    { value: "", label: "None" },
+    ...equipment
+      .filter((item) => item.state !== "retired" || item.id === currentId)
+      .map((item) => ({
+        value: String(item.id),
+        label: `${formatEquipmentId(item.id)} · ${item.name}${item.state === "available" ? "" : ` (${EQUIPMENT_STATE_LABELS[item.state]})`}`,
+      })),
+  ];
+}
 
 export default function NewRequestForm({ equipment }: { equipment: Equipment[] }) {
   const [state, formAction, pending] = useActionState(
@@ -102,10 +125,7 @@ export default function NewRequestForm({ equipment }: { equipment: Equipment[] }
       <SelectInput
         name="equipmentId"
         label="Equipment"
-        options={[
-          { value: "", label: "None" },
-          ...equipment.map((item) => ({ value: String(item.id), label: `${formatEquipmentId(item.id)} · ${item.name}` })),
-        ]}
+        options={equipmentOptions(equipment)}
       />
 
       {state.message && (
