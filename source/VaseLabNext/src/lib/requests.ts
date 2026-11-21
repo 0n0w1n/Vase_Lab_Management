@@ -243,7 +243,7 @@ async function throwOnError(res: Response, what: string) {
 
 // TODO(backend): POST /request/edit/<id>, owner + lab manager + admin
 // equipmentId: null removes it, undefined leaves it unchanged
-export async function editRequest(id: string, input: EditRequestInput, equipmentId?: number | null): Promise<void> {
+export async function editRequest(id: string, input: Partial<EditRequestInput>, equipmentId?: number | null): Promise<void> {
   const res = await authFetch(`/request/edit/${encodeURIComponent(id)}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

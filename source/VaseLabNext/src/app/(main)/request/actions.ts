@@ -79,6 +79,28 @@ export async function removeRequest(id: string): Promise<ActionResult> {
   return { ok: true };
 }
 
+const REVIEW_MESSAGES: Record<string, string> = {
+  "12": "This request no longer exists.",
+  "13": "You don't have permission to change this request.",
+  "23": "This request can only be submitted for review while it's in progress.",
+};
+
+/** An assigned TA hands an in-progress request over for review. Flask checks the role and current status. */
+export async function submitRequestForReview(id: string): Promise<ActionResult> {
+  try {
+    await editRequest(id, { status: "review" });
+  } catch (error) {
+    unstable_rethrow(error);
+    const code = error instanceof RequestValidationError ? error.errorCode : "";
+    return { ok: false, message: REVIEW_MESSAGES[code] ?? "Couldn't submit for review. Please try again." };
+  }
+
+  revalidatePath("/request");
+  revalidatePath(`/request/${id}`, "layout");
+  revalidatePath("/dashboard", "layout");
+  return { ok: true };
+}
+
 /** What the edit modal loads on open: fields the list rows don't carry, plus the equipment to pick from. */
 export async function loadRequestDetails(id: string): Promise<{
   details: string;
