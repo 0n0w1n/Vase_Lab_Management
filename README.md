@@ -1,26 +1,22 @@
 # Vase Lab Management
-## Group Members
 
-| Name | GitHub Username |
-|------|------------------|
-| Thanathas Puttapipat | @dootless-th8 |
-| Anawin Chaichana | @0n0w1n |
-| Hugh Jaiden | @hugy-ku |
-| Thichanon Kangkachit | @nonkrub123 |
-| Hugo Desvignes | @Suro1420 |
+## Requirements
 
-## Project Status
+- Docker Desktop installed and running.
+- Available ports 3000, 8000, and 3307
 
-🚧 **In Development**
+## Run the App
 
-**Done in Iteration 5**
-- File attachments: upload and download files on requests, with access limited to people on the request
-- Admin can register new users
-- Add, edit, and delete equipment
-- Edit and delete requests, with rules based on role and request status
-- Only the lab manager and admin can see and change request status and TA capacity
-- Production Docker setup (`docker-compose.prod.yml` and `.env.prod.example`)
-- Profile page and sidebar work better on small screens
+From the project root, run:
+
+```sh
+cd source
+docker compose up --build
+```
+
+
+Once the services have started, open [http://localhost:3000](http://localhost:3000) in your browser.
+
 
 ## Project Structure
 
