@@ -7,7 +7,8 @@ export const metadata = {
 };
 
 export default async function NewRequestPage() {
-  const equipment = (await getEquipment()).filter((item) => item.state === "available");
+  // Any state can be picked; the form leaves out retired items
+  const equipment = await getEquipment();
 
   return (
     <div className="mx-auto max-w-5xl">

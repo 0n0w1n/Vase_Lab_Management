@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { loadRequestDetails, removeRequest, submitRequestForReview, updateRequest } from "@/app/(main)/request/actions";
-import { PRIORITY_OPTIONS } from "@/components/request/NewRequestForm";
+import { loadRequestDetails, removeRequest, updateRequest } from "@/app/(main)/request/actions";
+import { PRIORITY_OPTIONS, equipmentOptions } from "@/components/request/NewRequestForm";
 import { STATUS } from "@/components/request/StatusPill";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { SelectInput, TextArea, TextInput } from "@/components/ui/FormFields";
@@ -40,7 +40,8 @@ function statusOptions(role: UserRole, request: LoadedRequest) {
 
 /** A list row lacks details, capacity and assignedCount; the detail page passes them in. */
 type EditableRequest = RequestSummary & { details?: string; capacity?: number; assignedCount?: number };
-type LoadedRequest = RequestSummary & { details: string; capacity: number; assignedCount: number };
+type Loaded = NonNullable<Awaited<ReturnType<typeof loadRequestDetails>>>;
+type LoadedRequest = RequestSummary & Loaded;
 
 type Props = {
   request: EditableRequest;
@@ -108,13 +109,9 @@ export default function RequestActions({ request, variant, role }: Props) {
 
 type FormProps = { role: UserRole; onDone: () => void };
 
-/** List rows lack details, capacity and assignedCount: load them first so saving can't blank them. */
+/** Loads on open: list rows lack details and capacity, and every form needs the equipment list. */
 function EditRequestLoader({ request, ...props }: FormProps & { request: EditableRequest }) {
-  const [extra, setExtra] = useState(
-    request.details !== undefined && request.capacity !== undefined && request.assignedCount !== undefined
-      ? { details: request.details, capacity: request.capacity, assignedCount: request.assignedCount }
-      : null
-  );
+  const [extra, setExtra] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -167,6 +164,13 @@ function EditRequestForm({ request, role, onDone }: FormProps & { request: Loade
           )}
         </div>
       )}
+
+      <SelectInput
+        name="equipmentId"
+        label="Equipment"
+        options={equipmentOptions(request.equipment, request.equipmentId)}
+        defaultValue={request.equipmentId === null ? "" : String(request.equipmentId)}
+      />
 
       <TextArea name="details" label="Details" maxLength={2000} className="h-28" defaultValue={values.details} error={errors.details} />
 
