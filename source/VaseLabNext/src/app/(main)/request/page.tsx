@@ -1,3 +1,4 @@
+import AutoRefresh from "@/components/layout/AutoRefresh";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import PriorityDot from "@/components/request/PriorityDot";
@@ -79,6 +80,7 @@ export default async function ManageRequestsPage({ searchParams }: Props) {
   return (
     // Glow and padding come from AppShell.
     <div className="mx-auto max-w-5xl">
+        <AutoRefresh />
         <PageHeader
           title="Manage Request"
           actions={

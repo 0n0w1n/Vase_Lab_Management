@@ -1,3 +1,4 @@
+import AutoRefresh from "@/components/layout/AutoRefresh";
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/layout/PageHeader";
 import RequestActions from "@/components/request/RequestActions";
@@ -30,6 +31,7 @@ export default async function RequestDetailLayout({ children, params }: Props) {
 
   return (
     <div className="mx-auto max-w-5xl">
+      <AutoRefresh />
       <PageHeader
         title={`Request #${request.id}`}
         breadcrumbs={[
