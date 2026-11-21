@@ -262,21 +262,13 @@ def create_request() -> ApiResponse:
     if deadline.date() < date.today():
         return {"errorCode": "34", "error": "Invalid date"}, 400
 
-    # only available equipment can be requested
+    # equipment only says what the request is about, so any state works except retired
     equipment_id = user_input.get("equipment_id")
     if equipment_id is not None:
         if type(equipment_id) is not int:
             return {"errorCode": "35", "error": "Invalid equipment"}, 400
         equipment = db.session.get(Equipment, equipment_id)
-        if equipment is None or equipment.EquipmentState != "available":
-            return {"errorCode": "36", "error": "Equipment not available"}, 400
-        # already taken by another open request
-        in_use = db.session.scalar(
-            db.select(Request.RequestID)
-            .where(Request.EquipmentID == equipment_id, Request.RequestState.in_(ACTIVE_STATES))
-            .limit(1)
-        )
-        if in_use is not None:
+        if equipment is None or equipment.EquipmentState == "retired":
             return {"errorCode": "36", "error": "Equipment not available"}, 400
 
     req = Request(
@@ -448,6 +440,17 @@ def edit_request(request_id):
             except ValueError, TypeError:
                 return {"errorCode": "26", "error": "Invalid deadline date format"}, 400
 
+    # anyone who can edit may change the equipment; null removes it, keeping the current one always works
+    changing_equipment = "equipment_id" in user_input
+    if changing_equipment:
+        equipment_id = user_input["equipment_id"]
+        if equipment_id is not None and equipment_id != req.EquipmentID:
+            if type(equipment_id) is not int:
+                return {"errorCode": "27", "error": "Invalid equipment"}, 400
+            equipment = db.session.get(Equipment, equipment_id)
+            if equipment is None or equipment.EquipmentState == "retired":
+                return {"errorCode": "28", "error": "Equipment not available"}, 400
+
     # DRY: Do Repeat Yourself
     # leaving the status as it is is always fine
     if updating["status"] and updating["status"] != req.RequestState:
@@ -458,6 +461,9 @@ def edit_request(request_id):
     if updating["details"]: req.RequestDetails = updating["details"]
     if updating["priority"]: req.RequestPriority = updating["priority"]
     if updating["capacity"]: req.Capacity = updating["capacity"]
+    if changing_equipment:
+        req.EquipmentID = user_input["equipment_id"]
+        updating["equipment_id"] = user_input["equipment_id"]
     if updating["deadline"]:
         req.RequestDeadline = updating["deadline"]
         # doing this so its json serializable for Activity Log

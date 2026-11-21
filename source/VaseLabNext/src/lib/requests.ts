@@ -242,12 +242,17 @@ async function throwOnError(res: Response, what: string) {
 }
 
 // TODO(backend): POST /request/edit/<id>, owner + lab manager + admin
-export async function editRequest(id: string, input: EditRequestInput): Promise<void> {
+// equipmentId: null removes it, undefined leaves it unchanged
+export async function editRequest(id: string, input: EditRequestInput, equipmentId?: number | null): Promise<void> {
   const res = await authFetch(`/request/edit/${encodeURIComponent(id)}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
+    body: JSON.stringify({ ...input, equipment_id: equipmentId }),
   });
+  const body = await res.clone().json().catch(() => null);
+  const code = String(body?.errorCode);
+  if (code === "27" || code === "28")
+    throw new RequestValidationError(code, "That equipment can't be picked. Please choose another.");
   await throwOnError(res, `Edit request ${id}`);
 }
 
