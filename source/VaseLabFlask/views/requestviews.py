@@ -457,6 +457,8 @@ def edit_request(request_id):
         if updating["status"] not in allowed_status:
             return {"errorCode": "23", "error": "Unauthorized status change"}, 403
         req.RequestState = updating["status"]
+        # dashboard and workload count completed requests by this time; reopening clears it
+        req.CompletedAt = datetime.now(timezone.utc) if req.RequestState == "close" else None
     if updating["title"]: req.RequestTitle = updating["title"]
     if updating["details"]: req.RequestDetails = updating["details"]
     if updating["priority"]: req.RequestPriority = updating["priority"]
